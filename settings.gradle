@@ -1,0 +1,3 @@
+include ':rhinoengine'
+include ':app'
+rootProject.name = "Rhino Engine"
