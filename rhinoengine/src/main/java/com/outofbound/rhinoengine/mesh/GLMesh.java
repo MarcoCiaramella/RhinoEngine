@@ -18,7 +18,7 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 
-public class GLMesh {
+public abstract class GLMesh {
 
     private float[] vertices;
     private float[] normals;
@@ -153,14 +153,31 @@ public class GLMesh {
         dead = true;
     }
 
-    public final void doTransformation(float[] mvMatrix){
-        if (getMotion() != null) {
-            Matrix.translateM(mvMatrix, 0, getMotion().position.x, getMotion().position.y, getMotion().position.z);
-            Matrix.rotateM(mvMatrix, 0, getMotion().rotation.z, 0, 0, 1);
-            Matrix.rotateM(mvMatrix, 0, getMotion().rotation.y, 0, 1, 0);
-            Matrix.rotateM(mvMatrix, 0, getMotion().rotation.x, 1, 0, 0);
-            Matrix.scaleM(mvMatrix, 0, getMotion().scale.x, getMotion().scale.y, getMotion().scale.z);
-        }
+    public abstract void doTransformation(float[] mvMatrix);
+
+    public GLMesh rotateX(float[] mvMatrix){
+        Matrix.rotateM(mvMatrix, 0, getMotion().rotation.x, 1, 0, 0);
+        return this;
+    }
+
+    public GLMesh rotateY(float[] mvMatrix){
+        Matrix.rotateM(mvMatrix, 0, getMotion().rotation.y, 0, 1, 0);
+        return this;
+    }
+
+    public GLMesh rotateZ(float[] mvMatrix){
+        Matrix.rotateM(mvMatrix, 0, getMotion().rotation.z, 0, 0, 1);
+        return this;
+    }
+
+    public GLMesh scale(float[] mvMatrix){
+        Matrix.scaleM(mvMatrix, 0, getMotion().scale.x, getMotion().scale.y, getMotion().scale.z);
+        return this;
+    }
+
+    public GLMesh translate(float[] mvMatrix){
+        Matrix.translateM(mvMatrix, 0, getMotion().position.x, getMotion().position.y, getMotion().position.z);
+        return this;
     }
 
     public void move(long ms){

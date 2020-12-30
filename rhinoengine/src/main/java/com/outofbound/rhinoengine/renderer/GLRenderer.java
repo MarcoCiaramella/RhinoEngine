@@ -71,7 +71,9 @@ public abstract class GLRenderer implements Loadable {
     protected void render(float[] m, long ms) {
 
         Matrix.setIdentityM(mvMatrix,0);
-        glMesh.doTransformation(mvMatrix);
+        if (glMesh.getMotion() != null) {
+            glMesh.doTransformation(mvMatrix);
+        }
         Matrix.multiplyMM(mvpMatrix, 0, m, 0, mvMatrix, 0);
 
         if (glMesh.getBoundingBox() != null) {
