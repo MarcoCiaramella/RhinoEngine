@@ -1,4 +1,4 @@
-package com.outofbound.rhinoengine.renderer;
+package com.outofbound.rhinoengine.renderer.fx;
 
 import android.opengl.GLES20;
 import android.opengl.Matrix;
@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 
 import com.outofbound.rhinoengine.camera.GLCamera;
 import com.outofbound.rhinoengine.camera.GLCamera2D;
+import com.outofbound.rhinoengine.renderer.GLOnTextureRenderer;
 import com.outofbound.rhinoengine.util.vector.Vector3f;
 
 import java.nio.FloatBuffer;

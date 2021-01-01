@@ -307,8 +307,9 @@ public abstract class GLMesh {
         return indices.length;
     }
 
-    public void setMotion(Motion motion){
+    public GLMesh setMotion(Motion motion){
         this.motion = motion;
+        return this;
     }
 
     public Motion getMotion(){
