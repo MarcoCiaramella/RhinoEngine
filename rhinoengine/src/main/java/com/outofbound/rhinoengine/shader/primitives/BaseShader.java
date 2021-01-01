@@ -14,7 +14,7 @@ public class BaseShader extends GLShader {
                 "uMVMatrix",
                 null,
                 "uLightsPos",
-                null,
+                "uLightsColor",
                 "uLightsIntensity",
                 null,
                 null,

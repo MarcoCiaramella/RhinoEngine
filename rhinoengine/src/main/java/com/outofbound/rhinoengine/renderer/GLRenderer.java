@@ -8,9 +8,11 @@ import androidx.annotation.NonNull;
 
 import com.outofbound.rhinoengine.engine.GLEngine;
 import com.outofbound.rhinoengine.engine.Loadable;
+import com.outofbound.rhinoengine.light.GLLight;
 import com.outofbound.rhinoengine.light.GLLights;
 import com.outofbound.rhinoengine.mesh.GLMesh;
 import com.outofbound.rhinoengine.shader.GLShader;
+import com.outofbound.rhinoengine.util.vector.Vector3f;
 
 
 /**
@@ -40,7 +42,9 @@ public abstract class GLRenderer implements Loadable {
         this.id = id;
         this.glMesh = glMesh;
         this.glShader = glShader;
-        this.glLights = new GLLights(0);
+        this.glLights = new GLLights(1);
+        GLLight glLight = new GLLight(new Vector3f(0,10,0),new Vector3f(1,1,1),10);
+        glLights.add(0,glLight);
     }
 
     /**

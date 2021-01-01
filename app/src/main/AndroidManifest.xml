@@ -8,6 +8,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.RhinoEngine" />
+        android:theme="@style/Theme.RhinoEngine">
+        <activity android:name=".MainActivity"></activity>
+    </application>
 
 </manifest>

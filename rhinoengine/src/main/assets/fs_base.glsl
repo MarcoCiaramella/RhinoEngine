@@ -3,9 +3,8 @@
 precision highp float;
 
 
-const vec4 LIGHT_COLOR = vec4(1.0,1.0,1.0,1.0);
-
 uniform vec3 uLightsPos[1];
+uniform vec4 uLightsColor[1];
 uniform float uLightsIntensity[1];
 varying vec4 vColor;
 varying vec3 vPosition;
@@ -19,7 +18,7 @@ float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal);
 
 void main() {
     float diffuse = calcDiffuseLight(uLightsPos[0], uLightsIntensity[0], vPosition, vNormal);
-    vec4 color = vColor * (diffuse*LIGHT_COLOR);
+    vec4 color = vColor * (diffuse*uLightsColor[0]);
     gl_FragColor = color;
 }
 
