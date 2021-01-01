@@ -18,6 +18,6 @@ public abstract class GLOnTextureRenderer {
         dead = true;
     }
 
-    public abstract int render(int textureInput, float[] mFBO, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer, long ms, int screenWidth, int screenHeight);
+    public abstract int render(int textureInput, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer, long ms, int fboWidth, int fboHeight);
     public abstract void setup(int fboWidth, int fboHeight);
 }

@@ -3,8 +3,9 @@ package com.outofbound.rhinoengine.renderer;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.outofbound.rhinoengine.camera.GLCamera;
+import com.outofbound.rhinoengine.camera.GLCamera2D;
 import com.outofbound.rhinoengine.engine.GLEngine;
-import com.outofbound.rhinoengine.renderer.util.FrameBuffer;
 import com.outofbound.rhinoengine.shader.GLShader;
 import com.outofbound.rhinoengine.util.file.TextFileReader;
 
@@ -49,11 +50,14 @@ public class GLBlur extends GLOnTextureRenderer {
     private float amount;
     private float strength;
 
+    private GLCamera camera;
+
 
     public GLBlur(float scale, float amount, float strength) {
         this.scale = scale;
         this.amount = amount;
         this.strength = strength;
+        this.camera = new GLCamera2D();
     }
 
     private void setupBlur(int fboWidth, int fboHeight){
@@ -73,9 +77,9 @@ public class GLBlur extends GLOnTextureRenderer {
         renderBufferStep1 = buffers[0];
         renderBufferStep2 = buffers[1];
         renderBufferStep3 = buffers[2];
-        FrameBuffer.create(frameBufferStep1,textureStep1,renderBufferStep1,fboWidth,fboHeight);
-        FrameBuffer.create(frameBufferStep2,textureStep2,renderBufferStep2,fboWidth,fboHeight);
-        FrameBuffer.create(frameBufferStep3,textureStep3,renderBufferStep3,fboWidth,fboHeight);
+        createFramebuffer(frameBufferStep1,textureStep1,renderBufferStep1,fboWidth,fboHeight);
+        createFramebuffer(frameBufferStep2,textureStep2,renderBufferStep2,fboWidth,fboHeight);
+        createFramebuffer(frameBufferStep3,textureStep3,renderBufferStep3,fboWidth,fboHeight);
 
         programShaderBlur = GLES20.glCreateProgram();
         //compile shaders
@@ -123,12 +127,13 @@ public class GLBlur extends GLOnTextureRenderer {
     }
 
     @Override
-    public int render(int textureInput, float[] mFBO, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer, long ms, int screenWidth, int screenHeight) {
+    public int render(int textureInput, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer, long ms, int fboWidth, int fboHeight) {
+        float[] m = camera.create(fboWidth, fboHeight, ms);
         this.textureInput = textureInput;
         // mFBO is used to render on texture.
-        blur(1, mFBO, vertexBuffer, textureCoordsBuffer);
-        blur(2, mFBO, vertexBuffer, textureCoordsBuffer);
-        draw(mFBO, vertexBuffer, textureCoordsBuffer);
+        blur(1, m, vertexBuffer, textureCoordsBuffer);
+        blur(2, m, vertexBuffer, textureCoordsBuffer);
+        draw(m, vertexBuffer, textureCoordsBuffer);
         return textureStep3;
     }
 
@@ -200,6 +205,32 @@ public class GLBlur extends GLOnTextureRenderer {
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
+    }
+
+    private void createFramebuffer(int fbo, int tex, int rid, int fboWidth, int fboHeight){
+        //Bind Frame buffer
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbo);
+        //Bind texture
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex);
+        //Define texture parameters
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, fboWidth, fboHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+        //Bind render buffer and define buffer dimension
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, rid);
+        GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, fboWidth, fboHeight);
+        //Attach texture FBO color attachment
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, tex, 0);
+        //Attach render buffer to depth attachment
+        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, rid);
+        //we are done, reset
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
 }

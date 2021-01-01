@@ -3,8 +3,9 @@ package com.outofbound.rhinoengine.renderer;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
+import com.outofbound.rhinoengine.camera.GLCamera;
+import com.outofbound.rhinoengine.camera.GLCamera2D;
 import com.outofbound.rhinoengine.engine.GLEngine;
-import com.outofbound.rhinoengine.renderer.util.FrameBuffer;
 import com.outofbound.rhinoengine.shader.GLShader;
 import com.outofbound.rhinoengine.util.file.TextFileReader;
 
@@ -33,6 +34,7 @@ public class GLPixellation extends GLOnTextureRenderer {
     private float time;
     private float timeToLiveS;
     private int uTime;
+    private GLCamera camera;
 
 
     public GLPixellation(float pixelWidth, float pixelHeight, float timeToLiveS) {
@@ -40,6 +42,7 @@ public class GLPixellation extends GLOnTextureRenderer {
         this.pixelHeight = pixelHeight;
         time = 0.0f;
         this.timeToLiveS = timeToLiveS;
+        this.camera = new GLCamera2D();
     }
 
     @Override
@@ -57,7 +60,7 @@ public class GLPixellation extends GLOnTextureRenderer {
         texture = buffers[0];
         GLES20.glGenRenderbuffers(1, buffers, 0);
         int renderBuffer = buffers[0];
-        FrameBuffer.create(frameBuffer,texture,renderBuffer,fboWidth,fboHeight);
+        createFramebuffer(frameBuffer,texture,renderBuffer,fboWidth,fboHeight);
 
         programShader = GLES20.glCreateProgram();
         //compile shaders
@@ -80,10 +83,11 @@ public class GLPixellation extends GLOnTextureRenderer {
     }
 
     @Override
-    public int render(int textureInput, float[] mFBO, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer, long ms, int screenWidth, int screenHeight) {
+    public int render(int textureInput, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer, long ms, int fboWidth, int fboHeight) {
+        float[] m = camera.create(fboWidth, fboHeight, ms);
         this.textureInput = textureInput;
         // mFBO is used to render on texture.
-        pixellation(mFBO,vertexBuffer,textureCoordsBuffer,ms);
+        pixellation(m,vertexBuffer,textureCoordsBuffer,ms);
         if (time > timeToLiveS){
             destroy();
         }
@@ -111,6 +115,32 @@ public class GLPixellation extends GLOnTextureRenderer {
         time += ms/1000f;
         GLES20.glUniform1f(uTime, time);
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+    }
+
+    private void createFramebuffer(int fbo, int tex, int rid, int fboWidth, int fboHeight){
+        //Bind Frame buffer
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbo);
+        //Bind texture
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex);
+        //Define texture parameters
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, fboWidth, fboHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+        //Bind render buffer and define buffer dimension
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, rid);
+        GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, fboWidth, fboHeight);
+        //Attach texture FBO color attachment
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, tex, 0);
+        //Attach render buffer to depth attachment
+        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, rid);
+        //we are done, reset
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
