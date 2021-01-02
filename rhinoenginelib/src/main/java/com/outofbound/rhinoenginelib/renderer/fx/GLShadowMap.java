@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.renderer.GLOnTextureRenderer;
+import com.outofbound.rhinoenginelib.renderer.util.Framebuffer;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.util.file.TextFileReader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
@@ -42,19 +43,10 @@ public class GLShadowMap extends GLOnTextureRenderer {
         GLES20.glGenTextures(1, buffers, 0);
         depthTexture = buffers[0];
 
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, depthTexture);
-        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_DEPTH_COMPONENT16, fboWidth, fboHeight, 0, GLES20.GL_DEPTH_COMPONENT, GLES20.GL_FLOAT, null);
+        GLES20.glGenRenderbuffers(1, buffers, 0);
+        int renderBuffer = buffers[0];
 
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_TEXTURE_2D, depthTexture, 0);
-
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        Framebuffer.create(frameBuffer,depthTexture,renderBuffer,fboWidth,fboHeight);
 
         programShader = GLES20.glCreateProgram();
         //compile shaders
