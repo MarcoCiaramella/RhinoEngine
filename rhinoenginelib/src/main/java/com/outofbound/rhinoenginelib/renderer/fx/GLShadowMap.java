@@ -4,7 +4,10 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.GLCamera;
+import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.renderer.GLOnTextureRenderer;
+import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.util.file.TextFileReader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.nio.FloatBuffer;
@@ -14,6 +17,9 @@ public class GLShadowMap extends GLOnTextureRenderer {
     private int frameBuffer;
     private int depthTexture;
     private GLCamera camera;
+    private int programShader;
+    private int uMVPMatrix;
+    private int aPosition;
 
 
     public GLShadowMap(Vector3f lightDir){
@@ -49,6 +55,18 @@ public class GLShadowMap extends GLOnTextureRenderer {
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+
+        programShader = GLES20.glCreateProgram();
+        //compile shaders
+        GLES20.glAttachShader(programShader, GLShader.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                TextFileReader.getString(GLEngine.getInstance().getContext(), "fs_shadow_map.glsl")) );
+        GLES20.glAttachShader(programShader, GLShader.loadShader(GLES20.GL_VERTEX_SHADER,
+                TextFileReader.getString(GLEngine.getInstance().getContext(), "vs_shadow_map.glsl")) );
+        GLES20.glLinkProgram(programShader);
+        // Set our shader program
+        GLES20.glUseProgram(programShader);
+        uMVPMatrix = GLES20.glGetUniformLocation(programShader, "uMVPMatrix");
+        aPosition = GLES20.glGetAttribLocation(programShader, "aPosition");
     }
 
     private static class Camera extends GLCamera {

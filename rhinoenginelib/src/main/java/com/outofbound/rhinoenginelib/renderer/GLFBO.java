@@ -124,7 +124,7 @@ public class GLFBO implements Loadable {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
     }
 
-    private void renderOnFBO(ArrayList<GLRenderer> renderers, float[] m3D, float[] m2D, long ms, int screenWidth, int screenHeight){
+    private void renderOnFBO(ArrayList<GLRenderer> renderers, float[] m3D, float[] m2D, long ms){
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferInput);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT| GLES20.GL_DEPTH_BUFFER_BIT);
         Iterator<GLRenderer> itr = renderers.iterator();
@@ -145,7 +145,7 @@ public class GLFBO implements Loadable {
 
         GLES20.glViewport(0, 0, fboWidth, fboHeight);
 
-        renderOnFBO(renderers,m3D,m2D,ms,screenWidth,screenHeight);
+        renderOnFBO(renderers,m3D,m2D,ms);
         textureOutput = textureInput;
         this.ms = ms;
         Iterator<GLOnTextureRenderer> itr = onTextureRenderers.iterator();
