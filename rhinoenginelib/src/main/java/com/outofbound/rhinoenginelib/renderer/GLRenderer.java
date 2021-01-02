@@ -43,7 +43,7 @@ public abstract class GLRenderer implements Loadable {
         this.glMesh = glMesh;
         this.glShader = glShader;
         this.glLights = new GLLights(1);
-        GLLight glLight = new GLLight(new Vector3f(0,10,0),new Vector3f(1,1,1),10);
+        GLLight glLight = new GLLight(new Vector3f(20,30,50),new Vector3f(1,1,1),1000);
         glLights.add(0,glLight);
     }
 

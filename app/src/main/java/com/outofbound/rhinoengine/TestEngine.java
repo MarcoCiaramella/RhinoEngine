@@ -15,7 +15,7 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 public class TestEngine extends GLEngine {
 
     private static final Vector3f EYE_CENTER = new Vector3f(0,0,0);
-    private static final Vector3f EYE_POS = new Vector3f(1,1,1);
+    private static final Vector3f EYE_POS = new Vector3f(3,5,4);
     private static final Vector3f EYE_UP = new Vector3f(0,1,0);
 
     public TestEngine(Context context){
@@ -30,5 +30,6 @@ public class TestEngine extends GLEngine {
     protected void init() {
         setClearColor(0,0,0,1);
         new GLRenderer3D(0,new Cube(new float[]{1,0,0,1}),new BaseShader()).load();
+        getCamera3D().follow(getGLMesh(0));
     }
 }

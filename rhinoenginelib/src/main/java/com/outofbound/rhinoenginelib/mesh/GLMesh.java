@@ -79,6 +79,11 @@ public abstract class GLMesh {
 
     private void init(){
         load();
+        motion = new Motion() {
+            @Override
+            public void move(long ms) {
+            }
+        };
     }
 
     private void load(){
