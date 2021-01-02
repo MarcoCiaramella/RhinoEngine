@@ -3,13 +3,14 @@ package com.outofbound.rhinoengine;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.outofbound.rhinoengine.camera.GLCamera2D;
-import com.outofbound.rhinoengine.camera.GLCamera3D;
-import com.outofbound.rhinoengine.engine.GLEngine;
-import com.outofbound.rhinoengine.mesh.primitives.Cube;
-import com.outofbound.rhinoengine.renderer.GLRenderer3D;
-import com.outofbound.rhinoengine.shader.primitives.BaseShader;
-import com.outofbound.rhinoengine.util.vector.Vector3f;
+import com.outofbound.rhinoenginelib.camera.GLCamera2D;
+import com.outofbound.rhinoenginelib.camera.GLCamera3D;
+import com.outofbound.rhinoenginelib.engine.GLEngine;
+import com.outofbound.rhinoenginelib.mesh.primitives.Cube;
+import com.outofbound.rhinoenginelib.renderer.GLRenderer3D;
+import com.outofbound.rhinoenginelib.shader.primitives.BaseShader;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
+
 
 public class TestEngine extends GLEngine {
 

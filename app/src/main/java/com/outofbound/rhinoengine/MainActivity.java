@@ -3,7 +3,7 @@ package com.outofbound.rhinoengine;
 
 import android.os.Bundle;
 
-import com.outofbound.rhinoengine.activity.GLActivity;
+import com.outofbound.rhinoenginelib.activity.GLActivity;
 
 public class MainActivity extends GLActivity {
 
