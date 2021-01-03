@@ -189,7 +189,7 @@ public class GLBlur {
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep2);
         }
 
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT| GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         GLES20.glVertexAttribPointer(aPositionBlur, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer);
         GLES20.glEnableVertexAttribArray(aPositionBlur);
@@ -224,7 +224,7 @@ public class GLBlur {
     private void draw(float[] m, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer){
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep3);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT| GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         GLES20.glUseProgram(programShaderBlurRenderer);
 
