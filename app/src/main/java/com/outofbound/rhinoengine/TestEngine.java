@@ -31,5 +31,6 @@ public class TestEngine extends GLEngine {
         setClearColor(0,0,0,1);
         new GLRenderer3D(0,new Cube(new float[]{1,0,0,1}),new BaseShader()).load();
         getCamera3D().follow(getGLMesh(0));
+        enableBlur(0.5f,10f,0.1f);
     }
 }

@@ -6,14 +6,15 @@ import android.opengl.Matrix;
 import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.camera.GLCamera2D;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
-import com.outofbound.rhinoenginelib.renderer.GLOnTextureRenderer;
-import com.outofbound.rhinoenginelib.renderer.util.Framebuffer;
+import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.util.file.TextFileReader;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public class GLBlur extends GLOnTextureRenderer {
+public class GLBlur {
 
     private int textureInput;
 
@@ -46,6 +47,12 @@ public class GLBlur extends GLOnTextureRenderer {
     private int uTextureId1BlurRenderer;
     private int uMVPMatrixBlurRenderer;
 
+    private int programShaderScreenRenderer;
+    private int aPositionScreenRenderer;
+    private int aTextureScreenRenderer;
+    private int uTextureIdScreenRenderer;
+    private int uMVPMatrixScreenRenderer;
+
     private float[] mvMatrix = new float[16];
     private float[] mvpMatrix = new float[16];
     private float scale;
@@ -54,12 +61,60 @@ public class GLBlur extends GLOnTextureRenderer {
 
     private GLCamera camera;
 
+    private static float[] vertices = {
+            -1f, -1f, //bottom - left
+            1f, -1f, //bottom - right
+            -1f, 1f, //top - left
+            1f, 1f //top - right
+    };
 
-    public GLBlur(float scale, float amount, float strength) {
+    private static float[] textureCoords = {
+            1, 1, //bottom - left
+            0, 1, // bottom - right
+            1, 0, // top - left
+            0, 0 // top - right
+    };
+
+    private FloatBuffer vertexBuffer;
+    private FloatBuffer textureCoordsBuffer;
+
+    private GLRendererOnTexture glRendererOnTexture;
+
+
+    public GLBlur(GLRendererOnTexture glRendererOnTexture, float scale, float amount, float strength) {
+        this.glRendererOnTexture = glRendererOnTexture;
         this.scale = scale;
         this.amount = amount;
         this.strength = strength;
         this.camera = new GLCamera2D();
+        ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
+        bb_vertex.order(ByteOrder.nativeOrder());
+        vertexBuffer = bb_vertex.asFloatBuffer();
+        vertexBuffer.put(vertices);
+        vertexBuffer.position(0);
+        ByteBuffer bb_textCoords = ByteBuffer.allocateDirect(textureCoords.length * 4);
+        bb_textCoords.order(ByteOrder.nativeOrder());
+        textureCoordsBuffer = bb_textCoords.asFloatBuffer();
+        textureCoordsBuffer.put(textureCoords);
+        textureCoordsBuffer.position(0);
+    }
+
+    private void setupScreenRenderer(){
+        programShaderScreenRenderer = GLES20.glCreateProgram();
+
+        //compile shaders
+        GLES20.glAttachShader(programShaderScreenRenderer, GLShader.loadShader(GLES20.GL_FRAGMENT_SHADER,
+                TextFileReader.getString(GLEngine.getInstance().getContext(), "fs_texture.glsl")));
+        GLES20.glAttachShader(programShaderScreenRenderer, GLShader.loadShader(GLES20.GL_VERTEX_SHADER,
+                TextFileReader.getString(GLEngine.getInstance().getContext(), "vs_texture.glsl")));
+        GLES20.glLinkProgram(programShaderScreenRenderer);
+        // Set our shader program
+        GLES20.glUseProgram(programShaderScreenRenderer);
+
+        aPositionScreenRenderer = GLES20.glGetAttribLocation(programShaderScreenRenderer, "a_position");
+        aTextureScreenRenderer = GLES20.glGetAttribLocation(programShaderScreenRenderer, "a_texCoords");
+        uTextureIdScreenRenderer = GLES20.glGetUniformLocation(programShaderScreenRenderer, "u_texId");
+        uMVPMatrixScreenRenderer = GLES20.glGetUniformLocation(programShaderScreenRenderer, "u_mvpMatrix");
     }
 
     private void setupBlur(int fboWidth, int fboHeight){
@@ -79,9 +134,9 @@ public class GLBlur extends GLOnTextureRenderer {
         renderBufferStep1 = buffers[0];
         renderBufferStep2 = buffers[1];
         renderBufferStep3 = buffers[2];
-        Framebuffer.create(frameBufferStep1,textureStep1,renderBufferStep1,fboWidth,fboHeight);
-        Framebuffer.create(frameBufferStep2,textureStep2,renderBufferStep2,fboWidth,fboHeight);
-        Framebuffer.create(frameBufferStep3,textureStep3,renderBufferStep3,fboWidth,fboHeight);
+        createFramebuffer(frameBufferStep1,textureStep1,renderBufferStep1,fboWidth,fboHeight);
+        createFramebuffer(frameBufferStep2,textureStep2,renderBufferStep2,fboWidth,fboHeight);
+        createFramebuffer(frameBufferStep3,textureStep3,renderBufferStep3,fboWidth,fboHeight);
 
         programShaderBlur = GLES20.glCreateProgram();
         //compile shaders
@@ -122,21 +177,20 @@ public class GLBlur extends GLOnTextureRenderer {
         uMVPMatrixBlurRenderer = GLES20.glGetUniformLocation(programShaderBlurRenderer, "u_mvpMatrix");
     }
 
-    @Override
     public void setup(int fboWidth, int fboHeight){
         setupBlur(fboWidth, fboHeight);
         setupBlurRenderer();
+        setupScreenRenderer();
     }
 
-    @Override
-    public int render(int textureInput, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer, long ms, int fboWidth, int fboHeight) {
-        float[] m = camera.create(fboWidth, fboHeight, ms);
-        this.textureInput = textureInput;
+    public void render(int screenWidth, int screenHeight, long ms) {
+        float[] m = camera.create(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight(), ms);
+        this.textureInput = glRendererOnTexture.render();
         // mFBO is used to render on texture.
         blur(1, m, vertexBuffer, textureCoordsBuffer);
         blur(2, m, vertexBuffer, textureCoordsBuffer);
         draw(m, vertexBuffer, textureCoordsBuffer);
-        return textureStep3;
+        renderOnScreen(glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight(),screenWidth,screenHeight,ms);
     }
 
     private void blur(int step, float[] m, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer) {
@@ -207,6 +261,57 @@ public class GLBlur extends GLOnTextureRenderer {
 
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
 
+    }
+
+    public void renderOnScreen(int fboWidth, int fboHeight, int screenWidth, int screenHeight, long ms){
+
+        GLES20.glViewport(0, 0, screenWidth, screenHeight);
+
+        float[] m = camera.create(fboWidth, fboHeight, ms);
+
+        GLES20.glUseProgram(programShaderScreenRenderer);
+
+        GLES20.glVertexAttribPointer(aPositionScreenRenderer, 2, GLES20.GL_FLOAT, false, 0, vertexBuffer);
+        GLES20.glEnableVertexAttribArray(aPositionScreenRenderer);
+
+        GLES20.glVertexAttribPointer(aTextureScreenRenderer, 2, GLES20.GL_FLOAT, false, 0, textureCoordsBuffer);
+        GLES20.glEnableVertexAttribArray(aTextureScreenRenderer);
+
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureStep3);
+        GLES20.glUniform1i(uTextureIdScreenRenderer, 0);
+
+        Matrix.setIdentityM(mvMatrix, 0);
+        Matrix.multiplyMM(mvpMatrix, 0, m, 0, mvMatrix, 0);
+        GLES20.glUniformMatrix4fv(uMVPMatrixScreenRenderer, 1, false, mvpMatrix, 0);
+
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
+    }
+
+    private void createFramebuffer(int fbo, int tex, int rid, int fboWidth, int fboHeight){
+        //Bind Frame buffer
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbo);
+        //Bind texture
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex);
+        //Define texture parameters
+        GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, fboWidth, fboHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
+
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
+
+        //Bind render buffer and define buffer dimension
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, rid);
+        GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, fboWidth, fboHeight);
+        //Attach texture FBO color attachment
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, tex, 0);
+        //Attach render buffer to depth attachment
+        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, rid);
+        //we are done, reset
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
 }

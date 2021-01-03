@@ -15,8 +15,10 @@ import com.outofbound.rhinoenginelib.camera.GLCamera2D;
 import com.outofbound.rhinoenginelib.camera.GLCamera3D;
 import com.outofbound.rhinoenginelib.gesture.GLGesture;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
-import com.outofbound.rhinoenginelib.renderer.GLFBO;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer;
+import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
+import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
+import com.outofbound.rhinoenginelib.renderer.fx.GLBlur;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.task.GLTask;
 
@@ -37,9 +39,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private final ArrayList<GLRenderer> renderersInRunning = new ArrayList<>();
     private final ArrayList<GLTask> tasks = new ArrayList<>();
     private final ArrayList<GLTask> tasksInRunning = new ArrayList<>();
-    private GLFBO fbo = null;
     private GLGesture glGesture = null;
-    private float[] clearColor = {0,0,0,1};
+    private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
     private GLCamera3D camera3D;
     private GLCamera2D camera2D;
@@ -50,6 +51,9 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private boolean gestureProcessed = false;
     private static GLEngine instance;
     private boolean running = false;
+    private GLRendererOnTexture glRendererOnTexture;
+    private GLBlur glBlur = null;
+    private GLSceneRenderer glSceneRenderer;
 
 
 
@@ -88,6 +92,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         this.camera3D = camera3D;
         this.camera2D = camera2D;
         this.glGesture = gesture;
+        this.glSceneRenderer = this::renderScene;
+        this.glRendererOnTexture = new GLRendererOnTexture(glSceneRenderer,512,512);
         // Create an OpenGL ES 2.0 context.
         setEGLContextClientVersion(2);
         // Set the Renderer for drawing on the GLSurfaceView
@@ -120,14 +126,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
             return true;
         }
         return false;
-    }
-
-    /**
-     * Set a GLFBO object.
-     * @param fbo the GLFBO object.
-     */
-    public void setFBO(GLFBO fbo){
-        this.fbo = fbo;
     }
 
     /**
@@ -315,8 +313,9 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         // get ms
         deltaMs = 0;
         long currentMs = Calendar.getInstance().getTimeInMillis();
-        if (ms >= 0)
+        if (ms >= 0) {
             deltaMs = currentMs - ms;
+        }
 
         synchronized (renderers) {
             for (GLRenderer glRenderer : renderers){
@@ -328,26 +327,17 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         mvpMatrix2D = camera2D.create(getWidth(), getHeight(), deltaMs);
 
         synchronized (renderers) {
-            if (fbo != null) {
-                fbo.render(renderers, mvpMatrix3D, mvpMatrix2D, deltaMs, getWidth(), getHeight());
-            } else {
-                Iterator<GLRenderer> itr = renderers.iterator();
-                while (itr.hasNext()) {
-                    GLRenderer renderer = itr.next();
-                    if (renderer.isDead(deltaMs)){
-                        renderer.onRemove();
-                        itr.remove();
-                    }
-                    else {
-                        renderer.render(mvpMatrix3D, mvpMatrix2D, deltaMs);
-                    }
-                }
-                for (GLRenderer glRenderer : renderersInRunning){
-                    glRenderer.onAdd();
-                }
-                renderers.addAll(renderersInRunning);
-                renderersInRunning.clear();
+            if (glBlur != null){
+                glBlur.render(getWidth(),getHeight(),deltaMs);
             }
+            else {
+                glSceneRenderer.doRendering();
+            }
+            for (GLRenderer glRenderer : renderersInRunning) {
+                glRenderer.onAdd();
+            }
+            renderers.addAll(renderersInRunning);
+            renderersInRunning.clear();
         }
 
         synchronized (tasks) {
@@ -374,6 +364,19 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
 
         ms = currentMs;
 
+    }
+
+    private void renderScene(){
+        Iterator<GLRenderer> itr = renderers.iterator();
+        while (itr.hasNext()) {
+            GLRenderer renderer = itr.next();
+            if (renderer.isDead(deltaMs)) {
+                renderer.onRemove();
+                itr.remove();
+            } else {
+                renderer.render(mvpMatrix3D, mvpMatrix2D, deltaMs);
+            }
+        }
     }
 
     /**
@@ -419,14 +422,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      */
     public GLCamera3D getCamera3D(){
         return camera3D;
-    }
-
-    /**
-     * Return the fbo.
-     * @return the fbo.
-     */
-    public GLFBO getFbo(){
-        return fbo;
     }
 
     /**
@@ -522,6 +517,27 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      */
     public synchronized int getNumGLTask(){
         return tasks.size();
+    }
+
+    /**
+     * Enable blur effect.
+     * @param scale the scale.
+     * @param amount the amount.
+     * @param strength the strength.
+     * @return this GLEngine.
+     */
+    public GLEngine enableBlur(float scale, float amount, float strength){
+        glBlur = new GLBlur(glRendererOnTexture,scale,amount,strength);
+        return this;
+    }
+
+    /**
+     * Disable blur effect.
+     * @return this GLEngine.
+     */
+    public GLEngine disableBlur(){
+        glBlur = null;
+        return this;
     }
 
 }
