@@ -536,6 +536,10 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         return this;
     }
 
+    /**
+     * Return frame rate.
+     * @return frame rate.
+     */
     public int getFPS(){
         if (deltaMs == 0){
             return 0;
