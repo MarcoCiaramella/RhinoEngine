@@ -2,9 +2,7 @@ package com.outofbound.rhinoengine;
 
 
 import android.os.Bundle;
-import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import androidx.appcompat.widget.SwitchCompat;
 
