@@ -8,9 +8,9 @@ public class GLRendererOnTexture {
     // Make sure that dimensions are in POT (Power Of Two), because some devices may not support NPOT textures.
     private int fboWidth;
     private int fboHeight;
-    private int frameBufferInput;
+    private int frameBuffer;
     private int texture;
-    private int renderBufferInput;
+    private int renderBuffer;
     private GLSceneRenderer glSceneRenderer;
 
 
@@ -24,16 +24,16 @@ public class GLRendererOnTexture {
     private void setup(){
         int[] buffers = new int[1];
         GLES20.glGenFramebuffers(1, buffers, 0);
-        frameBufferInput = buffers[0];
+        frameBuffer = buffers[0];
         GLES20.glGenTextures(1, buffers, 0);
         texture = buffers[0];
         GLES20.glGenRenderbuffers(1, buffers, 0);
-        renderBufferInput = buffers[0];
-        createFramebuffer(frameBufferInput, texture, renderBufferInput, fboWidth, fboHeight);
+        renderBuffer = buffers[0];
+        createFramebuffer(frameBuffer, texture, renderBuffer, fboWidth, fboHeight);
     }
 
     private void renderOnFBO(){
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferInput);
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT| GLES20.GL_DEPTH_BUFFER_BIT);
         glSceneRenderer.doRendering();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);

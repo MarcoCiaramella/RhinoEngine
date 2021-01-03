@@ -187,7 +187,6 @@ public class GLBlur {
     public void render(int screenWidth, int screenHeight, long ms) {
         float[] m = camera.create(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight(), ms);
         this.textureInput = glRendererOnTexture.render();
-        // mFBO is used to render on texture.
         blur(1, m, vertexBuffer, textureCoordsBuffer);
         blur(2, m, vertexBuffer, textureCoordsBuffer);
         draw(m, vertexBuffer, textureCoordsBuffer);
@@ -195,11 +194,14 @@ public class GLBlur {
     }
 
     private void blur(int step, float[] m, FloatBuffer vertexBuffer, FloatBuffer textureCoordsBuffer) {
-        //apply horizontal blur
-        if (step == 1)
+        if (step == 1) {
+            //apply horizontal blur
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep1);
-        else if (step == 2)//apply vertical blur
+        }
+        else if (step == 2) {
+            //apply vertical blur
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep2);
+        }
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT| GLES20.GL_DEPTH_BUFFER_BIT);
 
