@@ -46,9 +46,7 @@ public class GLRendererOnTexture {
     }
 
     private void createFramebuffer(int fbo, int tex, int rid, int fboWidth, int fboHeight){
-        //Bind Frame buffer
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbo);
-        //Bind texture
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex);
         //Define texture parameters
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, fboWidth, fboHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
