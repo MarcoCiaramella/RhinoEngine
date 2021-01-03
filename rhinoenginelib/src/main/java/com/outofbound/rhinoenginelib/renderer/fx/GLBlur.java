@@ -177,10 +177,11 @@ public class GLBlur {
         uMVPMatrixBlurRenderer = GLES20.glGetUniformLocation(programShaderBlurRenderer, "u_mvpMatrix");
     }
 
-    public void setup(int fboWidth, int fboHeight){
-        setupBlur(fboWidth, fboHeight);
+    public GLBlur setup(){
+        setupBlur(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight());
         setupBlurRenderer();
         setupScreenRenderer();
+        return this;
     }
 
     public void render(int screenWidth, int screenHeight, long ms) {
