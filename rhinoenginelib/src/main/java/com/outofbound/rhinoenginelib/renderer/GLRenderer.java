@@ -31,6 +31,7 @@ public abstract class GLRenderer implements Loadable {
     private final int id;
     private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
+    private boolean shadowEnabled = false;
 
     /**
      * The renderer constructor.
@@ -85,6 +86,7 @@ public abstract class GLRenderer implements Loadable {
         }
 
         GLES20.glUseProgram(glShader.programShader);
+
         if (glShader.aPositionLocation >= 0) {
             GLES20.glEnableVertexAttribArray(glShader.aPositionLocation);
             GLES20.glVertexAttribPointer(glShader.aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
@@ -319,6 +321,24 @@ public abstract class GLRenderer implements Loadable {
     @Override
     public void unload() {
         kill();
+    }
+
+    /**
+     * Enable shadow.
+     * @return this GLRenderer.
+     */
+    public GLRenderer enableShadow(){
+        shadowEnabled = true;
+        return this;
+    }
+
+    /**
+     * Disable shadow.
+     * @return this GLRenderer.
+     */
+    public GLRenderer disableShadow(){
+        shadowEnabled = false;
+        return this;
     }
 
 }
