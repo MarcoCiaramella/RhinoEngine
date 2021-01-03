@@ -89,19 +89,16 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      */
     private void config(GLCamera3D camera3D, GLCamera2D camera2D, GLGesture gesture){
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
+        setEGLContextClientVersion(2);
+        setRenderer(this);
+        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+        setOnTouchListener(this);
         this.camera3D = camera3D;
         this.camera2D = camera2D;
         this.glGesture = gesture;
         this.glSceneRenderer = this::renderScene;
         this.glRendererOnTexture = new GLRendererOnTexture(glSceneRenderer,512,512);
-        // Create an OpenGL ES 2.0 context.
-        setEGLContextClientVersion(2);
-        // Set the Renderer for drawing on the GLSurfaceView
-        setRenderer(this);
-        // Render the view only when there is a change in the drawing data
-        setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
-        setOnTouchListener(this);
-        scaleDetector = new ScaleGestureDetector(getContext(), this);
+        this.scaleDetector = new ScaleGestureDetector(getContext(), this);
         instance = this;
     }
 
