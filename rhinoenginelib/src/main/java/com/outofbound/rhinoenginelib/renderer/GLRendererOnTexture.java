@@ -34,7 +34,7 @@ public class GLRendererOnTexture {
 
     private void renderOnFBO(){
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT| GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         glSceneRenderer.doRendering();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
