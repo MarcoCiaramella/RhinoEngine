@@ -8,6 +8,7 @@ import com.outofbound.rhinoenginelib.camera.GLCamera3D;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.mesh.primitives.Cube;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer3D;
+import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.shader.primitives.BaseShader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
@@ -31,6 +32,6 @@ public class TestEngine extends GLEngine {
         setClearColor(0,0,0,1);
         new GLRenderer3D(0,new Cube(new float[]{1,0,0,1}),new BaseShader()).load();
         getCamera3D().follow(getGLMesh(0));
-        enableBlur(0.5f,10f,0.1f);
+        enableBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f);
     }
 }

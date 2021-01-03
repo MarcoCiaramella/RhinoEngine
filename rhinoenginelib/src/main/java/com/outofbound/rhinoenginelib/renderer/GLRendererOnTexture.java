@@ -13,11 +13,15 @@ public class GLRendererOnTexture {
     private int renderBuffer;
     private GLSceneRenderer glSceneRenderer;
 
+    public static final int RESOLUTION_256 = 256;
+    public static final int RESOLUTION_512 = 512;
+    public static final int RESOLUTION_1024 = 1024;
 
-    public GLRendererOnTexture(GLSceneRenderer glSceneRenderer, int fboWidth, int fboHeight){
+
+    public GLRendererOnTexture(GLSceneRenderer glSceneRenderer, int resolution){
         this.glSceneRenderer = glSceneRenderer;
-        this.fboWidth = fboWidth;
-        this.fboHeight = fboHeight;
+        this.fboWidth = resolution;
+        this.fboHeight = resolution;
         setup();
     }
 

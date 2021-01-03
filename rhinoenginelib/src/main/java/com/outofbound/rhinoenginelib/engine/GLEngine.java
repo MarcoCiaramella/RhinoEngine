@@ -51,7 +51,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private boolean gestureProcessed = false;
     private static GLEngine instance;
     private boolean running = false;
-    private GLRendererOnTexture glRendererOnTexture;
     private GLBlur glBlur = null;
     private GLSceneRenderer glSceneRenderer;
 
@@ -97,7 +96,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         this.camera2D = camera2D;
         this.glGesture = gesture;
         this.glSceneRenderer = this::renderScene;
-        this.glRendererOnTexture = new GLRendererOnTexture(glSceneRenderer,512,512);
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
         instance = this;
     }
@@ -518,13 +516,14 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
 
     /**
      * Enable blur effect.
+     * @param resolution the resolution. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
      * @param scale the scale.
      * @param amount the amount.
      * @param strength the strength.
      * @return this GLEngine.
      */
-    public GLEngine enableBlur(float scale, float amount, float strength){
-        glBlur = new GLBlur(glRendererOnTexture,scale,amount,strength).setup();
+    public GLEngine enableBlur(int resolution, float scale, float amount, float strength){
+        glBlur = new GLBlur(new GLRendererOnTexture(glSceneRenderer,resolution),scale,amount,strength).setup();
         return this;
     }
 
