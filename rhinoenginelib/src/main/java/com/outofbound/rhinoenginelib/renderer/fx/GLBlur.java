@@ -117,7 +117,7 @@ public class GLBlur {
         uMVPMatrixScreenRenderer = GLES20.glGetUniformLocation(programShaderScreenRenderer, "u_mvpMatrix");
     }
 
-    private void setupBlur(int fboWidth, int fboHeight){
+    private void setupBlur(){
 
         int[] buffers = new int[3];
 
@@ -134,9 +134,9 @@ public class GLBlur {
         renderBufferStep1 = buffers[0];
         renderBufferStep2 = buffers[1];
         renderBufferStep3 = buffers[2];
-        createFramebuffer(frameBufferStep1,textureStep1,renderBufferStep1,fboWidth,fboHeight);
-        createFramebuffer(frameBufferStep2,textureStep2,renderBufferStep2,fboWidth,fboHeight);
-        createFramebuffer(frameBufferStep3,textureStep3,renderBufferStep3,fboWidth,fboHeight);
+        createFramebuffer(frameBufferStep1,textureStep1,renderBufferStep1,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
+        createFramebuffer(frameBufferStep2,textureStep2,renderBufferStep2,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
+        createFramebuffer(frameBufferStep3,textureStep3,renderBufferStep3,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
 
         programShaderBlur = GLES20.glCreateProgram();
         //compile shaders
@@ -178,7 +178,7 @@ public class GLBlur {
     }
 
     public GLBlur setup(){
-        setupBlur(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight());
+        setupBlur();
         setupBlurRenderer();
         setupScreenRenderer();
         return this;
