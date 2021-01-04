@@ -6,21 +6,21 @@ import android.opengl.Matrix;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.outofbound.rhinoenginelib.engine.GLEngine;
-import com.outofbound.rhinoenginelib.engine.Loadable;
 import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
+import java.util.ArrayList;
+
 
 /**
  * The OpenGL renderer.
  */
-public abstract class GLRenderer implements Loadable {
+public abstract class GLRenderer {
 
-    private GLMesh glMesh;
+    private final ArrayList<GLMesh> glMeshes;
     private GLShader glShader;
     private float[] mvMatrix = new float[16];
     private float[] mvpMatrix = new float[16];
@@ -28,33 +28,58 @@ public abstract class GLRenderer implements Loadable {
     private GLLights glLights;
     private float[] floatArray = new float[255];
     private int numFloat = 0;
-    private final int id;
     private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
 
     /**
      * The renderer constructor.
-     * @param id the id for this GLRenderer.
-     * @param glMesh the mesh to render.
-     * @param glShader the shader to render.
+     * @param glShader the shader for this renderer.
      */
-    public GLRenderer(int id, @NonNull GLMesh glMesh, @NonNull GLShader glShader){
-        this.id = id;
-        this.glMesh = glMesh;
+    public GLRenderer(@NonNull GLShader glShader){
         this.glShader = glShader;
+        this.glMeshes = new ArrayList<>();
         this.glLights = new GLLights(1);
         GLLight glLight = new GLLight(new Vector3f(20,30,50),new Vector3f(1,1,1),1000);
         glLights.add(0,glLight);
     }
 
     /**
-     * Set mesh.
-     * @param glMesh the mesh to set.
+     * Add a GLMesh.
+     * @param glMesh the GLMesh to add.
+     * @return the GLMesh id, -1 if GLMesh is a duplicate.
+     */
+    public int addGLMesh(GLMesh glMesh){
+        if (glMeshes.contains(glMesh)) {
+            return -1;
+        }
+        glMesh.onAdd();
+        glMeshes.add(glMesh);
+        return glMeshes.indexOf(glMesh);
+    }
+
+    /**
+     * Remove the GLMesh with the input id.
+     * @param id the id.
      * @return this GLRenderer.
      */
-    public GLRenderer setGLMesh(GLMesh glMesh){
-        this.glMesh = glMesh;
+    public GLRenderer removeGLMesh(int id){
+        if (id < glMeshes.size() && glMeshes.get(id) != null){
+            glMeshes.get(id).onRemove();
+            glMeshes.set(id,null);
+        }
         return this;
+    }
+
+    /**
+     * Return the GLMesh with the input id.
+     * @param id the id.
+     * @return the GLMesh if exists, null otherwise.
+     */
+    public GLMesh getGLMesh(int id){
+        if (id < glMeshes.size()){
+            return glMeshes.get(id);
+        }
+        return null;
     }
 
     /**
@@ -68,36 +93,22 @@ public abstract class GLRenderer implements Loadable {
     }
 
     /**
+     * Get the shader.
+     * @return the shader.
+     */
+    public GLShader getGLShader(){
+        return glShader;
+    }
+
+    /**
      * Render mesh and shader.
      * @param m projection matrix.
      * @param ms engine time in milliseconds.
      */
     protected void render(float[] m, long ms) {
 
-        Matrix.setIdentityM(mvMatrix,0);
-        if (glMesh.getMotion() != null) {
-            glMesh.doTransformation(mvMatrix);
-        }
-        Matrix.multiplyMM(mvpMatrix, 0, m, 0, mvMatrix, 0);
-
-        if (glMesh.getBoundingBox() != null) {
-            glMesh.getBoundingBox().copyMvMatrix(mvMatrix);
-        }
-
         GLES20.glUseProgram(glShader.programShader);
 
-        if (glShader.aPositionLocation >= 0) {
-            GLES20.glEnableVertexAttribArray(glShader.aPositionLocation);
-            GLES20.glVertexAttribPointer(glShader.aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
-        }
-        if (glShader.aNormalLocation >= 0) {
-            GLES20.glEnableVertexAttribArray(glShader.aNormalLocation);
-            GLES20.glVertexAttribPointer(glShader.aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
-        }
-        if (glShader.aColorLocation >= 0) {
-            GLES20.glEnableVertexAttribArray(glShader.aColorLocation);
-            GLES20.glVertexAttribPointer(glShader.aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
-        }
         time += ms/1000f;
         if (glShader.uTimeLocation >= 0) {
             GLES20.glUniform1f(glShader.uTimeLocation, time);
@@ -120,38 +131,72 @@ public abstract class GLRenderer implements Loadable {
         if (glShader.uNumFloatLocation >= 0) {
             GLES20.glUniform1i(glShader.uNumFloatLocation, numFloat);
         }
-        if (glShader.uMVMatrixLocation >= 0) {
-            GLES20.glUniformMatrix4fv(glShader.uMVMatrixLocation, 1, false, mvMatrix, 0);
+        if (glShader.aPositionLocation >= 0) {
+            GLES20.glEnableVertexAttribArray(glShader.aPositionLocation);
         }
-        if (glShader.uMVPMatrixLocation >= 0) {
-            GLES20.glUniformMatrix4fv(glShader.uMVPMatrixLocation, 1, false, mvpMatrix, 0);
+        if (glShader.aNormalLocation >= 0) {
+            GLES20.glEnableVertexAttribArray(glShader.aNormalLocation);
         }
-
+        if (glShader.aColorLocation >= 0) {
+            GLES20.glEnableVertexAttribArray(glShader.aColorLocation);
+        }
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
-
         if (faceCullingEnabled){
             GLES20.glEnable(GLES20.GL_CULL_FACE);
             GLES20.glCullFace(GLES20.GL_BACK);
         }
 
-        if (glMesh.getIndices() != null) {
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
-        }
-        else {
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
+        for (GLMesh glMesh : glMeshes) {
+
+            if (!glMesh.isDead(ms)) {
+
+                Matrix.setIdentityM(mvMatrix, 0);
+                if (glMesh.getMotion() != null) {
+                    glMesh.doTransformation(mvMatrix);
+                }
+                Matrix.multiplyMM(mvpMatrix, 0, m, 0, mvMatrix, 0);
+
+                if (glMesh.getBoundingBox() != null) {
+                    glMesh.getBoundingBox().copyMvMatrix(mvMatrix);
+                }
+
+                if (glShader.aPositionLocation >= 0) {
+                    GLES20.glVertexAttribPointer(glShader.aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
+                }
+                if (glShader.aNormalLocation >= 0) {
+                    GLES20.glVertexAttribPointer(glShader.aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
+                }
+                if (glShader.aColorLocation >= 0) {
+                    GLES20.glVertexAttribPointer(glShader.aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
+                }
+                if (glShader.uMVMatrixLocation >= 0) {
+                    GLES20.glUniformMatrix4fv(glShader.uMVMatrixLocation, 1, false, mvMatrix, 0);
+                }
+                if (glShader.uMVPMatrixLocation >= 0) {
+                    GLES20.glUniformMatrix4fv(glShader.uMVPMatrixLocation, 1, false, mvpMatrix, 0);
+                }
+
+                if (glMesh.getIndices() != null) {
+                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
+                } else {
+                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
+                }
+            }
+            else {
+                removeGLMesh(glMeshes.indexOf(glMesh));
+            }
+
         }
 
         if (blendingEnabled) {
             GLES20.glDisable(GLES20.GL_BLEND);
         }
-
         if (faceCullingEnabled){
             GLES20.glDisable(GLES20.GL_CULL_FACE);
         }
-
         if (glShader.aPositionLocation >= 0) {
             GLES20.glDisableVertexAttribArray(glShader.aPositionLocation);
         }
@@ -168,23 +213,9 @@ public abstract class GLRenderer implements Loadable {
      * @param ms engine time in milliseconds.
      */
     public void move(long ms){
-        glMesh.move(ms);
-    }
-
-    /**
-     * Get mesh.
-     * @return the mesh.
-     */
-    public GLMesh getGLMesh(){
-        return glMesh;
-    }
-
-    /**
-     * Get the shader.
-     * @return the shader.
-     */
-    public GLShader getGLShader(){
-        return glShader;
+        for (GLMesh glMesh : glMeshes) {
+            glMesh.move(ms);
+        }
     }
 
     /**
@@ -193,7 +224,6 @@ public abstract class GLRenderer implements Loadable {
     @CallSuper
     public void onAdd(){
         time = 0;
-        glMesh.onAdd();
     }
 
     /**
@@ -201,23 +231,6 @@ public abstract class GLRenderer implements Loadable {
      */
     @CallSuper
     public void onRemove(){
-        glMesh.onRemove();
-    }
-
-    /**
-     * Check if mesh is dead after ms.
-     * @param ms the time in milliseconds.
-     * @return true if dead, false otherwise.
-     */
-    public boolean isDead(long ms){
-        return glMesh.isDead(ms);
-    }
-
-    /**
-     * Kill the mesh.
-     */
-    public void kill(){
-        glMesh.kill();
     }
 
     /**
@@ -269,14 +282,6 @@ public abstract class GLRenderer implements Loadable {
     public abstract void render(float[] m3D, float[] m2D, long ms);
 
     /**
-     * Return the id.
-     * @return the id.
-     */
-    public int getId(){
-        return id;
-    }
-
-    /**
      * Enable face culling.
      * @return this GLRenderer.
      */
@@ -310,16 +315,6 @@ public abstract class GLRenderer implements Loadable {
     public GLRenderer disableBlending(){
         blendingEnabled = false;
         return this;
-    }
-
-    @Override
-    public boolean load() {
-        return GLEngine.getInstance().addGLRenderer(this);
-    }
-
-    @Override
-    public void unload() {
-        kill();
     }
 
 }

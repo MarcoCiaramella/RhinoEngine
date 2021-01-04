@@ -7,15 +7,6 @@ public class TestCameraRotation extends GLTask {
 
     private static final float SPEED = 0.01f;
 
-    /**
-     * Instantiate a GLTask.
-     *
-     * @param id the id.
-     */
-    public TestCameraRotation(int id) {
-        super(id);
-    }
-
     @Override
     public boolean runTask(long ms) {
         float angle = SPEED*ms;

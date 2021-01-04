@@ -14,17 +14,14 @@ import android.view.View.OnTouchListener;
 import com.outofbound.rhinoenginelib.camera.GLCamera2D;
 import com.outofbound.rhinoenginelib.camera.GLCamera3D;
 import com.outofbound.rhinoenginelib.gesture.GLGesture;
-import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.fx.GLBlur;
-import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.task.GLTask;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -35,10 +32,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
-    private final ArrayList<GLRenderer> renderers = new ArrayList<>();
-    private final ArrayList<GLRenderer> renderersInRunning = new ArrayList<>();
-    private final ArrayList<GLTask> tasks = new ArrayList<>();
-    private final ArrayList<GLTask> tasksInRunning = new ArrayList<>();
+    private final ArrayList<GLRenderer> glRenderers = new ArrayList<>();
+    private final ArrayList<GLTask> glTasks = new ArrayList<>();
     private GLGesture glGesture = null;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
@@ -50,7 +45,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private ScaleGestureDetector scaleDetector;
     private boolean gestureProcessed = false;
     private static GLEngine instance;
-    private boolean running = false;
     private GLBlur glBlur = null;
     private GLSceneRenderer glSceneRenderer;
     private boolean blurEnabled = false;
@@ -102,26 +96,81 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     }
 
     /**
-     * Add a GLRenderer object.
-     * @param renderer the GLRenderer object to add.
-     * @return true if added, false otherwise.
+     * Add a GLRenderer.
+     * @param glRenderer the GLRenderer to add.
+     * @return the GLRenderer id, -1 if the input GLRenderer is a duplicate.
      */
-    public boolean addGLRenderer(GLRenderer renderer){
-        if (getGLRenderer(renderer.getId()) == null) {
-            if (!running) {
-                synchronized (renderers) {
-                    renderer.onAdd();
-                    renderers.add(renderer);
-                }
-            }
-            else {
-                synchronized (renderersInRunning) {
-                    renderersInRunning.add(renderer);
-                }
-            }
-            return true;
+    public int addGLRenderer(GLRenderer glRenderer){
+        if (glRenderers.contains(glRenderer)){
+            return -1;
         }
-        return false;
+        glRenderer.onAdd();
+        glRenderers.add(glRenderer);
+        return glRenderers.indexOf(glRenderer);
+    }
+
+    /**
+     * Add a GLTask.
+     * @param glTask the GLTask to add.
+     * @return the GLTask id, -1 if the input GLTask is a duplicate.
+     */
+    public int addGLTask(GLTask glTask){
+        if (glTasks.contains(glTask)){
+            return -1;
+        }
+        glTask.onAdd();
+        glTasks.add(glTask);
+        return glTasks.indexOf(glTask);
+    }
+
+    /**
+     * Remove the GLRenderer with the specified id.
+     * @param id the id of GLRenderer to remove.
+     * @return this GLEngine.
+     */
+    public GLEngine removeGLRenderer(int id){
+        if (id < glRenderers.size() && glRenderers.get(id) != null) {
+            glRenderers.get(id).onRemove();
+            glRenderers.set(id,null);
+        }
+        return this;
+    }
+
+    /**
+     * Remove the GLTask with the specified id.
+     * @param id the id of GLTask to remove.
+     * @return this GLEngine.
+     */
+    public GLEngine removeGLTask(int id){
+        if (id < glTasks.size() && glTasks.get(id) != null) {
+            glTasks.get(id).onRemove();
+            glTasks.set(id,null);
+        }
+        return this;
+    }
+
+    /**
+     * Return the GLRenderer with input id.
+     * @param id the id.
+     * @return the GLRenderer if exists, null otherwise.
+     */
+    public GLRenderer getGLRenderer(int id){
+        if (id < glRenderers.size()) {
+            return glRenderers.get(id);
+        }
+        return null;
+    }
+
+    /**
+     * Return GLTask with the input id.
+     * @param id the id.
+     * @return the GLTask if exists, null otherwise.
+     */
+    public GLTask getGLTask(int id){
+        if (id < glTasks.size()) {
+            return glTasks.get(id);
+        }
+        return null;
     }
 
     /**
@@ -298,8 +347,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     @Override
     public void onDrawFrame(GL10 gl) {
 
-        running = true;
-
         GLES20.glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
         // clear Screen and Depth Buffer
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
@@ -311,49 +358,26 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
             deltaMs = currentMs - ms;
         }
 
-        synchronized (renderers) {
-            for (GLRenderer glRenderer : renderers){
-                glRenderer.move(deltaMs);
-            }
+        for (GLRenderer glRenderer : glRenderers){
+            glRenderer.move(deltaMs);
         }
 
         mvpMatrix3D = camera3D.create(getWidth(), getHeight(), deltaMs);
         mvpMatrix2D = camera2D.create(getWidth(), getHeight(), deltaMs);
 
-        synchronized (renderers) {
-            if (glBlur != null && blurEnabled){
-                glBlur.render(getWidth(),getHeight(),deltaMs);
-            }
-            else {
-                glSceneRenderer.doRendering();
-            }
-            for (GLRenderer glRenderer : renderersInRunning) {
-                glRenderer.onAdd();
-            }
-            renderers.addAll(renderersInRunning);
-            renderersInRunning.clear();
+
+        if (glBlur != null && blurEnabled){
+            glBlur.render(getWidth(),getHeight(),deltaMs);
+        }
+        else {
+            glSceneRenderer.doRendering();
         }
 
-        synchronized (tasks) {
-            Iterator<GLTask> itr = tasks.iterator();
-            while (itr.hasNext()) {
-                GLTask task = itr.next();
-                if (task.isDead()){
-                    task.onRemove();
-                    itr.remove();
-                }
-                else {
-                    boolean alive = task.runTask(deltaMs);
-                    if (!alive) {
-                        itr.remove();
-                    }
-                }
+        for (GLTask glTask : glTasks){
+            boolean alive = glTask.runTask(deltaMs);
+            if (!alive) {
+                removeGLTask(glTasks.indexOf(glTask));
             }
-            for (GLTask glTask : tasksInRunning){
-                glTask.onAdd();
-            }
-            tasks.addAll(tasksInRunning);
-            tasksInRunning.clear();
         }
 
         ms = currentMs;
@@ -361,15 +385,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     }
 
     private void renderScene(){
-        Iterator<GLRenderer> itr = renderers.iterator();
-        while (itr.hasNext()) {
-            GLRenderer renderer = itr.next();
-            if (renderer.isDead(deltaMs)) {
-                renderer.onRemove();
-                itr.remove();
-            } else {
-                renderer.render(mvpMatrix3D, mvpMatrix2D, deltaMs);
-            }
+        for (GLRenderer glRenderer : glRenderers){
+            glRenderer.render(mvpMatrix3D, mvpMatrix2D, deltaMs);
         }
     }
 
@@ -385,29 +402,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         this.clearColor[1] = g;
         this.clearColor[2] = b;
         this.clearColor[3] = a;
-    }
-
-    /**
-     * Add a GLTask object.
-     * @param task the GLTask object.
-     * @return true if added, false otherwise.
-     */
-    public boolean addGLTask(GLTask task){
-        if (getGLTask(task.getId()) == null) {
-            if (!running) {
-                synchronized (tasks) {
-                    task.onAdd();
-                    tasks.add(task);
-                }
-            }
-            else {
-                synchronized (tasksInRunning) {
-                    tasksInRunning.add(task);
-                }
-            }
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -430,88 +424,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * Initialize the engine.
      */
     protected abstract void init();
-
-    /**
-     * Return the GLMesh of the GLRenderer with the input id.
-     * @param id the id of the GLRenderer.
-     * @return the GLMesh found, null if not found.
-     */
-    public GLMesh getGLMesh(int id){
-        GLRenderer glRenderer = getGLRenderer(id);
-        return glRenderer != null ? glRenderer.getGLMesh() : null;
-    }
-
-    /**
-     * Return the GLShader of the GLRenderer with input id.
-     * @param id the id of the GLRenderer.
-     * @return the GLShader found, null if not found.
-     */
-    public GLShader getGLShader(int id){
-        GLRenderer glRenderer = getGLRenderer(id);
-        return glRenderer != null ? glRenderer.getGLShader() : null;
-    }
-
-    /**
-     * Return the GLRenderer with input id.
-     * @param id the id.
-     * @return the GLRenderer found, null if not found.
-     */
-    public GLRenderer getGLRenderer(int id){
-        synchronized (renderers) {
-            for (int i = 0; i < renderers.size(); i++) {
-                if (renderers.get(i).getId() == id) {
-                    return renderers.get(i);
-                }
-            }
-        }
-        synchronized (renderersInRunning) {
-            for (int i = 0; i < renderersInRunning.size(); i++) {
-                if (renderersInRunning.get(i).getId() == id) {
-                    return renderersInRunning.get(i);
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Return GLTask with the input id.
-     * @param id the id.
-     * @return the GLTask found, null if not found.
-     */
-    public GLTask getGLTask(int id){
-        synchronized (tasks) {
-            for (int i = 0; i < tasks.size(); i++) {
-                if (tasks.get(i).getId() == id) {
-                    return tasks.get(i);
-                }
-            }
-        }
-        synchronized (tasksInRunning) {
-            for (int i = 0; i < tasksInRunning.size(); i++) {
-                if (tasksInRunning.get(i).getId() == id) {
-                    return tasksInRunning.get(i);
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Return number of GLRenderer objects.
-     * @return the number of GLRenderer objects.
-     */
-    public synchronized int getNumGLRenderer(){
-        return renderers.size();
-    }
-
-    /**
-     * Return the number of GLTask objects.
-     * @return the number of GLTask objects.
-     */
-    public synchronized int getNumGLTask(){
-        return tasks.size();
-    }
 
     /**
      * Set blur effect.

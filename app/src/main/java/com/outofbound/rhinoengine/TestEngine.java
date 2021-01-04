@@ -30,10 +30,11 @@ public class TestEngine extends GLEngine {
     @Override
     protected void init() {
         setClearColor(0,0,0,1);
+        int rendererId = addGLRenderer(new GLRenderer3D(new BaseShader()));
         for (int i = 0; i < 1000; i++) {
-            new GLRenderer3D(i, new TestCube().setMotion(new TestMotion()), new BaseShader()).load();
+            getGLRenderer(rendererId).addGLMesh(new TestCube().setMotion(new TestMotion()));
         }
-        new TestCameraRotation(0).load();
+        addGLTask(new TestCameraRotation());
         setBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f);
     }
 
