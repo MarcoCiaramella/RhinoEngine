@@ -522,7 +522,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return this GLEngine.
      */
     public GLEngine setBlur(int resolution, float scale, float amount, float strength){
-        glBlur = new GLBlur(new GLRendererOnTexture(glSceneRenderer,resolution),scale,amount,strength);
+        glBlur = new GLBlur(new GLRendererOnTexture(glSceneRenderer,resolution),scale,amount,strength).setup();
         return this;
     }
 
