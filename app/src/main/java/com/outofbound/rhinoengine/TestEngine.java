@@ -34,10 +34,11 @@ public class TestEngine extends GLEngine {
             new GLRenderer3D(i, new TestCube().setMotion(new TestMotion()), new BaseShader()).load();
         }
         new TestCameraRotation(0).load();
+        setBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f);
     }
 
     public void blurOn(){
-        enableBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f);
+        enableBlur();
     }
 
     public void blurOff(){

@@ -53,6 +53,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private boolean running = false;
     private GLBlur glBlur = null;
     private GLSceneRenderer glSceneRenderer;
+    private boolean blurEnabled = false;
 
 
 
@@ -271,9 +272,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
-        // Enable depth test
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        // Accept fragment if it closer to the camera than the former one
         GLES20.glDepthFunc(GLES20.GL_LESS);
         GLES20.glClearDepthf(1.0f);
         GLES20.glFrontFace(GLES20.GL_CCW);
@@ -322,7 +321,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         mvpMatrix2D = camera2D.create(getWidth(), getHeight(), deltaMs);
 
         synchronized (renderers) {
-            if (glBlur != null){
+            if (glBlur != null && blurEnabled){
                 glBlur.render(getWidth(),getHeight(),deltaMs);
             }
             else {
@@ -515,15 +514,24 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     }
 
     /**
-     * Enable blur effect.
+     * Set blur effect.
      * @param resolution the resolution. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
      * @param scale the scale.
      * @param amount the amount.
      * @param strength the strength.
      * @return this GLEngine.
      */
-    public GLEngine enableBlur(int resolution, float scale, float amount, float strength){
-        glBlur = new GLBlur(new GLRendererOnTexture(glSceneRenderer,resolution),scale,amount,strength).setup();
+    public GLEngine setBlur(int resolution, float scale, float amount, float strength){
+        glBlur = new GLBlur(new GLRendererOnTexture(glSceneRenderer,resolution),scale,amount,strength);
+        return this;
+    }
+
+    /**
+     * Enable blur effect.
+     * @return this GLEngine.
+     */
+    public GLEngine enableBlur(){
+        blurEnabled = true;
         return this;
     }
 
@@ -532,7 +540,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return this GLEngine.
      */
     public GLEngine disableBlur(){
-        glBlur = null;
+        blurEnabled = false;
         return this;
     }
 
