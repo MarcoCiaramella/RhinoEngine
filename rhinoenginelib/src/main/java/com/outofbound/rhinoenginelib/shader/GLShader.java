@@ -21,6 +21,7 @@ public class GLShader {
     public int uNumLightsLocation;
     public int uFloatArrayLocation;
     public int uNumFloatLocation;
+    public int uShadowMapLocation;
 
     public GLShader(String vs, String fs){
         programShader = GLES20.glCreateProgram();
@@ -43,6 +44,7 @@ public class GLShader {
         uNumLightsLocation = -1;
         uFloatArrayLocation = -1;
         uNumFloatLocation = -1;
+        uShadowMapLocation = -1;
     }
 
     public void config(String aPosition,
@@ -56,7 +58,8 @@ public class GLShader {
                        String uLightsIntensity,
                        String uNumLights,
                        String uFloatArray,
-                       String uNumFloat){
+                       String uNumFloat,
+                       String uShadowMap){
 
         GLES20.glUseProgram(programShader);
 
@@ -72,6 +75,7 @@ public class GLShader {
         uNumLightsLocation = isEmpty(uNumLights) ? -1 : GLES20.glGetUniformLocation(programShader,uNumLights);
         uFloatArrayLocation = isEmpty(uFloatArray) ? -1 : GLES20.glGetUniformLocation(programShader,uFloatArray);
         uNumFloatLocation = isEmpty(uNumFloat) ? -1 : GLES20.glGetUniformLocation(programShader,uNumFloat);
+        uShadowMapLocation = isEmpty(uShadowMap) ? -1 : GLES20.glGetUniformLocation(programShader,uShadowMap);
 
     }
 

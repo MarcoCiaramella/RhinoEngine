@@ -6,6 +6,7 @@ precision highp float;
 uniform vec3 uLightsPos[1];
 uniform vec3 uLightsColor[1];
 uniform float uLightsIntensity[1];
+uniform sampler2D uShadowMap;
 varying vec4 vColor;
 varying vec3 vPosition;
 varying vec3 vNormal;

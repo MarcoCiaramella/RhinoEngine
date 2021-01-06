@@ -2,24 +2,27 @@
 
 precision highp float;
 
+varying vec4 vPosition;
 
-vec4 pack (float depth){
-    const vec4 bitSh = vec4(256.0*256.0*256.0, 256.0*256.0, 256.0, 1.0);
-    const vec4 bitMsk = vec4(0, 1.0/256.0, 1.0/256.0, 1.0/256.0);
-    vec4 comp = fract(depth * bitSh);
+
+vec4 packToRGBA32(float f){
+    const vec4 bitSh = vec4(256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0);
+    const vec4 bitMsk = vec4(0, 1.0 / 256.0, 1.0 / 256.0, 1.0 / 256.0);
+    vec4 comp = fract(f * bitSh);
     comp -= comp.xxyz * bitMsk;
     return comp;
 }
 
+float getDepth(){
+    return vPosition.z / vPosition.w;
+}
+
+float to01(float f){
+    return (f + 1.0) / 2.0;
+}
+
 void main() {
-    // the depth
-    float normalizedDistance  = position.z / position.w;
-    // scale it from 0-1
-    normalizedDistance = (normalizedDistance + 1.0) / 2.0;
-    // bias (to remove artifacts)
-    normalizedDistance += 0.0005;
-    // pack value into 32-bit RGBA texture
-    gl_FragColor = pack(normalizedDistance);
+    gl_FragColor = packToRGBA32(to01(getDepth()));
 }
 
 

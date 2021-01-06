@@ -7,6 +7,7 @@ import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.camera.GLCamera2D;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
+import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.util.file.TextFileReader;
 
@@ -18,17 +19,13 @@ public class GLBlur {
 
     private int textureInput;
 
-    private int frameBufferStep1;
-    private int frameBufferStep2;
-    private int frameBufferStep3;
+    private final int frameBufferStep1;
+    private final int frameBufferStep2;
+    private final int frameBufferStep3;
 
-    private int textureStep1;
-    private int textureStep2;
-    private int textureStep3;
-
-    private int renderBufferStep1;
-    private int renderBufferStep2;
-    private int renderBufferStep3;
+    private final int textureStep1;
+    private final int textureStep2;
+    private final int textureStep3;
 
     private int programShaderBlur;
     private int uMVPMatrixBlur;
@@ -53,32 +50,32 @@ public class GLBlur {
     private int uTextureIdScreenRenderer;
     private int uMVPMatrixScreenRenderer;
 
-    private float[] mvMatrix = new float[16];
-    private float[] mvpMatrix = new float[16];
-    private float scale;
-    private float amount;
-    private float strength;
+    private final float[] mvMatrix = new float[16];
+    private final float[] mvpMatrix = new float[16];
+    private final float scale;
+    private final float amount;
+    private final float strength;
 
-    private GLCamera camera;
+    private final GLCamera camera;
 
-    private static float[] vertices = {
+    private static final float[] vertices = {
             -1f, -1f, //bottom - left
             1f, -1f, //bottom - right
             -1f, 1f, //top - left
             1f, 1f //top - right
     };
 
-    private static float[] textureCoords = {
+    private static final float[] textureCoords = {
             1, 1, //bottom - left
             0, 1, // bottom - right
             1, 0, // top - left
             0, 0 // top - right
     };
 
-    private FloatBuffer vertexBuffer;
-    private FloatBuffer textureCoordsBuffer;
+    private final FloatBuffer vertexBuffer;
+    private final FloatBuffer textureCoordsBuffer;
 
-    private GLRendererOnTexture glRendererOnTexture;
+    private final GLRendererOnTexture glRendererOnTexture;
 
 
     public GLBlur(GLRendererOnTexture glRendererOnTexture, float scale, float amount, float strength) {
@@ -108,12 +105,12 @@ public class GLBlur {
         textureStep2 = buffers[1];
         textureStep3 = buffers[2];
         GLES20.glGenRenderbuffers(3, buffers, 0);
-        renderBufferStep1 = buffers[0];
-        renderBufferStep2 = buffers[1];
-        renderBufferStep3 = buffers[2];
-        createFramebuffer(frameBufferStep1,textureStep1,renderBufferStep1,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
-        createFramebuffer(frameBufferStep2,textureStep2,renderBufferStep2,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
-        createFramebuffer(frameBufferStep3,textureStep3,renderBufferStep3,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
+        int renderBufferStep1 = buffers[0];
+        int renderBufferStep2 = buffers[1];
+        int renderBufferStep3 = buffers[2];
+        createFramebuffer(frameBufferStep1,textureStep1, renderBufferStep1,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
+        createFramebuffer(frameBufferStep2,textureStep2, renderBufferStep2,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
+        createFramebuffer(frameBufferStep3,textureStep3, renderBufferStep3,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
     }
 
     private void setupBlur(){
@@ -170,9 +167,9 @@ public class GLBlur {
         return this;
     }
 
-    public void render(int screenWidth, int screenHeight, long ms) {
+    public void render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight, long ms) {
         float[] m = camera.create(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight(), ms);
-        this.textureInput = glRendererOnTexture.render();
+        this.textureInput = glRendererOnTexture.render(glSceneRenderer);
         blur(1, m, vertexBuffer, textureCoordsBuffer);
         blur(2, m, vertexBuffer, textureCoordsBuffer);
         draw(m, vertexBuffer, textureCoordsBuffer);

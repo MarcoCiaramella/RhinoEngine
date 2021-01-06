@@ -18,6 +18,7 @@ public class BaseShader extends GLShader {
                 "uLightsIntensity",
                 null,
                 null,
+                null,
                 null);
     }
 }

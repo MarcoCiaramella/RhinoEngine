@@ -19,8 +19,8 @@ import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.fx.GLBlur;
 import com.outofbound.rhinoenginelib.task.GLTask;
+import com.outofbound.rhinoenginelib.util.list.BigList;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -32,8 +32,8 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
-    private final ArrayList<GLRenderer> glRenderers = new ArrayList<>();
-    private final ArrayList<GLTask> glTasks = new ArrayList<>();
+    private final BigList<GLRenderer> glRenderers = new BigList<>();
+    private final BigList<GLTask> glTasks = new BigList<>();
     private GLGesture glGesture = null;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
@@ -101,12 +101,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return the GLRenderer id, -1 if the input GLRenderer is a duplicate.
      */
     public int addGLRenderer(GLRenderer glRenderer){
-        if (glRenderers.contains(glRenderer)){
-            return -1;
-        }
         glRenderer.onAdd();
-        glRenderers.add(glRenderer);
-        return glRenderers.indexOf(glRenderer);
+        return glRenderers.add(glRenderer);
     }
 
     /**
@@ -115,12 +111,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return the GLTask id, -1 if the input GLTask is a duplicate.
      */
     public int addGLTask(GLTask glTask){
-        if (glTasks.contains(glTask)){
-            return -1;
-        }
         glTask.onAdd();
-        glTasks.add(glTask);
-        return glTasks.indexOf(glTask);
+        return glTasks.add(glTask);
     }
 
     /**
@@ -129,9 +121,9 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return this GLEngine.
      */
     public GLEngine removeGLRenderer(int id){
-        if (id < glRenderers.size() && glRenderers.get(id) != null) {
-            glRenderers.get(id).onRemove();
-            glRenderers.set(id,null);
+        GLRenderer glRenderer = glRenderers.remove(id);
+        if (glRenderer != null){
+            glRenderer.onRemove();
         }
         return this;
     }
@@ -142,9 +134,9 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return this GLEngine.
      */
     public GLEngine removeGLTask(int id){
-        if (id < glTasks.size() && glTasks.get(id) != null) {
-            glTasks.get(id).onRemove();
-            glTasks.set(id,null);
+        GLTask glTask = glTasks.remove(id);
+        if (glTask != null){
+            glTask.onRemove();
         }
         return this;
     }
@@ -155,10 +147,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return the GLRenderer if exists, null otherwise.
      */
     public GLRenderer getGLRenderer(int id){
-        if (id < glRenderers.size()) {
-            return glRenderers.get(id);
-        }
-        return null;
+        return glRenderers.get(id);
     }
 
     /**
@@ -167,10 +156,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return the GLTask if exists, null otherwise.
      */
     public GLTask getGLTask(int id){
-        if (id < glTasks.size()) {
-            return glTasks.get(id);
-        }
-        return null;
+        return glTasks.get(id);
     }
 
     /**
@@ -367,7 +353,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
 
 
         if (glBlur != null && blurEnabled){
-            glBlur.render(getWidth(),getHeight(),deltaMs);
+            glBlur.render(glSceneRenderer,getWidth(),getHeight(),deltaMs);
         }
         else {
             glSceneRenderer.doRendering();
@@ -376,7 +362,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         for (GLTask glTask : glTasks){
             boolean alive = glTask.runTask(deltaMs);
             if (!alive) {
-                removeGLTask(glTasks.indexOf(glTask));
+                glTasks.remove(glTask);
             }
         }
 
@@ -384,6 +370,9 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
 
     }
 
+    /**
+     * Render the scene.
+     */
     private void renderScene(){
         for (GLRenderer glRenderer : glRenderers){
             glRenderer.render(mvpMatrix3D, mvpMatrix2D, deltaMs);
@@ -426,15 +415,15 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     protected abstract void init();
 
     /**
-     * Set blur effect.
-     * @param resolution the resolution. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
+     * Configure blur effect.
+     * @param resolution the quality level. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
      * @param scale the scale.
      * @param amount the amount.
      * @param strength the strength.
      * @return this GLEngine.
      */
-    public GLEngine setBlur(int resolution, float scale, float amount, float strength){
-        glBlur = new GLBlur(new GLRendererOnTexture(glSceneRenderer,resolution),scale,amount,strength).setup();
+    public GLEngine configBlur(int resolution, float scale, float amount, float strength){
+        glBlur = new GLBlur(new GLRendererOnTexture(resolution),scale,amount,strength).setup();
         return this;
     }
 

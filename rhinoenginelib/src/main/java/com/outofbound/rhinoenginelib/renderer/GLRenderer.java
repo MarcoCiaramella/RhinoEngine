@@ -10,9 +10,8 @@ import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.util.list.BigList;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
-
-import java.util.ArrayList;
 
 
 /**
@@ -20,7 +19,7 @@ import java.util.ArrayList;
  */
 public abstract class GLRenderer {
 
-    private final ArrayList<GLMesh> glMeshes;
+    private final BigList<GLMesh> glMeshes;
     private GLShader glShader;
     private float[] mvMatrix = new float[16];
     private float[] mvpMatrix = new float[16];
@@ -30,6 +29,12 @@ public abstract class GLRenderer {
     private int numFloat = 0;
     private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
+    private boolean shadowEnabled = false;
+    private final GLSceneRenderer glSceneRenderer;
+    private float[] m;
+    private long ms;
+    private final GLShader glShaderShadowMap;
+    private GLRendererOnTexture shadowMapRenderer;
 
     /**
      * The renderer constructor.
@@ -37,10 +42,26 @@ public abstract class GLRenderer {
      */
     public GLRenderer(@NonNull GLShader glShader){
         this.glShader = glShader;
-        this.glMeshes = new ArrayList<>();
+        this.glMeshes = new BigList<>();
         this.glLights = new GLLights(1);
         GLLight glLight = new GLLight(new Vector3f(20,30,50),new Vector3f(1,1,1),1000);
         glLights.add(0,glLight);
+        glSceneRenderer = this::renderScene;
+        glShaderShadowMap = new GLShader("vs_shadow_map.glsl","fs_shadow_map.glsl");
+        glShaderShadowMap.config(
+                "aPosition",
+                null,
+                null,
+                "uMVPMatrix",
+                "uMVMatrix",
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 
     /**
@@ -49,12 +70,8 @@ public abstract class GLRenderer {
      * @return the GLMesh id, -1 if GLMesh is a duplicate.
      */
     public int addGLMesh(GLMesh glMesh){
-        if (glMeshes.contains(glMesh)) {
-            return -1;
-        }
         glMesh.onAdd();
-        glMeshes.add(glMesh);
-        return glMeshes.indexOf(glMesh);
+        return glMeshes.add(glMesh);
     }
 
     /**
@@ -63,10 +80,7 @@ public abstract class GLRenderer {
      * @return this GLRenderer.
      */
     public GLRenderer removeGLMesh(int id){
-        if (id < glMeshes.size() && glMeshes.get(id) != null){
-            glMeshes.get(id).onRemove();
-            glMeshes.set(id,null);
-        }
+        glMeshes.remove(id);
         return this;
     }
 
@@ -76,10 +90,7 @@ public abstract class GLRenderer {
      * @return the GLMesh if exists, null otherwise.
      */
     public GLMesh getGLMesh(int id){
-        if (id < glMeshes.size()){
-            return glMeshes.get(id);
-        }
-        return null;
+        return glMeshes.get(id);
     }
 
     /**
@@ -107,9 +118,20 @@ public abstract class GLRenderer {
      */
     protected void render(float[] m, long ms) {
 
+        this.m = m;
+        this.ms = ms;
+
         GLES20.glUseProgram(glShader.programShader);
 
         time += ms/1000f;
+        if (blendingEnabled) {
+            GLES20.glEnable(GLES20.GL_BLEND);
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        }
+        if (faceCullingEnabled){
+            GLES20.glEnable(GLES20.GL_CULL_FACE);
+            GLES20.glCullFace(GLES20.GL_BACK);
+        }
         if (glShader.uTimeLocation >= 0) {
             GLES20.glUniform1f(glShader.uTimeLocation, time);
         }
@@ -140,56 +162,14 @@ public abstract class GLRenderer {
         if (glShader.aColorLocation >= 0) {
             GLES20.glEnableVertexAttribArray(glShader.aColorLocation);
         }
-        if (blendingEnabled) {
-            GLES20.glEnable(GLES20.GL_BLEND);
-            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        }
-        if (faceCullingEnabled){
-            GLES20.glEnable(GLES20.GL_CULL_FACE);
-            GLES20.glCullFace(GLES20.GL_BACK);
+        if (shadowEnabled && glShader.uShadowMapLocation >= 0) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMapRenderer.render(glSceneRenderer));
+            GLES20.glUniform1i(glShader.uShadowMapLocation, 0);
+            this.ms = 0;
         }
 
-        for (GLMesh glMesh : glMeshes) {
-
-            if (!glMesh.isDead(ms)) {
-
-                Matrix.setIdentityM(mvMatrix, 0);
-                if (glMesh.getMotion() != null) {
-                    glMesh.doTransformation(mvMatrix);
-                }
-                Matrix.multiplyMM(mvpMatrix, 0, m, 0, mvMatrix, 0);
-
-                if (glMesh.getBoundingBox() != null) {
-                    glMesh.getBoundingBox().copyMvMatrix(mvMatrix);
-                }
-
-                if (glShader.aPositionLocation >= 0) {
-                    GLES20.glVertexAttribPointer(glShader.aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
-                }
-                if (glShader.aNormalLocation >= 0) {
-                    GLES20.glVertexAttribPointer(glShader.aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
-                }
-                if (glShader.aColorLocation >= 0) {
-                    GLES20.glVertexAttribPointer(glShader.aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
-                }
-                if (glShader.uMVMatrixLocation >= 0) {
-                    GLES20.glUniformMatrix4fv(glShader.uMVMatrixLocation, 1, false, mvMatrix, 0);
-                }
-                if (glShader.uMVPMatrixLocation >= 0) {
-                    GLES20.glUniformMatrix4fv(glShader.uMVPMatrixLocation, 1, false, mvpMatrix, 0);
-                }
-
-                if (glMesh.getIndices() != null) {
-                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
-                } else {
-                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
-                }
-            }
-            else {
-                removeGLMesh(glMeshes.indexOf(glMesh));
-            }
-
-        }
+        glSceneRenderer.doRendering();
 
         if (blendingEnabled) {
             GLES20.glDisable(GLES20.GL_BLEND);
@@ -205,6 +185,47 @@ public abstract class GLRenderer {
         }
         if (glShader.aColorLocation >= 0) {
             GLES20.glDisableVertexAttribArray(glShader.aColorLocation);
+        }
+    }
+
+    /**
+     * Render the scene.
+     */
+    private void renderScene(){
+        for (GLMesh glMesh : glMeshes) {
+            if (!glMesh.isDead(ms)) {
+                Matrix.setIdentityM(mvMatrix, 0);
+                if (glMesh.getMotion() != null) {
+                    glMesh.doTransformation(mvMatrix);
+                }
+                Matrix.multiplyMM(mvpMatrix, 0, m, 0, mvMatrix, 0);
+                if (glMesh.getBoundingBox() != null) {
+                    glMesh.getBoundingBox().copyMvMatrix(mvMatrix);
+                }
+                if (glShader.aPositionLocation >= 0) {
+                    GLES20.glVertexAttribPointer(glShader.aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
+                }
+                if (glShader.aNormalLocation >= 0) {
+                    GLES20.glVertexAttribPointer(glShader.aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
+                }
+                if (glShader.aColorLocation >= 0) {
+                    GLES20.glVertexAttribPointer(glShader.aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
+                }
+                if (glShader.uMVMatrixLocation >= 0) {
+                    GLES20.glUniformMatrix4fv(glShader.uMVMatrixLocation, 1, false, mvMatrix, 0);
+                }
+                if (glShader.uMVPMatrixLocation >= 0) {
+                    GLES20.glUniformMatrix4fv(glShader.uMVPMatrixLocation, 1, false, mvpMatrix, 0);
+                }
+                if (glMesh.getIndices() != null) {
+                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
+                } else {
+                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
+                }
+            }
+            else {
+                glMeshes.remove(glMesh);
+            }
         }
     }
 
@@ -315,6 +336,43 @@ public abstract class GLRenderer {
     public GLRenderer disableBlending(){
         blendingEnabled = false;
         return this;
+    }
+
+    /**
+     * Configure shadow.
+     * @param resolution the quality level. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
+     * @return this GLRenderer.
+     */
+    public GLRenderer configShadow(int resolution){
+        shadowMapRenderer = new GLRendererOnTexture(resolution);
+        return this;
+    }
+
+    /**
+     * Enable shadow.
+     * @return this GLRenderer.
+     */
+    public GLRenderer enableShadow(){
+        shadowEnabled = true;
+        return this;
+    }
+
+    /**
+     * Disable shadow.
+     * @return this GLRenderer.
+     */
+    public GLRenderer disableShadow(){
+        shadowEnabled = false;
+        return this;
+    }
+
+    private void attachGLShaderShadowMap(GLRenderer glRenderer){
+        glShader = glRenderer.getGLShader();
+        glRenderer.setGLShader(glShaderShadowMap);
+    }
+
+    private void detachGLShaderShadowMap(GLRenderer glRenderer){
+        glRenderer.setGLShader(glShader);
     }
 
 }
