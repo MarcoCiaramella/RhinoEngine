@@ -7,8 +7,8 @@ import java.util.Iterator;
 
 public class BigList<E> implements Iterable<E>, Iterator<E> {
 
-    private ArrayList<E> list;
-    private ArrayList<Integer> indices;
+    private final ArrayList<E> list = new ArrayList<>();
+    private final ArrayList<Integer> indices = new ArrayList<>();
     private int count = 0;
 
     public int add(E object){
@@ -49,6 +49,7 @@ public class BigList<E> implements Iterable<E>, Iterator<E> {
     @NonNull
     @Override
     public Iterator<E> iterator() {
+        count = 0;
         return this;
     }
 
