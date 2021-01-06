@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import com.outofbound.rhinoenginelib.camera.GLCamera2D;
 import com.outofbound.rhinoenginelib.camera.GLCamera3D;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
-import com.outofbound.rhinoenginelib.mesh.primitives.Cube;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer3D;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.shader.primitives.BaseShader;
@@ -15,16 +14,16 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class TestEngine extends GLEngine {
 
-    private static final Vector3f EYE_CENTER = new Vector3f(0,0,0);
-    private static final Vector3f EYE_POS = new Vector3f(3,5,4);
-    private static final Vector3f EYE_UP = new Vector3f(0,1,0);
+    private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
+    private static final Vector3f CAMERA_EYE = new Vector3f(3,5,4);
+    private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
 
     public TestEngine(Context context){
-        super(context, new GLCamera3D(EYE_POS.clone(), EYE_UP.clone(), EYE_CENTER.clone(), 1, 1000), new GLCamera2D(1,1000), null);
+        super(context, new GLCamera3D(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), new GLCamera2D(1,1000), null);
     }
 
     public TestEngine(Context context, AttributeSet attrs){
-        super(context, attrs, new GLCamera3D(EYE_POS.clone(), EYE_UP.clone(), EYE_CENTER.clone(), 1, 1000), new GLCamera2D(1,1000), null);
+        super(context, attrs, new GLCamera3D(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), new GLCamera2D(1,1000), null);
     }
 
     @Override

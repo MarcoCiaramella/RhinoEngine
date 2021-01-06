@@ -141,4 +141,13 @@ public class GLLights {
     public int getMaxSize(){
         return MAX_SIZE;
     }
+
+    public GLLight getFirstLight(){
+        for (GLLight glLight : lights){
+            if (glLight != null){
+                return glLight;
+            }
+        }
+        return null;
+    }
 }

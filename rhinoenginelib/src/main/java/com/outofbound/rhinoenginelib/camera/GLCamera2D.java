@@ -26,6 +26,6 @@ public class GLCamera2D extends GLCamera {
         float ratio = (float)width/(float)height;
         Matrix.orthoM(projectionMatrix, 0, -ratio, ratio, -ratio, ratio, near, far);
         setupM();
-        return mvpMatrix;
+        return vpMatrix;
     }
 }

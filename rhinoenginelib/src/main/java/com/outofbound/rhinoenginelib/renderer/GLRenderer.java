@@ -6,9 +6,13 @@ import android.opengl.Matrix;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.outofbound.rhinoenginelib.camera.GLCamera;
+import com.outofbound.rhinoenginelib.camera.GLCamera2D;
+import com.outofbound.rhinoenginelib.camera.GLCamera3D;
 import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
+import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.util.list.BigList;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
@@ -21,11 +25,11 @@ public abstract class GLRenderer {
 
     private final BigList<GLMesh> glMeshes;
     private GLShader glShader;
-    private float[] mvMatrix = new float[16];
-    private float[] mvpMatrix = new float[16];
+    private final float[] mvMatrix = new float[16];
+    private final float[] mvpMatrix = new float[16];
     private float time = 0;
     private GLLights glLights;
-    private float[] floatArray = new float[255];
+    private final float[] floatArray = new float[255];
     private int numFloat = 0;
     private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
@@ -34,7 +38,9 @@ public abstract class GLRenderer {
     private float[] m;
     private long ms;
     private final GLShader glShaderShadowMap;
-    private GLRendererOnTexture shadowMapRenderer;
+    private GLShadowMap glShadowMap;
+    private int shadowMap;
+
 
     /**
      * The renderer constructor.
@@ -113,25 +119,49 @@ public abstract class GLRenderer {
 
     /**
      * Render mesh and shader.
-     * @param m projection matrix.
+     * @param screenWidth the screen width.
+     * @param screenHeight the screen height.
+     * @param glCamera the GLCamera.
      * @param ms engine time in milliseconds.
      */
-    protected void render(float[] m, long ms) {
+    protected void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
 
-        this.m = m;
+        this.m = glCamera.create(screenWidth, screenHeight, ms);
         this.ms = ms;
-
-        GLES20.glUseProgram(glShader.programShader);
-
         time += ms/1000f;
+
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
+
+        if (shadowEnabled) {
+            renderShadowMap(screenWidth,screenHeight,ms);
+        }
+
         if (faceCullingEnabled){
             GLES20.glEnable(GLES20.GL_CULL_FACE);
             GLES20.glCullFace(GLES20.GL_BACK);
         }
+
+        enableShader();
+        glSceneRenderer.doRendering();
+        disableShader();
+
+        if (faceCullingEnabled){
+            GLES20.glDisable(GLES20.GL_CULL_FACE);
+        }
+
+        if (blendingEnabled) {
+            GLES20.glDisable(GLES20.GL_BLEND);
+        }
+    }
+
+    /**
+     * Enable shader.
+     */
+    private void enableShader(){
+        GLES20.glUseProgram(glShader.programShader);
         if (glShader.uTimeLocation >= 0) {
             GLES20.glUniform1f(glShader.uTimeLocation, time);
         }
@@ -164,19 +194,15 @@ public abstract class GLRenderer {
         }
         if (shadowEnabled && glShader.uShadowMapLocation >= 0) {
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMapRenderer.render(glSceneRenderer));
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
             GLES20.glUniform1i(glShader.uShadowMapLocation, 0);
-            this.ms = 0;
         }
+    }
 
-        glSceneRenderer.doRendering();
-
-        if (blendingEnabled) {
-            GLES20.glDisable(GLES20.GL_BLEND);
-        }
-        if (faceCullingEnabled){
-            GLES20.glDisable(GLES20.GL_CULL_FACE);
-        }
+    /**
+     * Disable shader.
+     */
+    private void disableShader(){
         if (glShader.aPositionLocation >= 0) {
             GLES20.glDisableVertexAttribArray(glShader.aPositionLocation);
         }
@@ -296,11 +322,13 @@ public abstract class GLRenderer {
 
     /**
      * Do the rendering.
-     * @param m3D projection matrix 3D.
-     * @param m2D projection matrix 2D.
+     * @param screenWidth the screen width.
+     * @param screenHeight the screen height.
+     * @param glCamera3D the GLCamera3D.
+     * @param glCamera2D the GLCamera2D.
      * @param ms engine time in milliseconds.
      */
-    public abstract void render(float[] m3D, float[] m2D, long ms);
+    public abstract void render(int screenWidth, int screenHeight, GLCamera3D glCamera3D, GLCamera2D glCamera2D, long ms);
 
     /**
      * Enable face culling.
@@ -344,7 +372,9 @@ public abstract class GLRenderer {
      * @return this GLRenderer.
      */
     public GLRenderer configShadow(int resolution){
-        shadowMapRenderer = new GLRendererOnTexture(resolution);
+        if (glLights.size() > 0) {
+            glShadowMap = new GLShadowMap(resolution,glLights.getFirstLight());
+        }
         return this;
     }
 
@@ -366,13 +396,22 @@ public abstract class GLRenderer {
         return this;
     }
 
-    private void attachGLShaderShadowMap(GLRenderer glRenderer){
-        glShader = glRenderer.getGLShader();
-        glRenderer.setGLShader(glShaderShadowMap);
-    }
-
-    private void detachGLShaderShadowMap(GLRenderer glRenderer){
-        glRenderer.setGLShader(glShader);
+    /**
+     * Render shadow map.
+     * @param screenWidth the screen width.
+     * @param screenHeight the screen height.
+     * @param ms engine time in milliseconds.
+     */
+    private void renderShadowMap(int screenWidth, int screenHeight, long ms){
+        setGLShader(glShaderShadowMap);
+        enableShader();
+        float[] tempM = m;
+        m = glShadowMap.getVpMatrix(screenWidth,screenHeight,ms);
+        shadowMap = glShadowMap.render(glSceneRenderer);
+        disableShader();
+        setGLShader(glShader);
+        this.ms = 0;
+        m = tempM;
     }
 
 }

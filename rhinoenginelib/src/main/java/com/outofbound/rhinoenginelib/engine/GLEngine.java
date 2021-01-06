@@ -39,8 +39,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private long ms = -1;
     private GLCamera3D camera3D;
     private GLCamera2D camera2D;
-    private float[] mvpMatrix3D;
-    private float[] mvpMatrix2D;
     private long deltaMs;
     private ScaleGestureDetector scaleDetector;
     private boolean gestureProcessed = false;
@@ -334,10 +332,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     public void onDrawFrame(GL10 gl) {
 
         GLES20.glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-        // clear Screen and Depth Buffer
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        // get ms
         deltaMs = 0;
         long currentMs = Calendar.getInstance().getTimeInMillis();
         if (ms >= 0) {
@@ -347,10 +343,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         for (GLRenderer glRenderer : glRenderers){
             glRenderer.move(deltaMs);
         }
-
-        mvpMatrix3D = camera3D.create(getWidth(), getHeight(), deltaMs);
-        mvpMatrix2D = camera2D.create(getWidth(), getHeight(), deltaMs);
-
 
         if (glBlur != null && blurEnabled){
             glBlur.render(glSceneRenderer,getWidth(),getHeight(),deltaMs);
@@ -375,7 +367,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      */
     private void renderScene(){
         for (GLRenderer glRenderer : glRenderers){
-            glRenderer.render(mvpMatrix3D, mvpMatrix2D, deltaMs);
+            glRenderer.render(getWidth(), getHeight(), camera3D, camera2D, deltaMs);
         }
     }
 

@@ -8,44 +8,44 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public abstract class GLCamera {
 
-    protected float[] mvpMatrix;
+    protected float[] vpMatrix;
     protected float[] projectionMatrix;
-    private float[] viewMatrix;
-    protected Vector3f eyePos;
-    protected Vector3f eyeCenter;
-    protected Vector3f eyeUp;
+    private final float[] viewMatrix;
+    protected Vector3f eye;
+    protected Vector3f center;
+    protected Vector3f up;
+    private final Vector3f eyeRes;
     protected GLMesh glMeshToFollow;
-    private Vector3f eyePosRes;
     private Vector3f pointToFollow;
 
-    public GLCamera(Vector3f eyePos, Vector3f eyeUp, Vector3f eyeCenter){
-        mvpMatrix = new float[16];
+    public GLCamera(Vector3f eye, Vector3f up, Vector3f center){
+        vpMatrix = new float[16];
         projectionMatrix = new float[16];
         viewMatrix = new float[16];
-        this.eyePos = new Vector3f(eyePos);
-        this.eyeUp = new Vector3f(eyeUp);
-        this.eyeCenter = new Vector3f(eyeCenter);
-        eyePosRes = this.eyePos.clone();
+        this.eye = new Vector3f(eye);
+        this.up = new Vector3f(up);
+        this.center = new Vector3f(center);
+        eyeRes = this.eye.clone();
         glMeshToFollow = null;
         pointToFollow = null;
     }
 
     protected void setupM(){
         if (glMeshToFollow != null) {
-            eyeCenter.copy(glMeshToFollow.getMotion().position);
-            eyePos.add(eyeCenter,eyePosRes);
+            center.copy(glMeshToFollow.getMotion().position);
+            eye.add(center, eyeRes);
         }
         else if (pointToFollow != null){
-            eyeCenter.copy(pointToFollow);
-            eyePos.add(eyeCenter,eyePosRes);
+            center.copy(pointToFollow);
+            eye.add(center, eyeRes);
         }
         else {
-            eyePosRes.copy(eyePos);
+            eyeRes.copy(eye);
         }
         // Set the camera position (View matrix)
-        Matrix.setLookAtM(viewMatrix, 0, eyePosRes.x, eyePosRes.y, eyePosRes.z, eyeCenter.x, eyeCenter.y, eyeCenter.z, eyeUp.x, eyeUp.y, eyeUp.z);
+        Matrix.setLookAtM(viewMatrix, 0, eyeRes.x, eyeRes.y, eyeRes.z, center.x, center.y, center.z, up.x, up.y, up.z);
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        Matrix.multiplyMM(vpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
     }
 
     public GLCamera follow(GLMesh glMeshToFollow){
@@ -68,25 +68,25 @@ public abstract class GLCamera {
 
     public abstract float[] create(int width, int height, long ms);
 
-    public Vector3f getEyePos(){
-        return eyePos;
+    public Vector3f getEye(){
+        return eye;
     }
 
-    public Vector3f getEyeUp(){
-        return eyeUp;
+    public Vector3f getUp(){
+        return up;
     }
 
-    public Vector3f getEyeCenter(){
-        return eyeCenter;
+    public Vector3f getCenter(){
+        return center;
     }
 
     public GLCamera rotate(float a, float x, float y, float z){
-        eyePos.rotate(a,x,y,z);
+        eye.rotate(a,x,y,z);
         return this;
     }
 
     public GLCamera translate(Vector3f shift){
-        eyePos.translate(shift);
+        eye.translate(shift);
         return this;
     }
 }

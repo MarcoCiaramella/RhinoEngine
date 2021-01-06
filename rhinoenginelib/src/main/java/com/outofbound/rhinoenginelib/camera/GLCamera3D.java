@@ -10,14 +10,14 @@ public class GLCamera3D extends GLCamera {
     private final float near;
     private final float far;
 
-    public GLCamera3D(Vector3f eyePos, Vector3f eyeUp, Vector3f eyeCenter, float near, float far) {
-        super(eyePos, eyeUp, eyeCenter);
+    public GLCamera3D(Vector3f eye, Vector3f up, Vector3f center, float near, float far) {
+        super(eye, up, center);
         this.near = near;
         this.far = far;
     }
 
-    public GLCamera3D(Vector3f eyePos, Vector3f eyeUp, Vector3f eyeCenter) {
-        this(eyePos, eyeUp, eyeCenter, 1, 100);
+    public GLCamera3D(Vector3f eye, Vector3f up, Vector3f center) {
+        this(eye, up, center, 1, 100);
     }
 
     @Override
@@ -25,6 +25,6 @@ public class GLCamera3D extends GLCamera {
         float ratio = (float)width/(float)height;
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, near, far);
         setupM();
-        return mvpMatrix;
+        return vpMatrix;
     }
 }

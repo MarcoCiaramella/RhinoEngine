@@ -1,5 +1,7 @@
 package com.outofbound.rhinoenginelib.renderer;
 
+import com.outofbound.rhinoenginelib.camera.GLCamera2D;
+import com.outofbound.rhinoenginelib.camera.GLCamera3D;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 
 public class GLRenderer3D extends GLRenderer {
@@ -14,7 +16,7 @@ public class GLRenderer3D extends GLRenderer {
     }
 
     @Override
-    public void render(float[] m3D, float[] m2D, long ms) {
-        render(m3D,ms);
+    public void render(int screenWidth, int screenHeight, GLCamera3D glCamera3D, GLCamera2D glCamera2D, long ms) {
+        render(screenWidth,screenHeight,glCamera3D,ms);
     }
 }
