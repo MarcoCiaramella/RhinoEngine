@@ -14,6 +14,7 @@ import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
 import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.shader.primitives.BaseWithShadowShader;
 import com.outofbound.rhinoenginelib.util.list.BigList;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
@@ -40,6 +41,7 @@ public abstract class GLRenderer {
     private final GLShader glShaderShadowMap;
     private GLShadowMap glShadowMap;
     private int shadowMap;
+    private float[] shadowMVPMatrix = new float[16];
 
 
     /**
@@ -60,6 +62,7 @@ public abstract class GLRenderer {
                 null,
                 "uMVPMatrix",
                 "uMVMatrix",
+                null,
                 null,
                 null,
                 null,
@@ -192,10 +195,11 @@ public abstract class GLRenderer {
         if (glShader.aColorLocation >= 0) {
             GLES20.glEnableVertexAttribArray(glShader.aColorLocation);
         }
-        if (shadowEnabled && glShader.uShadowMapLocation >= 0) {
+        if (shadowEnabled && glShader.uShadowMapLocation >= 0 && glShader.uShadowMVPMatrixLocation >= 0) {
             GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
             GLES20.glUniform1i(glShader.uShadowMapLocation, 0);
+            GLES20.glUniformMatrix4fv(glShader.uShadowMVPMatrixLocation, 1, false, shadowMVPMatrix, 0);
         }
     }
 
@@ -374,6 +378,7 @@ public abstract class GLRenderer {
     public GLRenderer configShadow(int resolution){
         if (glLights.size() > 0) {
             glShadowMap = new GLShadowMap(resolution,glLights.getFirstLight());
+            glShader = new BaseWithShadowShader();
         }
         return this;
     }
@@ -403,15 +408,17 @@ public abstract class GLRenderer {
      * @param ms engine time in milliseconds.
      */
     private void renderShadowMap(int screenWidth, int screenHeight, long ms){
-        setGLShader(glShaderShadowMap);
-        enableShader();
+        GLShader tempGLShader = glShader;
         float[] tempM = m;
+        glShader = glShaderShadowMap;
+        enableShader();
         m = glShadowMap.getVpMatrix(screenWidth,screenHeight,ms);
         shadowMap = glShadowMap.render(glSceneRenderer);
         disableShader();
-        setGLShader(glShader);
         this.ms = 0;
         m = tempM;
+        System.arraycopy(mvpMatrix, 0, shadowMVPMatrix, 0, mvpMatrix.length);
+        glShader = tempGLShader;
     }
 
 }

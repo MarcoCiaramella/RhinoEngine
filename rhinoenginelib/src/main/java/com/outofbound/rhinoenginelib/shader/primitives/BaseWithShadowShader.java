@@ -2,10 +2,10 @@ package com.outofbound.rhinoenginelib.shader.primitives;
 
 import com.outofbound.rhinoenginelib.shader.GLShader;
 
-public class BaseShader extends GLShader {
+public class BaseWithShadowShader extends GLShader {
 
-    public BaseShader() {
-        super("vs_base.glsl", "fs_base.glsl");
+    public BaseWithShadowShader() {
+        super("vs_base_shadow.glsl", "fs_base_shadow.glsl");
         config(
                 "aPosition",
                 "aColor",
@@ -19,7 +19,7 @@ public class BaseShader extends GLShader {
                 null,
                 null,
                 null,
-                null,
-                null);
+                "uShadowMap",
+                "uShadowMVPMatrixLocation");
     }
 }

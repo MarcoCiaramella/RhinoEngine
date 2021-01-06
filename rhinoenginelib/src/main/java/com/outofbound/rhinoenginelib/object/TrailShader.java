@@ -23,7 +23,8 @@ public class TrailShader extends GLShader {
                        String uNumLights,
                        String uFloatArray,
                        String uNumFloat,
-                       String uShadowMap){
-        super.config(aPosition,aColor,aNormal,uMVPMatrix,uMVMatrix,uTime,uLightsPosition,uLightsColor,uLightsIntensity,uNumLights,uFloatArray,uNumFloat,uShadowMap);
+                       String uShadowMap,
+                       String uShadowMVPMatrix){
+        super.config(aPosition,aColor,aNormal,uMVPMatrix,uMVMatrix,uTime,uLightsPosition,uLightsColor,uLightsIntensity,uNumLights,uFloatArray,uNumFloat,uShadowMap,uShadowMVPMatrix);
     }
 }
