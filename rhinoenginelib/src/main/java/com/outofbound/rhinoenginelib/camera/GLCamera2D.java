@@ -8,17 +8,8 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class GLCamera2D extends GLCamera {
 
-    private final float near;
-    private final float far;
-
     public GLCamera2D(float near, float far){
-        super(new Vector3f(0,0,1),new Vector3f(0,-1,0),new Vector3f(0,0,0));
-        this.near = near;
-        this.far = far;
-    }
-
-    public GLCamera2D(){
-        this(1,100);
+        super(new Vector3f(0,0,1),new Vector3f(0,-1,0),new Vector3f(0,0,0),near,far);
     }
 
     @Override

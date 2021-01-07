@@ -373,11 +373,13 @@ public abstract class GLRenderer {
     /**
      * Configure shadow.
      * @param resolution the quality level. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
+     * @param near camera near.
+     * @param far camera far.
      * @return this GLRenderer.
      */
-    public GLRenderer configShadow(int resolution){
+    public GLRenderer configShadow(int resolution, float near, float far){
         if (glLights.size() > 0) {
-            glShadowMap = new GLShadowMap(resolution,glLights.getFirstLight());
+            glShadowMap = new GLShadowMap(resolution,glLights.getFirstLight(),near,far);
             glShader = new BaseWithShadowShader();
         }
         return this;

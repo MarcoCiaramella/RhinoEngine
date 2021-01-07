@@ -17,14 +17,18 @@ public abstract class GLCamera {
     private final Vector3f eyeRes;
     protected GLMesh glMeshToFollow;
     private Vector3f pointToFollow;
+    protected final float near;
+    protected final float far;
 
-    public GLCamera(Vector3f eye, Vector3f up, Vector3f center){
+    public GLCamera(Vector3f eye, Vector3f up, Vector3f center, float near, float far){
         vpMatrix = new float[16];
         projectionMatrix = new float[16];
         viewMatrix = new float[16];
         this.eye = new Vector3f(eye);
         this.up = new Vector3f(up);
         this.center = new Vector3f(center);
+        this.near = near;
+        this.far = far;
         eyeRes = this.eye.clone();
         glMeshToFollow = null;
         pointToFollow = null;
@@ -78,6 +82,14 @@ public abstract class GLCamera {
 
     public Vector3f getCenter(){
         return center;
+    }
+
+    public float getNear(){
+        return near;
+    }
+
+    public float getFar(){
+        return far;
     }
 
     public GLCamera rotate(float a, float x, float y, float z){

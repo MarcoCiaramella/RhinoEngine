@@ -78,12 +78,12 @@ public class GLBlur {
     private final GLRendererOnTexture glRendererOnTexture;
 
 
-    public GLBlur(GLRendererOnTexture glRendererOnTexture, float scale, float amount, float strength) {
+    public GLBlur(GLRendererOnTexture glRendererOnTexture, float scale, float amount, float strength, float near, float far) {
         this.glRendererOnTexture = glRendererOnTexture;
         this.scale = scale;
         this.amount = amount;
         this.strength = strength;
-        this.camera = new GLCamera2D();
+        this.camera = new GLCamera2D(near,far);
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
         vertexBuffer = bb_vertex.asFloatBuffer();

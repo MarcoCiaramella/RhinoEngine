@@ -412,10 +412,12 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @param scale the scale.
      * @param amount the amount.
      * @param strength the strength.
+     * @param near camera near.
+     * @param far camera far.
      * @return this GLEngine.
      */
-    public GLEngine configBlur(int resolution, float scale, float amount, float strength){
-        glBlur = new GLBlur(new GLRendererOnTexture(resolution),scale,amount,strength).setup();
+    public GLEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
+        glBlur = new GLBlur(new GLRendererOnTexture(resolution),scale,amount,strength,near,far).setup();
         return this;
     }
 

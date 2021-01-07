@@ -13,7 +13,7 @@ public class GLShadowMap {
     private final GLRendererOnTexture shadowMapRenderer;
     private final GLCamera3D shadowMapCamera;
 
-    public GLShadowMap(int resolution, GLLight light){
+    public GLShadowMap(int resolution, GLLight light, float near, float far){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
         Vector3f cameraEye = light.getPosition().clone();
         Vector3f cameraCenter = cameraEye.clone();
@@ -22,7 +22,7 @@ public class GLShadowMap {
         cameraUp.x = -cameraUp.x;
         cameraUp.y = 0;
         cameraUp.z = -cameraUp.z;
-        shadowMapCamera = new GLCamera3D(cameraEye, cameraUp, cameraCenter);
+        shadowMapCamera = new GLCamera3D(cameraEye, cameraUp, cameraCenter, near, far);
     }
 
     public float[] getVpMatrix(int screenWidth, int screenHeight, long ms){
