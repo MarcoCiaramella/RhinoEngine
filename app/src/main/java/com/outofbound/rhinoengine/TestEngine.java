@@ -29,7 +29,7 @@ public class TestEngine extends GLEngine {
     @Override
     protected void init() {
         setClearColor(0,0,0,1);
-        int rendererId = addGLRenderer(new GLRenderer3D(new BaseShader()));
+        int rendererId = addGLRenderer(new GLRenderer3D());
         for (int i = 0; i < 1000; i++) {
             getGLRenderer(rendererId).addGLMesh(new TestCube().setMotion(new TestMotion()));
         }

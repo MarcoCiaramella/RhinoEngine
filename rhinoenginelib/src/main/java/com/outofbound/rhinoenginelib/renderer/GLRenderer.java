@@ -14,6 +14,7 @@ import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
 import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.shader.primitives.BaseShader;
 import com.outofbound.rhinoenginelib.shader.primitives.BaseWithShadowShader;
 import com.outofbound.rhinoenginelib.util.list.BigList;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
@@ -41,15 +42,14 @@ public abstract class GLRenderer {
     private final GLShader glShaderShadowMap;
     private GLShadowMap glShadowMap;
     private int shadowMap;
-    private float[] shadowMVPMatrix = new float[16];
+    private final float[] shadowMVPMatrix = new float[16];
 
 
     /**
      * The renderer constructor.
-     * @param glShader the shader for this renderer.
      */
-    public GLRenderer(@NonNull GLShader glShader){
-        this.glShader = glShader;
+    public GLRenderer(){
+        this.glShader = new BaseShader();
         this.glMeshes = new BigList<>();
         this.glLights = new GLLights(1);
         GLLight glLight = new GLLight(new Vector3f(20,30,50),new Vector3f(1,1,1),1000);
