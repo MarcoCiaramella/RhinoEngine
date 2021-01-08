@@ -2,12 +2,13 @@
 
 precision mediump float;
 
-attribute vec4 a_position;
-attribute vec2 a_texCoords;
-uniform mat4 u_mvpMatrix;
-varying vec2 v_texCoords;
+attribute vec4 aPosition;
+attribute vec2 aTexCoords;
+uniform mat4 uMVPMatrix;
+varying vec2 vTexCoords;
+
 
 void main(){
-    v_texCoords = a_texCoords;
-    gl_Position = u_mvpMatrix * a_position;
+    vTexCoords = aTexCoords;
+    gl_Position = uMVPMatrix * aPosition;
 }
