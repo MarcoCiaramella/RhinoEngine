@@ -9,7 +9,7 @@ import com.outofbound.rhinoenginelib.shader.GLShader;
 public class SceneWithShadowShader extends GLShader {
 
     private int uMVPMatrixLocation;
-    private int uMVMatrixLocation;
+    private int uMMatrixLocation;
     private int aPositionLocation;
     private int aColorLocation;
     private int aNormalLocation;
@@ -28,7 +28,7 @@ public class SceneWithShadowShader extends GLShader {
     public SceneWithShadowShader(){
         super("vs_scene_shadow.glsl", "fs_scene_shadow.glsl");
         uMVPMatrixLocation = -1;
-        uMVMatrixLocation = -1;
+        uMMatrixLocation = -1;
         aPositionLocation = -1;
         aColorLocation = -1;
         aNormalLocation = -1;
@@ -46,7 +46,7 @@ public class SceneWithShadowShader extends GLShader {
         aColorLocation = GLES20.glGetAttribLocation(programShader,"aColor");
         aNormalLocation = GLES20.glGetAttribLocation(programShader,"aNormal");
         uMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVPMatrix");
-        uMVMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVMatrix");
+        uMMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMMatrix");
         uLightsPositionLocation = GLES20.glGetUniformLocation(programShader,"uLightsPos");
         uLightsColorLocation = GLES20.glGetUniformLocation(programShader,"uLightsColor");
         uLightsIntensityLocation = GLES20.glGetUniformLocation(programShader,"uLightsIntensity");
@@ -63,7 +63,7 @@ public class SceneWithShadowShader extends GLShader {
         GLES20.glVertexAttribPointer(aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
         GLES20.glVertexAttribPointer(aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
         GLES20.glVertexAttribPointer(aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
-        GLES20.glUniformMatrix4fv(uMVMatrixLocation, 1, false, mMatrix, 0);
+        GLES20.glUniformMatrix4fv(uMMatrixLocation, 1, false, mMatrix, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
         GLES20.glUniform3fv(uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
         GLES20.glUniform3fv(uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
