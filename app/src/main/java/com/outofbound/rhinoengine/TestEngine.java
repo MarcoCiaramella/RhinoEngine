@@ -8,7 +8,6 @@ import com.outofbound.rhinoenginelib.camera.GLCamera3D;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer3D;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
-import com.outofbound.rhinoenginelib.shader.primitives.BaseShader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 

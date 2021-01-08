@@ -81,6 +81,6 @@ public class Cube extends GLMesh {
     }
 
     @Override
-    public void doTransformation(float[] mvMatrix) {
+    public void doTransformation(float[] mMatrix) {
     }
 }

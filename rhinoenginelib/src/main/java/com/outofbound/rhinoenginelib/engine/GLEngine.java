@@ -99,7 +99,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return the GLRenderer id, -1 if the input GLRenderer is a duplicate.
      */
     public int addGLRenderer(GLRenderer glRenderer){
-        glRenderer.onAdd();
         return glRenderers.add(glRenderer);
     }
 
@@ -119,10 +118,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return this GLEngine.
      */
     public GLEngine removeGLRenderer(int id){
-        GLRenderer glRenderer = glRenderers.remove(id);
-        if (glRenderer != null){
-            glRenderer.onRemove();
-        }
+        glRenderers.remove(id);
         return this;
     }
 
@@ -222,13 +218,12 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
             if (!checkMotionEvent(event)){
                 return true;
             }
-            // pause
             v.performClick();
             int pointerIndex = event.getActionIndex();
             int action = event.getActionMasked();
             int pointerId = event.getPointerId(pointerIndex);
             float posX = event.getX(pointerId);
-            float posY = getHeight() - event.getY(pointerId); //inverted in GL surface
+            float posY = getHeight() - event.getY(pointerId);
             scaleDetector.onTouchEvent(event);
             if (gestureProcessed){
                 gestureProcessed = false;
@@ -242,7 +237,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
                     float velX = vt.getXVelocity();
                     float velY = vt.getYVelocity();
                     glGesture.onMove(posX, posY, velX, velY);
-                    //Return a VelocityTracker object back to be re-used by others. You must not touch the object after calling this function.
                     vt.recycle();
                 }
                 break;
@@ -417,7 +411,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @return this GLEngine.
      */
     public GLEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
-        glBlur = new GLBlur(new GLRendererOnTexture(resolution),scale,amount,strength,near,far).setup();
+        glBlur = new GLBlur(new GLRendererOnTexture(resolution),scale,amount,strength,near,far);
         return this;
     }
 

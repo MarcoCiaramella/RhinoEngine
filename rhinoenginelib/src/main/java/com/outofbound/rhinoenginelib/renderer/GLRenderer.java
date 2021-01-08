@@ -3,9 +3,6 @@ package com.outofbound.rhinoenginelib.renderer;
 import android.opengl.GLES20;
 import android.opengl.Matrix;
 
-import androidx.annotation.CallSuper;
-import androidx.annotation.NonNull;
-
 import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.camera.GLCamera2D;
 import com.outofbound.rhinoenginelib.camera.GLCamera3D;
@@ -13,9 +10,9 @@ import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
-import com.outofbound.rhinoenginelib.shader.GLShader;
-import com.outofbound.rhinoenginelib.shader.primitives.BaseShader;
-import com.outofbound.rhinoenginelib.shader.primitives.BaseWithShadowShader;
+import com.outofbound.rhinoenginelib.shader.primitives.SceneShader;
+import com.outofbound.rhinoenginelib.shader.primitives.SceneWithShadowShader;
+import com.outofbound.rhinoenginelib.shader.primitives.ShadowMapShader;
 import com.outofbound.rhinoenginelib.util.list.BigList;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
@@ -25,52 +22,33 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
  */
 public abstract class GLRenderer {
 
+    private final SceneShader sceneShader;
+    private SceneWithShadowShader sceneWithShadowShader;
     private final BigList<GLMesh> glMeshes;
-    private GLShader glShader;
-    private final float[] mvMatrix = new float[16];
+    private final float[] mMatrix = new float[16];
     private final float[] mvpMatrix = new float[16];
-    private float time = 0;
     private GLLights glLights;
-    private final float[] floatArray = new float[255];
-    private int numFloat = 0;
     private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
     private boolean shadowEnabled = false;
     private final GLSceneRenderer glSceneRenderer;
-    private float[] m;
+    private float[] vpMatrix;
     private long ms;
-    private final GLShader glShaderShadowMap;
+    private ShadowMapShader shadowMapShader;
     private GLShadowMap glShadowMap;
-    private int shadowMap;
-    private final float[] shadowMVPMatrix = new float[16];
+    private float[] shadowMVPMatrix = new float[16];
 
 
     /**
      * The renderer constructor.
      */
     public GLRenderer(){
-        this.glShader = new BaseShader();
-        this.glMeshes = new BigList<>();
-        this.glLights = new GLLights(1);
+        sceneShader = new SceneShader();
+        glMeshes = new BigList<>();
+        glLights = new GLLights(1);
         GLLight glLight = new GLLight(new Vector3f(20,30,50),new Vector3f(1,1,1),1000);
         glLights.add(0,glLight);
-        glSceneRenderer = this::renderScene;
-        glShaderShadowMap = new GLShader("vs_shadow_map.glsl","fs_shadow_map.glsl");
-        glShaderShadowMap.config(
-                "aPosition",
-                null,
-                null,
-                "uMVPMatrix",
-                "uMVMatrix",
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null);
+        glSceneRenderer = this::renderSceneShadowMap;
     }
 
     /**
@@ -103,24 +81,6 @@ public abstract class GLRenderer {
     }
 
     /**
-     * Set shader.
-     * @param glShader the shader to set.
-     * @return this GLRenderer.
-     */
-    public GLRenderer setGLShader(GLShader glShader){
-        this.glShader = glShader;
-        return this;
-    }
-
-    /**
-     * Get the shader.
-     * @return the shader.
-     */
-    public GLShader getGLShader(){
-        return glShader;
-    }
-
-    /**
      * Render mesh and shader.
      * @param screenWidth the screen width.
      * @param screenHeight the screen height.
@@ -129,129 +89,77 @@ public abstract class GLRenderer {
      */
     protected void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
 
-        this.m = glCamera.create(screenWidth, screenHeight, ms);
+        this.vpMatrix = glCamera.create(screenWidth, screenHeight, ms);
         this.ms = ms;
-        time += ms/1000f;
 
+        if (!shadowEnabled){
+            renderScene();
+        }
+        else {
+            renderSceneWithShadow(screenWidth,screenHeight);
+        }
+    }
+
+    private void renderScene(){
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
-
-        if (shadowEnabled) {
-            renderShadowMap(screenWidth,screenHeight,ms);
-        }
-
         if (faceCullingEnabled){
             GLES20.glEnable(GLES20.GL_CULL_FACE);
             GLES20.glCullFace(GLES20.GL_BACK);
         }
-
-        enableShader();
-        glSceneRenderer.doRendering();
-        disableShader();
-
-        if (faceCullingEnabled){
-            GLES20.glDisable(GLES20.GL_CULL_FACE);
-        }
-
-        if (blendingEnabled) {
-            GLES20.glDisable(GLES20.GL_BLEND);
-        }
-    }
-
-    /**
-     * Enable shader.
-     */
-    private void enableShader(){
-        GLES20.glUseProgram(glShader.programShader);
-        if (glShader.uTimeLocation >= 0) {
-            GLES20.glUniform1f(glShader.uTimeLocation, time);
-        }
-        if (glShader.uLightsPositionLocation >= 0) {
-            GLES20.glUniform3fv(glShader.uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
-        }
-        if (glShader.uLightsColorLocation >= 0) {
-            GLES20.glUniform3fv(glShader.uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
-        }
-        if (glShader.uLightsIntensityLocation >= 0) {
-            GLES20.glUniform1fv(glShader.uLightsIntensityLocation, glLights.size(), glLights.getIntensities(), 0);
-        }
-        if (glShader.uNumLightsLocation >= 0) {
-            GLES20.glUniform1i(glShader.uNumLightsLocation, glLights.size());
-        }
-        if (glShader.uFloatArrayLocation >= 0) {
-            GLES20.glUniform1fv(glShader.uFloatArrayLocation, numFloat, floatArray, 0);
-        }
-        if (glShader.uNumFloatLocation >= 0) {
-            GLES20.glUniform1i(glShader.uNumFloatLocation, numFloat);
-        }
-        if (glShader.aPositionLocation >= 0) {
-            GLES20.glEnableVertexAttribArray(glShader.aPositionLocation);
-        }
-        if (glShader.aNormalLocation >= 0) {
-            GLES20.glEnableVertexAttribArray(glShader.aNormalLocation);
-        }
-        if (glShader.aColorLocation >= 0) {
-            GLES20.glEnableVertexAttribArray(glShader.aColorLocation);
-        }
-        if (shadowEnabled && glShader.uShadowMapLocation >= 0 && glShader.uShadowMVPMatrixLocation >= 0) {
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
-            GLES20.glUniform1i(glShader.uShadowMapLocation, 0);
-            GLES20.glUniformMatrix4fv(glShader.uShadowMVPMatrixLocation, 1, false, shadowMVPMatrix, 0);
-        }
-    }
-
-    /**
-     * Disable shader.
-     */
-    private void disableShader(){
-        if (glShader.aPositionLocation >= 0) {
-            GLES20.glDisableVertexAttribArray(glShader.aPositionLocation);
-        }
-        if (glShader.aNormalLocation >= 0) {
-            GLES20.glDisableVertexAttribArray(glShader.aNormalLocation);
-        }
-        if (glShader.aColorLocation >= 0) {
-            GLES20.glDisableVertexAttribArray(glShader.aColorLocation);
-        }
-    }
-
-    /**
-     * Render the scene.
-     */
-    private void renderScene(){
         for (GLMesh glMesh : glMeshes) {
             if (!glMesh.isDead(ms)) {
-                Matrix.setIdentityM(mvMatrix, 0);
-                if (glMesh.getMotion() != null) {
-                    glMesh.doTransformation(mvMatrix);
-                }
-                Matrix.multiplyMM(mvpMatrix, 0, m, 0, mvMatrix, 0);
+                Matrix.setIdentityM(mMatrix, 0);
+                glMesh.doTransformation(mMatrix);
+                Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
-                    glMesh.getBoundingBox().copyMvMatrix(mvMatrix);
+                    glMesh.getBoundingBox().copyMvMatrix(mMatrix);
                 }
-                if (glShader.aPositionLocation >= 0) {
-                    GLES20.glVertexAttribPointer(glShader.aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
-                }
-                if (glShader.aNormalLocation >= 0) {
-                    GLES20.glVertexAttribPointer(glShader.aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
-                }
-                if (glShader.aColorLocation >= 0) {
-                    GLES20.glVertexAttribPointer(glShader.aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
-                }
-                if (glShader.uMVMatrixLocation >= 0) {
-                    GLES20.glUniformMatrix4fv(glShader.uMVMatrixLocation, 1, false, mvMatrix, 0);
-                }
-                if (glShader.uMVPMatrixLocation >= 0) {
-                    GLES20.glUniformMatrix4fv(glShader.uMVPMatrixLocation, 1, false, mvpMatrix, 0);
-                }
+                sceneShader.setGLMesh(glMesh);
+                sceneShader.setMMatrix(mMatrix);
+                sceneShader.setMvpMatrix(mvpMatrix);
+                sceneShader.setGLLights(glLights);
+                sceneShader.bindData();
                 if (glMesh.getIndices() != null) {
                     GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
                 } else {
                     GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
                 }
+                sceneShader.unbindData();
+            }
+            else {
+                glMeshes.remove(glMesh);
+            }
+        }
+        if (faceCullingEnabled){
+            GLES20.glDisable(GLES20.GL_CULL_FACE);
+        }
+        if (blendingEnabled) {
+            GLES20.glDisable(GLES20.GL_BLEND);
+        }
+    }
+
+    private void renderSceneShadowMap(){
+        for (GLMesh glMesh : glMeshes) {
+            if (!glMesh.isDead(ms)) {
+                Matrix.setIdentityM(mMatrix, 0);
+                glMesh.doTransformation(mMatrix);
+                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getVpMatrix(ms), 0, mMatrix, 0);
+                if (glMesh.getBoundingBox() != null) {
+                    glMesh.getBoundingBox().copyMvMatrix(mMatrix);
+                }
+                shadowMapShader.setGLMesh(glMesh);
+                shadowMapShader.setMMatrix(mMatrix);
+                shadowMapShader.setMvpMatrix(mvpMatrix);
+                shadowMapShader.bindData();
+                if (glMesh.getIndices() != null) {
+                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
+                } else {
+                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
+                }
+                shadowMapShader.unbindData();
             }
             else {
                 glMeshes.remove(glMesh);
@@ -270,21 +178,6 @@ public abstract class GLRenderer {
     }
 
     /**
-     * Called when this object is added to GLEngine.
-     */
-    @CallSuper
-    public void onAdd(){
-        time = 0;
-    }
-
-    /**
-     * Called when this object is removed from GLEngine.
-     */
-    @CallSuper
-    public void onRemove(){
-    }
-
-    /**
      * Set lights.
      * @param glLights the lights to set.
      * @return this GLRenderer.
@@ -292,36 +185,6 @@ public abstract class GLRenderer {
     public GLRenderer setGLLights(GLLights glLights){
         this.glLights = glLights;
         return this;
-    }
-
-    /**
-     * Add a float.
-     * @param f the float to add.
-     * @return true if float is added, false otherwise.
-     */
-    public boolean addFloat(float f){
-        if (numFloat == floatArray.length){
-            return false;
-        }
-        floatArray[numFloat++] = f;
-        return true;
-    }
-
-    /**
-     * Add floats.
-     * @param fa the float array.
-     */
-    public void addFloats(float[] fa){
-        for (float f : fa){
-            addFloat(f);
-        }
-    }
-
-    /**
-     * Reset the float array.
-     */
-    public void resetFloatArray(){
-        numFloat = 0;
     }
 
     /**
@@ -380,7 +243,8 @@ public abstract class GLRenderer {
     public GLRenderer configShadow(int resolution, float near, float far){
         if (glLights.size() > 0) {
             glShadowMap = new GLShadowMap(resolution,glLights.getFirstLight(),near,far);
-            glShader = new BaseWithShadowShader();
+            shadowMapShader = new ShadowMapShader();
+            sceneWithShadowShader = new SceneWithShadowShader();
         }
         return this;
     }
@@ -403,24 +267,52 @@ public abstract class GLRenderer {
         return this;
     }
 
-    /**
-     * Render shadow map.
-     * @param screenWidth the screen width.
-     * @param screenHeight the screen height.
-     * @param ms engine time in milliseconds.
-     */
-    private void renderShadowMap(int screenWidth, int screenHeight, long ms){
-        GLShader tempGLShader = glShader;
-        float[] tempM = m;
-        glShader = glShaderShadowMap;
-        enableShader();
-        m = glShadowMap.getVpMatrix(screenWidth,screenHeight,ms);
-        shadowMap = glShadowMap.render(glSceneRenderer);
-        disableShader();
+    private void renderSceneWithShadow(int screenWidth, int screenHeight){
+        glShadowMap.setScreenWidth(screenWidth);
+        glShadowMap.setScreenHeight(screenHeight);
+        int shadowMap = glShadowMap.render(glSceneRenderer);
         this.ms = 0;
-        m = tempM;
-        System.arraycopy(mvpMatrix, 0, shadowMVPMatrix, 0, mvpMatrix.length);
-        glShader = tempGLShader;
+
+        if (blendingEnabled) {
+            GLES20.glEnable(GLES20.GL_BLEND);
+            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+        }
+        if (faceCullingEnabled){
+            GLES20.glEnable(GLES20.GL_CULL_FACE);
+            GLES20.glCullFace(GLES20.GL_BACK);
+        }
+        for (GLMesh glMesh : glMeshes) {
+            if (!glMesh.isDead(ms)) {
+                Matrix.setIdentityM(mMatrix, 0);
+                glMesh.doTransformation(mMatrix);
+                Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mMatrix, 0);
+                if (glMesh.getBoundingBox() != null) {
+                    glMesh.getBoundingBox().copyMvMatrix(mMatrix);
+                }
+                sceneWithShadowShader.setGLMesh(glMesh);
+                sceneWithShadowShader.setMMatrix(mMatrix);
+                sceneWithShadowShader.setMvpMatrix(mvpMatrix);
+                sceneWithShadowShader.setGLLights(glLights);
+                sceneWithShadowShader.setShadowMap(shadowMap);
+                sceneWithShadowShader.setShadowMVPMatrix(shadowMVPMatrix);
+                sceneWithShadowShader.bindData();
+                if (glMesh.getIndices() != null) {
+                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
+                } else {
+                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
+                }
+                sceneWithShadowShader.unbindData();
+            }
+            else {
+                glMeshes.remove(glMesh);
+            }
+        }
+        if (faceCullingEnabled){
+            GLES20.glDisable(GLES20.GL_CULL_FACE);
+        }
+        if (blendingEnabled) {
+            GLES20.glDisable(GLES20.GL_BLEND);
+        }
     }
 
 }

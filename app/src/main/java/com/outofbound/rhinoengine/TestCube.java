@@ -9,8 +9,8 @@ public class TestCube extends Cube {
     }
 
     @Override
-    public void doTransformation(float[] mvMatrix) {
-        translate(mvMatrix);
-        scale(mvMatrix);
+    public void doTransformation(float[] mMatrix) {
+        translate(mMatrix);
+        scale(mMatrix);
     }
 }

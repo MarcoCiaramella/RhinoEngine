@@ -9,6 +9,9 @@ import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.shader.primitives.BlurStep1Shader;
+import com.outofbound.rhinoenginelib.shader.primitives.BlurStep2Shader;
+import com.outofbound.rhinoenginelib.shader.primitives.ScreenShader;
 import com.outofbound.rhinoenginelib.util.file.TextFileReader;
 
 import java.nio.ByteBuffer;
@@ -18,44 +21,17 @@ import java.nio.FloatBuffer;
 public class GLBlur {
 
     private int textureInput;
-
     private final int frameBufferStep1;
     private final int frameBufferStep2;
     private final int frameBufferStep3;
-
     private final int textureStep1;
     private final int textureStep2;
     private final int textureStep3;
-
-    private int programShaderBlur;
-    private int uMVPMatrixBlur;
-    private int aPositionBlur;
-    private int aTextureBlur;
-    private int uDirectionBlur;
-    private int uBlurScaleBlur;
-    private int uBlurAmountBlur;
-    private int uBlurStrengthBlur;
-    private int uTextureIdBlur;
-
-    private int programShaderBlurRenderer;
-    private int aPositionBlurRenderer;
-    private int aTextureBlurRenderer;
-    private int uTextureIdBlurRenderer;
-    private int uTextureId1BlurRenderer;
-    private int uMVPMatrixBlurRenderer;
-
-    private int programShaderScreenRenderer;
-    private int aPositionScreenRenderer;
-    private int aTextureScreenRenderer;
-    private int uTextureIdScreenRenderer;
-    private int uMVPMatrixScreenRenderer;
-
     private final float[] mvMatrix = new float[16];
     private final float[] mvpMatrix = new float[16];
     private final float scale;
     private final float amount;
     private final float strength;
-
     private final GLCamera camera;
 
     private static final float[] vertices = {
@@ -74,8 +50,10 @@ public class GLBlur {
 
     private final FloatBuffer vertexBuffer;
     private final FloatBuffer textureCoordsBuffer;
-
     private final GLRendererOnTexture glRendererOnTexture;
+    private BlurStep1Shader blurStep1Shader;
+    private BlurStep2Shader blurStep2Shader;
+    private ScreenShader screenShader;
 
 
     public GLBlur(GLRendererOnTexture glRendererOnTexture, float scale, float amount, float strength, float near, float far) {
@@ -111,60 +89,10 @@ public class GLBlur {
         createFramebuffer(frameBufferStep1,textureStep1, renderBufferStep1,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
         createFramebuffer(frameBufferStep2,textureStep2, renderBufferStep2,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
         createFramebuffer(frameBufferStep3,textureStep3, renderBufferStep3,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
-    }
 
-    private void setupBlur(){
-        programShaderBlur = GLES20.glCreateProgram();
-        GLES20.glAttachShader(programShaderBlur, GLShader.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), "fs_blur.glsl")) );
-        GLES20.glAttachShader(programShaderBlur, GLShader.loadShader(GLES20.GL_VERTEX_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), "vs_blur.glsl")) );
-        GLES20.glLinkProgram(programShaderBlur);
-        GLES20.glUseProgram(programShaderBlur);
-        uMVPMatrixBlur = GLES20.glGetUniformLocation(programShaderBlur, "uMVPMatrix");
-        aPositionBlur = GLES20.glGetAttribLocation(programShaderBlur, "aPosition");
-        aTextureBlur = GLES20.glGetAttribLocation(programShaderBlur, "aTexCoords");
-        uDirectionBlur = GLES20.glGetUniformLocation(programShaderBlur, "direction");
-        uBlurScaleBlur = GLES20.glGetUniformLocation(programShaderBlur, "blurScale");
-        uBlurAmountBlur = GLES20.glGetUniformLocation(programShaderBlur, "blurAmount");
-        uBlurStrengthBlur = GLES20.glGetUniformLocation(programShaderBlur, "blurStrength");
-        uTextureIdBlur = GLES20.glGetUniformLocation(programShaderBlur, "u_texId");
-    }
-
-    private void setupBlurRenderer(){
-        programShaderBlurRenderer = GLES20.glCreateProgram();
-        GLES20.glAttachShader(programShaderBlurRenderer, GLShader.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), "fs_blur_renderer.glsl")) );
-        GLES20.glAttachShader(programShaderBlurRenderer, GLShader.loadShader(GLES20.GL_VERTEX_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), "vs_blur_renderer.glsl")) );
-        GLES20.glLinkProgram(programShaderBlurRenderer);
-        GLES20.glUseProgram(programShaderBlurRenderer);
-        aPositionBlurRenderer = GLES20.glGetAttribLocation(programShaderBlurRenderer, "a_position");
-        aTextureBlurRenderer = GLES20.glGetAttribLocation(programShaderBlurRenderer, "a_texCoords");
-        uTextureIdBlurRenderer = GLES20.glGetUniformLocation(programShaderBlurRenderer, "u_texId");
-        uTextureId1BlurRenderer = GLES20.glGetUniformLocation(programShaderBlurRenderer, "u_texId1");
-        uMVPMatrixBlurRenderer = GLES20.glGetUniformLocation(programShaderBlurRenderer, "u_mvpMatrix");
-    }
-
-    private void setupScreenRenderer(){
-        programShaderScreenRenderer = GLES20.glCreateProgram();
-        GLES20.glAttachShader(programShaderScreenRenderer, GLShader.loadShader(GLES20.GL_FRAGMENT_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), "fs_texture.glsl")));
-        GLES20.glAttachShader(programShaderScreenRenderer, GLShader.loadShader(GLES20.GL_VERTEX_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), "vs_texture.glsl")));
-        GLES20.glLinkProgram(programShaderScreenRenderer);
-        GLES20.glUseProgram(programShaderScreenRenderer);
-        aPositionScreenRenderer = GLES20.glGetAttribLocation(programShaderScreenRenderer, "a_position");
-        aTextureScreenRenderer = GLES20.glGetAttribLocation(programShaderScreenRenderer, "a_texCoords");
-        uTextureIdScreenRenderer = GLES20.glGetUniformLocation(programShaderScreenRenderer, "u_texId");
-        uMVPMatrixScreenRenderer = GLES20.glGetUniformLocation(programShaderScreenRenderer, "u_mvpMatrix");
-    }
-
-    public GLBlur setup(){
-        setupBlur();
-        setupBlurRenderer();
-        setupScreenRenderer();
-        return this;
+        blurStep1Shader = new BlurStep1Shader();
+        blurStep2Shader = new BlurStep2Shader();
+        screenShader = new ScreenShader();
     }
 
     public void render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight, long ms) {

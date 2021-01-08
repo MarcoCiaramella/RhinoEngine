@@ -158,7 +158,7 @@ public abstract class GLMesh {
         dead = true;
     }
 
-    public abstract void doTransformation(float[] mvMatrix);
+    public abstract void doTransformation(float[] mMatrix);
 
     public GLMesh rotateX(float[] mvMatrix){
         Matrix.rotateM(mvMatrix, 0, getMotion().rotation.x, 1, 0, 0);
