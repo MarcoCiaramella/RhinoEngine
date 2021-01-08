@@ -27,19 +27,17 @@ public class ShadowMapShader extends GLShader {
     }
 
     @Override
-    public GLShader bindData() {
+    public void bindData() {
         GLES20.glUseProgram(getProgramShader());
         GLES20.glEnableVertexAttribArray(aPositionLocation);
         GLES20.glVertexAttribPointer(aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
         GLES20.glUniformMatrix4fv(uMVMatrixLocation, 1, false, mMatrix, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
-        return this;
     }
 
     @Override
-    public GLShader unbindData() {
+    public void unbindData() {
         GLES20.glDisableVertexAttribArray(aPositionLocation);
-        return this;
     }
 
     public ShadowMapShader setGLMesh(GLMesh glMesh){

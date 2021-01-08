@@ -24,8 +24,8 @@ public abstract class GLShader {
     }
 
     public abstract void config(int programShader);
-    public abstract GLShader bindData();
-    public abstract GLShader unbindData();
+    public abstract void bindData();
+    public abstract void unbindData();
 
     private int compile(int type, String shaderCode){
         int shader = GLES20.glCreateShader(type);

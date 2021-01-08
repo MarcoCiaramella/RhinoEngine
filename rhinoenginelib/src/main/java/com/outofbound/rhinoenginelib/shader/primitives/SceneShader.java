@@ -22,7 +22,7 @@ public class SceneShader extends GLShader {
     private GLLights glLights;
 
     public SceneShader() {
-        super("vs_base.glsl", "fs_base.glsl");
+        super("vs_scene.glsl", "fs_scene.glsl");
     }
 
     @Override
@@ -39,7 +39,7 @@ public class SceneShader extends GLShader {
     }
 
     @Override
-    public GLShader bindData() {
+    public void bindData() {
         GLES20.glUseProgram(getProgramShader());
         GLES20.glEnableVertexAttribArray(aPositionLocation);
         GLES20.glEnableVertexAttribArray(aNormalLocation);
@@ -52,15 +52,13 @@ public class SceneShader extends GLShader {
         GLES20.glUniform3fv(uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
         GLES20.glUniform3fv(uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
         GLES20.glUniform1fv(uLightsIntensityLocation, glLights.size(), glLights.getIntensities(), 0);
-        return this;
     }
 
     @Override
-    public GLShader unbindData() {
+    public void unbindData() {
         GLES20.glDisableVertexAttribArray(aPositionLocation);
         GLES20.glDisableVertexAttribArray(aNormalLocation);
         GLES20.glDisableVertexAttribArray(aColorLocation);
-        return this;
     }
 
     public SceneShader setGLMesh(GLMesh glMesh){

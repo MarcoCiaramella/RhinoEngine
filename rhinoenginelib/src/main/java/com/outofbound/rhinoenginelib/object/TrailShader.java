@@ -15,12 +15,10 @@ public class TrailShader extends GLShader {
     }
 
     @Override
-    public GLShader bindData() {
-        return null;
+    public void bindData() {
     }
 
     @Override
-    public GLShader unbindData() {
-        return null;
+    public void unbindData() {
     }
 }

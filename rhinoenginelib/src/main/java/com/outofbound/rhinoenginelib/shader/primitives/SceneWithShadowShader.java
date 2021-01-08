@@ -26,7 +26,7 @@ public class SceneWithShadowShader extends GLShader {
     private float[] shadowMVPMatrix = new float[16];
 
     public SceneWithShadowShader(){
-        super("vs_base_shadow.glsl","fs_base_shadow.glsl");
+        super("vs_scene_shadow.glsl", "fs_scene_shadow.glsl");
         uMVPMatrixLocation = -1;
         uMVMatrixLocation = -1;
         aPositionLocation = -1;
@@ -55,7 +55,7 @@ public class SceneWithShadowShader extends GLShader {
     }
 
     @Override
-    public GLShader bindData() {
+    public void bindData() {
         GLES20.glUseProgram(getProgramShader());
         GLES20.glEnableVertexAttribArray(aPositionLocation);
         GLES20.glEnableVertexAttribArray(aNormalLocation);
@@ -72,15 +72,13 @@ public class SceneWithShadowShader extends GLShader {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
         GLES20.glUniform1i(uShadowMapLocation, 0);
         GLES20.glUniformMatrix4fv(uShadowMVPMatrixLocation, 1, false, shadowMVPMatrix, 0);
-        return this;
     }
 
     @Override
-    public GLShader unbindData() {
+    public void unbindData() {
         GLES20.glDisableVertexAttribArray(aPositionLocation);
         GLES20.glDisableVertexAttribArray(aNormalLocation);
         GLES20.glDisableVertexAttribArray(aColorLocation);
-        return this;
     }
 
     public SceneWithShadowShader setGLMesh(GLMesh glMesh){

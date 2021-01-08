@@ -36,7 +36,7 @@ public abstract class GLRenderer {
     private long ms;
     private ShadowMapShader shadowMapShader;
     private GLShadowMap glShadowMap;
-    private float[] shadowMVPMatrix = new float[16];
+    private final float[] shadowMVPMatrix = new float[16];
 
 
     /**
