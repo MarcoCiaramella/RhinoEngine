@@ -16,15 +16,13 @@ void main(){
     float dev = uBlurAmount*0.5*0.5;
     dev *= dev;
     vec4 color = vec4(0.0,0.0,0.0,0.0);
-    vec4 temp =  vec4(0.0,0.0,0.0,0.0);
     float strength = 1.0 - uBlurStrength;
     float half1 = float(uBlurAmount)*0.5;
     float texel = 1.0/128.0;
     int count = int(uBlurAmount);
-    for (int i=0; i < count; i++){
+    for (int i = 0; i < count; i++){
         float offset = float(i) - half1;
-        temp = texture2D(uTextId, vTexCoords+vec2(offset*texel*uBlurScale,0.0))*gaussianFunction(offset*strength, dev);
-        color += temp;
+        color += texture2D(uTextId, vTexCoords+vec2(offset*texel*uBlurScale,0.0))*gaussianFunction(offset*strength, dev);
     }
     gl_FragColor = clamp(color, 0.0, 1.0);
     gl_FragColor.w = 1.0;
