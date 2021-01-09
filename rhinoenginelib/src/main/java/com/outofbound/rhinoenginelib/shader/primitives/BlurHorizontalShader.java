@@ -32,10 +32,10 @@ public class BlurHorizontalShader extends GLShader {
         uMVPMatrix = GLES20.glGetUniformLocation(programShader, "uMVPMatrix");
         aPosition = GLES20.glGetAttribLocation(programShader, "aPosition");
         aTexture = GLES20.glGetAttribLocation(programShader, "aTexCoords");
-        uBlurScale = GLES20.glGetUniformLocation(programShader, "blurScale");
-        uBlurAmount = GLES20.glGetUniformLocation(programShader, "blurAmount");
-        uBlurStrength = GLES20.glGetUniformLocation(programShader, "blurStrength");
-        uTextureId = GLES20.glGetUniformLocation(programShader, "u_texId");
+        uBlurScale = GLES20.glGetUniformLocation(programShader, "uBlurScale");
+        uBlurAmount = GLES20.glGetUniformLocation(programShader, "uBlurAmount");
+        uBlurStrength = GLES20.glGetUniformLocation(programShader, "uBlurStrength");
+        uTextureId = GLES20.glGetUniformLocation(programShader, "uTextId");
     }
 
     @Override
