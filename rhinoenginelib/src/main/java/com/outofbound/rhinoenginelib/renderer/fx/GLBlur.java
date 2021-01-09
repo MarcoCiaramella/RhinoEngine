@@ -75,7 +75,6 @@ public class GLBlur {
         GLES20.glGenRenderbuffers(3, buffers, 0);
         int renderBufferStep1 = buffers[0];
         int renderBufferStep2 = buffers[1];
-        int renderBufferStep3 = buffers[2];
         createFramebuffer(frameBufferStep1,textureStep1, renderBufferStep1,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
         createFramebuffer(frameBufferStep2,textureStep2, renderBufferStep2,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
 
