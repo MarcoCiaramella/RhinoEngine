@@ -27,16 +27,6 @@ public class SceneWithShadowShader extends GLShader {
 
     public SceneWithShadowShader(){
         super("vs_scene_shadow.glsl", "fs_scene_shadow.glsl");
-        uMVPMatrixLocation = -1;
-        uMMatrixLocation = -1;
-        aPositionLocation = -1;
-        aColorLocation = -1;
-        aNormalLocation = -1;
-        uLightsPositionLocation = -1;
-        uLightsColorLocation = -1;
-        uLightsIntensityLocation = -1;
-        uShadowMapLocation = -1;
-        uShadowMVPMatrixLocation = -1;
     }
 
     @Override
