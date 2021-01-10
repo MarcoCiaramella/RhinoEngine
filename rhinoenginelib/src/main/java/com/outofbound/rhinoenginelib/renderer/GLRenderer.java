@@ -152,7 +152,6 @@ public abstract class GLRenderer {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 shadowMapShader.setGLMesh(glMesh);
-                shadowMapShader.setMMatrix(mMatrix);
                 shadowMapShader.setMvpMatrix(mvpMatrix);
                 shadowMapShader.bindData();
                 if (glMesh.getIndices() != null) {

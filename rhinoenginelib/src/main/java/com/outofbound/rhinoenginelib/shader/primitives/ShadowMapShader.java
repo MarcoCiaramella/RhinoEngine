@@ -8,10 +8,8 @@ import com.outofbound.rhinoenginelib.shader.GLShader;
 public class ShadowMapShader extends GLShader {
 
     private int uMVPMatrixLocation;
-    private int uMMatrixLocation;
     private int aPositionLocation;
     private GLMesh glMesh;
-    private float[] mMatrix;
     private float[] mvpMatrix;
 
     public ShadowMapShader() {
@@ -22,7 +20,6 @@ public class ShadowMapShader extends GLShader {
     public void config(int programShader) {
         aPositionLocation = GLES20.glGetAttribLocation(programShader,"aPosition");
         uMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVPMatrix");
-        uMMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMMatrix");
     }
 
     @Override
@@ -30,7 +27,6 @@ public class ShadowMapShader extends GLShader {
         GLES20.glUseProgram(getProgramShader());
         GLES20.glEnableVertexAttribArray(aPositionLocation);
         GLES20.glVertexAttribPointer(aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
-        GLES20.glUniformMatrix4fv(uMMatrixLocation, 1, false, mMatrix, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
     }
 
@@ -41,11 +37,6 @@ public class ShadowMapShader extends GLShader {
 
     public ShadowMapShader setGLMesh(GLMesh glMesh){
         this.glMesh = glMesh;
-        return this;
-    }
-
-    public ShadowMapShader setMMatrix(float[] mMatrix){
-        this.mMatrix = mMatrix;
         return this;
     }
 
