@@ -38,6 +38,7 @@ public class GLShadowMap {
         GLES20.glCullFace(GLES20.GL_FRONT);
         int texture = shadowMapRenderer.render(glSceneRenderer);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
+        GLES20.glViewport(0, 0, screenWidth, screenHeight);
         return texture;
     }
 

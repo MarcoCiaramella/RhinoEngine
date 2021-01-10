@@ -13,6 +13,8 @@ varying vec3 vNormal;
 varying vec4 vShadowCoord;
 
 
+const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1);
+
 
 float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal);
 float calcShadow();
@@ -33,11 +35,19 @@ float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal){
     return diffuse;
 }
 
+float unpack(vec4 color){
+    return dot(color, bitShifts);
+}
+
 // return 0.0 if in shadow.
 // return 1.0 if not in shadow.
 float calcShadow(){
     vec4 shadowMapPosition = vShadowCoord / vShadowCoord.w;
-    float distanceFromLight = texture2D(uShadowMap, shadowMapPosition.st).z;
-    return float(distanceFromLight > shadowMapPosition.z);
+    shadowMapPosition = (shadowMapPosition + 1.0) /2.0;
+    vec4 packedZValue = texture2D(uShadowMap, shadowMapPosition.st);
+    float distanceFromLight = unpack(packedZValue);
+    // add bias to reduce shadow acne (error margin)
+    float bias = 0.0005;
+    return float(distanceFromLight > shadowMapPosition.z - bias);
 }
 
