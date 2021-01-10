@@ -9,9 +9,9 @@ public class TestMotion extends Motion {
         position.x = Numbers.randomFloat(-3,3);
         position.y = Numbers.randomFloat(-3,3);
         position.z = Numbers.randomFloat(-3,3);
-        scale.x = 0.1f;
-        scale.y = 0.1f;
-        scale.z = 0.1f;
+        scale.x = 0.5f;
+        scale.y = 0.5f;
+        scale.z = 0.5f;
     }
 
     @Override
