@@ -20,7 +20,6 @@ public class ShadowMapShader extends GLShader {
 
     @Override
     public void config(int programShader) {
-        GLES20.glUseProgram(programShader);
         aPositionLocation = GLES20.glGetAttribLocation(programShader,"aPosition");
         uMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVPMatrix");
         uMVMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMMatrix");

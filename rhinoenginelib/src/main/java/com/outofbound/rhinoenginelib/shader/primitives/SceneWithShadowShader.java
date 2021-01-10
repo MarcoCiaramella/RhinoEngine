@@ -31,7 +31,6 @@ public class SceneWithShadowShader extends GLShader {
 
     @Override
     public void config(int programShader) {
-        GLES20.glUseProgram(programShader);
         aPositionLocation = GLES20.glGetAttribLocation(programShader,"aPosition");
         aColorLocation = GLES20.glGetAttribLocation(programShader,"aColor");
         aNormalLocation = GLES20.glGetAttribLocation(programShader,"aNormal");
