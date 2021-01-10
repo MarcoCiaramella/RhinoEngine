@@ -37,7 +37,7 @@ float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal){
 // return 1.0 if not in shadow.
 float calcShadow(){
     vec4 shadowMapPosition = vShadowCoord / vShadowCoord.w;
-    float distanceFromLight = texture2D(uShadowTexture, shadowMapPosition.st).z;
+    float distanceFromLight = texture2D(uShadowMap, shadowMapPosition.st).z;
     return float(distanceFromLight > shadowMapPosition.z);
 }
 
