@@ -8,7 +8,7 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public abstract class GLCamera {
 
-    protected float[] vpMatrix;
+    private final float[] vpMatrix;
     protected float[] projectionMatrix;
     private final float[] viewMatrix;
     protected Vector3f eye;
@@ -34,7 +34,7 @@ public abstract class GLCamera {
         pointToFollow = null;
     }
 
-    protected void setupM(){
+    protected float[] createVpMatrix(){
         if (glMeshToFollow != null) {
             center.copy(glMeshToFollow.getMotion().position);
             eye.add(center, eyeRes);
@@ -50,6 +50,7 @@ public abstract class GLCamera {
         Matrix.setLookAtM(viewMatrix, 0, eyeRes.x, eyeRes.y, eyeRes.z, center.x, center.y, center.z, up.x, up.y, up.z);
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        return vpMatrix;
     }
 
     public GLCamera follow(GLMesh glMeshToFollow){
@@ -70,7 +71,7 @@ public abstract class GLCamera {
         return this;
     }
 
-    public abstract float[] create(int width, int height, long ms);
+    public abstract void loadVpMatrix(int width, int height, long ms);
 
     public Vector3f getEye(){
         return eye;
@@ -100,5 +101,13 @@ public abstract class GLCamera {
     public GLCamera translate(Vector3f shift){
         eye.translate(shift);
         return this;
+    }
+
+    public float[] getViewMatrix(){
+        return viewMatrix;
+    }
+
+    public float[] getVpMatrix(){
+        return vpMatrix;
     }
 }

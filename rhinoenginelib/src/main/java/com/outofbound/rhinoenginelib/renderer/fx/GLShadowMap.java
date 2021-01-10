@@ -30,7 +30,7 @@ public class GLShadowMap {
     }
 
     public float[] getVpMatrix(long ms){
-        return shadowMapCamera.create(screenWidth,screenHeight,ms);
+        return shadowMapCamera.loadVpMatrix(screenWidth,screenHeight,ms);
     }
 
     public int render(GLSceneRenderer glSceneRenderer){

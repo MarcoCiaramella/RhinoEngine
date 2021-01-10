@@ -84,7 +84,7 @@ public class GLBlur {
     }
 
     public void render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight, long ms) {
-        float[] vpMatrix = camera.create(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight(), ms);
+        float[] vpMatrix = camera.loadVpMatrix(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight(), ms);
         this.textureInput = glRendererOnTexture.render(glSceneRenderer);
         blurHorizontal(vpMatrix, verticesBuffer, textureCoordsBuffer);
         blurVertical(vpMatrix, verticesBuffer, textureCoordsBuffer);
@@ -125,7 +125,7 @@ public class GLBlur {
 
     public void renderOnScreen(int fboWidth, int fboHeight, int screenWidth, int screenHeight, long ms){
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
-        float[] vpMatrix = camera.create(fboWidth, fboHeight, ms);
+        float[] vpMatrix = camera.loadVpMatrix(fboWidth, fboHeight, ms);
         blurFinalShader.setVpMatrix(vpMatrix);
         blurFinalShader.setVertices(verticesBuffer);
         blurFinalShader.setTextureCoords(textureCoordsBuffer);

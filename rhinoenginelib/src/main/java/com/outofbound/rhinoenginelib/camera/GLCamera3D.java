@@ -12,10 +12,9 @@ public class GLCamera3D extends GLCamera {
     }
 
     @Override
-    public float[] create(int width, int height, long ms) {
+    public void loadVpMatrix(int width, int height, long ms) {
         float ratio = (float)width/(float)height;
         Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, near, far);
-        setupM();
-        return vpMatrix;
+        createVpMatrix();
     }
 }

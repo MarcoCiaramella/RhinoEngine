@@ -13,10 +13,9 @@ public class GLCamera2D extends GLCamera {
     }
 
     @Override
-    public float[] create(int width, int height, long ms) {
+    public void loadVpMatrix(int width, int height, long ms) {
         float ratio = (float)width/(float)height;
         Matrix.orthoM(projectionMatrix, 0, -ratio, ratio, -ratio, ratio, near, far);
-        setupM();
-        return vpMatrix;
+        createVpMatrix();
     }
 }

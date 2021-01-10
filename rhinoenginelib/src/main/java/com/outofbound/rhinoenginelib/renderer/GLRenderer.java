@@ -26,13 +26,13 @@ public abstract class GLRenderer {
     private SceneWithShadowShader sceneWithShadowShader;
     private final BigList<GLMesh> glMeshes;
     private final float[] mMatrix = new float[16];
+    private final float[] mvMatrix = new float[16];
     private final float[] mvpMatrix = new float[16];
     private GLLights glLights;
     private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
     private boolean shadowEnabled = false;
     private final GLSceneRenderer glSceneRenderer;
-    private float[] vpMatrix;
     private long ms;
     private ShadowMapShader shadowMapShader;
     private GLShadowMap glShadowMap;
@@ -89,18 +89,18 @@ public abstract class GLRenderer {
      */
     protected void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
 
-        this.vpMatrix = glCamera.create(screenWidth, screenHeight, ms);
+        glCamera.loadVpMatrix(screenWidth, screenHeight, ms);
         this.ms = ms;
 
         if (!shadowEnabled){
-            renderScene();
+            renderScene(glCamera);
         }
         else {
-            renderSceneWithShadow(screenWidth,screenHeight);
+            renderSceneWithShadow(screenWidth,screenHeight,glCamera);
         }
     }
 
-    private void renderScene(){
+    private void renderScene(GLCamera glCamera){
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -113,12 +113,13 @@ public abstract class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix);
-                Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mMatrix, 0);
+                Matrix.multiplyMM(mvMatrix, 0, glCamera.getViewMatrix(), 0, mMatrix, 0);
+                Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneShader.setGLMesh(glMesh);
-                sceneShader.setMMatrix(mMatrix);
+                sceneShader.setMvMatrix(mvMatrix);
                 sceneShader.setMvpMatrix(mvpMatrix);
                 sceneShader.setGLLights(glLights);
                 sceneShader.bindData();
@@ -267,7 +268,7 @@ public abstract class GLRenderer {
         return this;
     }
 
-    private void renderSceneWithShadow(int screenWidth, int screenHeight){
+    private void renderSceneWithShadow(int screenWidth, int screenHeight, GLCamera glCamera){
         glShadowMap.setScreenWidth(screenWidth);
         glShadowMap.setScreenHeight(screenHeight);
         int shadowMap = glShadowMap.render(glSceneRenderer);
@@ -285,12 +286,12 @@ public abstract class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix);
-                Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mMatrix, 0);
+                Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneWithShadowShader.setGLMesh(glMesh);
-                sceneWithShadowShader.setMMatrix(mMatrix);
+                sceneWithShadowShader.setMvMatrix(mMatrix);
                 sceneWithShadowShader.setMvpMatrix(mvpMatrix);
                 sceneWithShadowShader.setGLLights(glLights);
                 sceneWithShadowShader.setShadowMap(shadowMap);
