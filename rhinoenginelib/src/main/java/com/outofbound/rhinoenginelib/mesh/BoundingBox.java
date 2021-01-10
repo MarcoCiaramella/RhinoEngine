@@ -87,7 +87,7 @@ public class BoundingBox {
         return max;
     }
 
-    public synchronized void copyMvMatrix(float[] mvMatrix){
+    public synchronized void copyMMatrix(float[] mvMatrix){
         System.arraycopy(mvMatrix, 0, this.mvMatrix, 0, mvMatrix.length);
     }
 

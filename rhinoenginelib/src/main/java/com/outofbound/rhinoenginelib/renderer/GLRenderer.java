@@ -115,7 +115,7 @@ public abstract class GLRenderer {
                 glMesh.doTransformation(mMatrix);
                 Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
-                    glMesh.getBoundingBox().copyMvMatrix(mMatrix);
+                    glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneShader.setGLMesh(glMesh);
                 sceneShader.setMMatrix(mMatrix);
@@ -148,7 +148,7 @@ public abstract class GLRenderer {
                 glMesh.doTransformation(mMatrix);
                 Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getVpMatrix(ms), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
-                    glMesh.getBoundingBox().copyMvMatrix(mMatrix);
+                    glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 shadowMapShader.setGLMesh(glMesh);
                 shadowMapShader.setMMatrix(mMatrix);
@@ -287,7 +287,7 @@ public abstract class GLRenderer {
                 glMesh.doTransformation(mMatrix);
                 Matrix.multiplyMM(mvpMatrix, 0, vpMatrix, 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
-                    glMesh.getBoundingBox().copyMvMatrix(mMatrix);
+                    glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneWithShadowShader.setGLMesh(glMesh);
                 sceneWithShadowShader.setMMatrix(mMatrix);

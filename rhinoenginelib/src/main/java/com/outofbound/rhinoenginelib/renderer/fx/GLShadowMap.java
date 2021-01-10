@@ -18,12 +18,14 @@ public class GLShadowMap {
     public GLShadowMap(int resolution, GLLight light, float near, float far){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
         Vector3f cameraEye = light.getPosition().clone();
-        Vector3f cameraCenter = cameraEye.clone();
+        /*Vector3f cameraCenter = cameraEye.clone();
         cameraCenter.y = -cameraCenter.y;
         Vector3f cameraUp = cameraEye.clone();
         cameraUp.x = -cameraUp.x;
         cameraUp.y = 0;
-        cameraUp.z = -cameraUp.z;
+        cameraUp.z = -cameraUp.z;*/
+        Vector3f cameraCenter = new Vector3f(0,0,0);
+        Vector3f cameraUp = new Vector3f(0,1,0);
         shadowMapCamera = new GLCamera3D(cameraEye, cameraUp, cameraCenter, near, far);
     }
 
