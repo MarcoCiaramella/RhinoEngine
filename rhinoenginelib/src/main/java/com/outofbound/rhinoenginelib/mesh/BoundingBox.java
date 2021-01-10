@@ -35,7 +35,7 @@ public class BoundingBox {
     private Vector3f min;
     private Vector3f max;
     private float[] arr;
-    private float[] mvMatrix;
+    private float[] mMatrix;
     private Vector3f[] aabb;
 
 
@@ -66,8 +66,8 @@ public class BoundingBox {
         min = new Vector3f(0,0,0);
         max = new Vector3f(0,0,0);
         arr = new float[24];
-        mvMatrix = new float[16];
-        Matrix.setIdentityM(mvMatrix,0);
+        mMatrix = new float[16];
+        Matrix.setIdentityM(mMatrix,0);
         aabb = new Vector3f[]{min,max};
     }
 
@@ -87,19 +87,19 @@ public class BoundingBox {
         return max;
     }
 
-    public synchronized void copyMMatrix(float[] mvMatrix){
-        System.arraycopy(mvMatrix, 0, this.mvMatrix, 0, mvMatrix.length);
+    public synchronized void copyMMatrix(float[] mMatrix){
+        System.arraycopy(mMatrix, 0, this.mMatrix, 0, mMatrix.length);
     }
 
     private void transform(){
-        vfbl.multiplyMV(mvMatrix,vfblRes);
-        vfbr.multiplyMV(mvMatrix,vfbrRes);
-        vftr.multiplyMV(mvMatrix,vftrRes);
-        vftl.multiplyMV(mvMatrix,vftlRes);
-        vbbl.multiplyMV(mvMatrix,vbblRes);
-        vbbr.multiplyMV(mvMatrix,vbbrRes);
-        vbtr.multiplyMV(mvMatrix,vbtrRes);
-        vbtl.multiplyMV(mvMatrix,vbtlRes);
+        vfbl.multiplyMV(mMatrix,vfblRes);
+        vfbr.multiplyMV(mMatrix,vfbrRes);
+        vftr.multiplyMV(mMatrix,vftrRes);
+        vftl.multiplyMV(mMatrix,vftlRes);
+        vbbl.multiplyMV(mMatrix,vbblRes);
+        vbbr.multiplyMV(mMatrix,vbbrRes);
+        vbtr.multiplyMV(mMatrix,vbtrRes);
+        vbtl.multiplyMV(mMatrix,vbtlRes);
     }
 
     public synchronized float[][] getVertices(){
