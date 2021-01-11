@@ -43,7 +43,7 @@ float unpack(vec4 color){
 // return 1.0 if not in shadow.
 float calcShadow(){
     vec4 shadowMapPosition = vShadowCoord / vShadowCoord.w;
-    shadowMapPosition = (shadowMapPosition + 1.0) /2.0;
+    shadowMapPosition = (shadowMapPosition + 1.0) / 2.0;
     vec4 packedZValue = texture2D(uShadowMap, shadowMapPosition.st);
     float distanceFromLight = unpack(packedZValue);
     // add bias to reduce shadow acne (error margin)

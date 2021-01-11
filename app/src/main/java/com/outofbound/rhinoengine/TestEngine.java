@@ -29,9 +29,10 @@ public class TestEngine extends GLEngine {
     protected void init() {
         setClearColor(0,0,0,1);
         int rendererId = addGLRenderer(new GLRenderer3D());
-        for (int i = 0; i < 100; i++) {
-            getGLRenderer(rendererId).addGLMesh(new TestCube().setMotion(new TestMotion()));
+        for (int i = 0; i < 1; i++) {
+            getGLRenderer(rendererId).addGLMesh(new TestCube().setMotion(new TestCubeMotion()));
         }
+        getGLRenderer(rendererId).addGLMesh(new TestCube().setMotion(new TestPlaneMotion()));
         addGLTask(new TestCameraRotation());
         configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
         getGLRenderer(rendererId).configShadow(GLRendererOnTexture.RESOLUTION_1024,1,1000).enableShadow();
