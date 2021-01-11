@@ -13,7 +13,7 @@ varying vec3 vNormal;
 varying vec4 vShadowCoord;
 
 
-const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1);
+const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
 float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal);
