@@ -152,7 +152,7 @@ public abstract class GLRenderer {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 shadowMapShader.setGLMesh(glMesh);
-                shadowMapShader.setMvpMatrix(mvpMatrix);
+                shadowMapShader.setMvpMatrix(shadowMVPMatrix);
                 shadowMapShader.bindData();
                 if (glMesh.getIndices() != null) {
                     GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
@@ -285,12 +285,13 @@ public abstract class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix);
+                Matrix.multiplyMM(mvMatrix, 0, glCamera.getViewMatrix(), 0, mMatrix, 0);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneWithShadowShader.setGLMesh(glMesh);
-                sceneWithShadowShader.setMvMatrix(mMatrix);
+                sceneWithShadowShader.setMvMatrix(mvMatrix);
                 sceneWithShadowShader.setMvpMatrix(mvpMatrix);
                 sceneWithShadowShader.setGLLights(glLights);
                 sceneWithShadowShader.setShadowMap(shadowMap);
