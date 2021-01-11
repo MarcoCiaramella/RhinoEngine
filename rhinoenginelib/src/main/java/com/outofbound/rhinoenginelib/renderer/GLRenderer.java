@@ -286,6 +286,7 @@ public abstract class GLRenderer {
                 glMesh.doTransformation(mMatrix);
                 Matrix.multiplyMM(mvMatrix, 0, glCamera.getViewMatrix(), 0, mMatrix, 0);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
+                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
