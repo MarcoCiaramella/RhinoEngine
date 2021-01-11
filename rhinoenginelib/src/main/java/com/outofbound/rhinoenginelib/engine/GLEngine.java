@@ -339,7 +339,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         }
 
         if (glBlur != null && blurEnabled){
-            glBlur.render(glSceneRenderer,getWidth(),getHeight(),deltaMs);
+            glBlur.render(glSceneRenderer,getWidth(),getHeight());
         }
         else {
             glSceneRenderer.doRendering();

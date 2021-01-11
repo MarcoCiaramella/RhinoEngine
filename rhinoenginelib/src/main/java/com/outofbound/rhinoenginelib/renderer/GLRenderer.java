@@ -89,7 +89,7 @@ public abstract class GLRenderer {
      */
     protected void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
 
-        glCamera.loadVpMatrix(screenWidth, screenHeight, ms);
+        glCamera.loadVpMatrix(screenWidth, screenHeight);
         this.ms = ms;
 
         if (!shadowEnabled){
@@ -147,7 +147,7 @@ public abstract class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix);
-                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getVpMatrix(ms), 0, mMatrix, 0);
+                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }

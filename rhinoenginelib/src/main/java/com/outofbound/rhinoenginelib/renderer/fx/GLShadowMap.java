@@ -29,8 +29,8 @@ public class GLShadowMap {
         shadowMapCamera = new GLCamera3D(cameraEye, cameraUp, cameraCenter, near, far);
     }
 
-    public float[] getVpMatrix(long ms){
-        shadowMapCamera.loadVpMatrix(screenWidth,screenHeight,ms);
+    public float[] getVpMatrix(){
+        shadowMapCamera.loadVpMatrix(screenWidth,screenHeight);
         return shadowMapCamera.getVpMatrix();
     }
 

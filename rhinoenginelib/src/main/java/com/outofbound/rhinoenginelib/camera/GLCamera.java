@@ -71,7 +71,7 @@ public abstract class GLCamera {
         return this;
     }
 
-    public abstract void loadVpMatrix(int width, int height, long ms);
+    public abstract void loadVpMatrix(int width, int height);
 
     public Vector3f getEye(){
         return eye;
