@@ -34,7 +34,7 @@ public abstract class GLCamera {
         pointToFollow = null;
     }
 
-    protected float[] createVpMatrix(){
+    protected void createVpMatrix(){
         if (glMeshToFollow != null) {
             center.copy(glMeshToFollow.getMotion().position);
             eye.add(center, eyeRes);
@@ -50,7 +50,6 @@ public abstract class GLCamera {
         Matrix.setLookAtM(viewMatrix, 0, eyeRes.x, eyeRes.y, eyeRes.z, center.x, center.y, center.z, up.x, up.y, up.z);
         // Calculate the projection and view transformation
         Matrix.multiplyMM(vpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
-        return vpMatrix;
     }
 
     public GLCamera follow(GLMesh glMeshToFollow){
