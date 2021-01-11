@@ -12,8 +12,6 @@ public class GLShadowMap {
 
     private final GLRendererOnTexture shadowMapRenderer;
     private final GLCamera3D shadowMapCamera;
-    private int screenWidth;
-    private int screenHeight;
 
     public GLShadowMap(int resolution, GLLight light, float near, float far){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
@@ -29,27 +27,16 @@ public class GLShadowMap {
         shadowMapCamera = new GLCamera3D(cameraEye, cameraUp, cameraCenter, near, far);
     }
 
-    public float[] getVpMatrix(){
-        shadowMapCamera.loadVpMatrix(screenWidth,screenHeight);
-        return shadowMapCamera.getVpMatrix();
+    public GLCamera3D getShadowMapCamera(){
+        return shadowMapCamera;
     }
 
-    public int render(GLSceneRenderer glSceneRenderer){
+    public int render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight){
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
         int texture = shadowMapRenderer.render(glSceneRenderer);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
         return texture;
-    }
-
-    public GLShadowMap setScreenWidth(int screenWidth){
-        this.screenWidth = screenWidth;
-        return this;
-    }
-
-    public GLShadowMap setScreenHeight(int screenHeight){
-        this.screenHeight = screenHeight;
-        return this;
     }
 }

@@ -147,7 +147,7 @@ public abstract class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix);
-                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getVpMatrix(), 0, mMatrix, 0);
+                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
@@ -268,9 +268,8 @@ public abstract class GLRenderer {
     }
 
     private void renderSceneWithShadow(int screenWidth, int screenHeight, GLCamera glCamera){
-        glShadowMap.setScreenWidth(screenWidth);
-        glShadowMap.setScreenHeight(screenHeight);
-        int shadowMap = glShadowMap.render(glSceneRenderer);
+        glShadowMap.getShadowMapCamera().loadVpMatrix(screenWidth,screenHeight);
+        int shadowMap = glShadowMap.render(glSceneRenderer,screenWidth,screenHeight);
         this.ms = 0;
 
         if (blendingEnabled) {
