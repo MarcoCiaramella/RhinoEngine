@@ -42,10 +42,10 @@ float unpack(vec4 color){
 // return 0.0 if in shadow.
 // return 1.0 if not in shadow.
 float calcShadow(){
-    vPositionFromLight = vPositionFromLight / vPositionFromLight.w;
-    vPositionFromLight = (vPositionFromLight + 1.0) / 2.0;
-    float closestFragmentZ = unpack(texture2D(uShadowMap, vPositionFromLight.xy));
-    float currentFragmentZ = vPositionFromLight.z;
+    vec4 positionFromLight = vPositionFromLight / vPositionFromLight.w;
+    positionFromLight = (positionFromLight + 1.0) / 2.0;
+    float closestFragmentZ = unpack(texture2D(uShadowMap, positionFromLight.xy));
+    float currentFragmentZ = positionFromLight.z;
     // add bias to reduce shadow acne (error margin)
     float bias = 0.0005;
     return float(closestFragmentZ > currentFragmentZ - bias);
