@@ -74,11 +74,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
         config(camera3D, camera2D, gesture);
     }
 
-    /**
-     * Configure this engine.
-     * @param camera3D a 3D camera.
-     * @param camera2D a 2D camera.
-     */
     private void config(GLCamera3D camera3D, GLCamera2D camera2D, GLGesture gesture){
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
@@ -356,9 +351,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
 
     }
 
-    /**
-     * Render the scene.
-     */
     private void renderScene(){
         for (GLRenderer glRenderer : glRenderers){
             glRenderer.render(getWidth(), getHeight(), camera3D, camera2D, deltaMs);
