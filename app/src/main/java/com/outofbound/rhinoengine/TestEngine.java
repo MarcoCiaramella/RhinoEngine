@@ -35,7 +35,7 @@ public class TestEngine extends GLEngine {
         getGLRenderer(rendererId).addGLMesh(new TestCube().setMotion(new TestPlaneMotion()));
         addGLTask(new TestCameraRotation());
         configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
-        getGLRenderer(rendererId).configShadow(GLRendererOnTexture.RESOLUTION_1024,1,1000).enableShadow();
+        getGLRenderer(rendererId).configShadow(GLRendererOnTexture.RESOLUTION_1024,getCamera3D()).enableShadow();
     }
 
     public void blurOn(){
