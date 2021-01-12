@@ -10,7 +10,7 @@ uniform sampler2D uShadowMap;
 varying vec4 vColor;
 varying vec3 vPosition;
 varying vec3 vNormal;
-varying vec4 vShadowCoord;
+varying vec4 vPositionFromLight;
 
 
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
@@ -42,12 +42,12 @@ float unpack(vec4 color){
 // return 0.0 if in shadow.
 // return 1.0 if not in shadow.
 float calcShadow(){
-    vec4 shadowMapPosition = vShadowCoord / vShadowCoord.w;
-    shadowMapPosition = (shadowMapPosition + 1.0) / 2.0;
-    vec4 packedZValue = texture2D(uShadowMap, shadowMapPosition.st);
-    float distanceFromLight = unpack(packedZValue);
+    vPositionFromLight = vPositionFromLight / vPositionFromLight.w;
+    vPositionFromLight = (vPositionFromLight + 1.0) / 2.0;
+    float closestFragmentZ = unpack(texture2D(uShadowMap, vPositionFromLight.xy));
+    float currentFragmentZ = vPositionFromLight.z;
     // add bias to reduce shadow acne (error margin)
     float bias = 0.0005;
-    return float(distanceFromLight > shadowMapPosition.z - bias);
+    return float(closestFragmentZ > currentFragmentZ - bias);
 }
 

@@ -11,7 +11,7 @@ attribute vec4 aColor;
 varying vec4 vColor;
 varying vec3 vPosition;
 varying vec3 vNormal;
-varying vec4 vShadowCoord;
+varying vec4 vPositionFromLight;
 
 
 
@@ -19,6 +19,6 @@ void main() {
     vPosition = vec3(uMVMatrix * aPosition);
     vNormal = normalize(vec3(uMVMatrix * vec4(aNormal, 0.0)));
     vColor = aColor;
-    vShadowCoord = uShadowMVPMatrix * aPosition;
+    vPositionFromLight = uShadowMVPMatrix * aPosition;
     gl_Position = uMVPMatrix * aPosition;
 }
