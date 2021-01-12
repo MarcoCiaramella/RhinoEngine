@@ -1,4 +1,4 @@
-package com.outofbound.rhinoengine;
+package com.outofbound.rhinoengine.test;
 
 
 import android.os.Bundle;
@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.outofbound.rhinoengine.R;
 import com.outofbound.rhinoenginelib.activity.GLActivity;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
 
@@ -33,7 +34,7 @@ public class MainActivity extends GLActivity {
         });
     }
 
-    private TestEngine getEngine(){
+    private Engine getEngine(){
         return findViewById(R.id.engine);
     }
 

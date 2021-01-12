@@ -1,10 +1,8 @@
-package com.outofbound.rhinoengine;
+package com.outofbound.rhinoengine.test;
 
-import com.outofbound.rhinoenginelib.mesh.primitives.Cube;
+public class Cube extends com.outofbound.rhinoenginelib.mesh.primitives.Cube {
 
-public class TestCube extends Cube {
-
-    public TestCube() {
+    public Cube() {
         super(new float[]{1,0,0,1});
     }
 

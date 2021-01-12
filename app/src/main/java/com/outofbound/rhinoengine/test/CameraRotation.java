@@ -1,9 +1,9 @@
-package com.outofbound.rhinoengine;
+package com.outofbound.rhinoengine.test;
 
 import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.task.GLTask;
 
-public class TestCameraRotation extends GLTask {
+public class CameraRotation extends GLTask {
 
     private static final float SPEED = 0.01f;
 

@@ -11,14 +11,18 @@ public class GLRendererOnTexture {
     private int frameBuffer;
     private int texture;
 
-    public static final int RESOLUTION_256 = 256;
-    public static final int RESOLUTION_512 = 512;
-    public static final int RESOLUTION_1024 = 1024;
+    public static final int RESOLUTION_256 = 0;
+    public static final int RESOLUTION_512 = 1;
+    public static final int RESOLUTION_1024 = 2;
+    public static final int RESOLUTION_2048 = 3;
+    public static final int RESOLUTION_4096 = 4;
+
+    private static final int[] resolutions = {256,512,1024,2048,4096};
 
 
     public GLRendererOnTexture(int resolution){
-        this.fboWidth = resolution;
-        this.fboHeight = resolution;
+        this.fboWidth = resolutions[resolution];
+        this.fboHeight = resolutions[resolution];
         setup();
     }
 

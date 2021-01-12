@@ -315,4 +315,12 @@ public abstract class GLRenderer {
         }
     }
 
+    /**
+     * Return GLLights.
+     * @return GLLights.
+     */
+    public GLLights getGLLights(){
+        return glLights;
+    }
+
 }
