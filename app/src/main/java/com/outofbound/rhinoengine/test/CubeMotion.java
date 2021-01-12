@@ -16,5 +16,6 @@ public class CubeMotion extends Motion {
 
     @Override
     public void move(long ms) {
+        position.y += 0.01f;
     }
 }

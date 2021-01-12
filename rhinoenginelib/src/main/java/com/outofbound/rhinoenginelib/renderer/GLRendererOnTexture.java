@@ -21,6 +21,9 @@ public class GLRendererOnTexture {
 
 
     public GLRendererOnTexture(int resolution){
+        if (resolution < 0 || resolution > 4){
+            throw new IllegalArgumentException("resolution must be GLRendererOnTexture.RESOLUTION_x");
+        }
         this.fboWidth = resolutions[resolution];
         this.fboHeight = resolutions[resolution];
         setup();
