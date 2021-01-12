@@ -3,7 +3,7 @@ package com.outofbound.rhinoenginelib.renderer.fx;
 import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.camera.GLCamera;
-import com.outofbound.rhinoenginelib.camera.GLCamera2D;
+import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
 import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
@@ -11,14 +11,14 @@ import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 public class GLShadowMap {
 
     private final GLRendererOnTexture shadowMapRenderer;
-    private final GLCamera2D shadowMapCamera;
+    private final GLCameraOrthographic shadowMapCamera;
 
     public GLShadowMap(int resolution, GLLight light, GLCamera glCamera){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
-        shadowMapCamera = new GLCamera2D(light.getPosition(), glCamera.getUp(), glCamera.getCenter(), glCamera.getNear(), glCamera.getFar());
+        shadowMapCamera = new GLCameraOrthographic(light.getPosition(), glCamera.getUp(), glCamera.getCenter(), glCamera.getNear(), glCamera.getFar());
     }
 
-    public GLCamera2D getShadowMapCamera(){
+    public GLCameraOrthographic getShadowMapCamera(){
         return shadowMapCamera;
     }
 

@@ -4,8 +4,8 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.GLCamera;
-import com.outofbound.rhinoenginelib.camera.GLCamera2D;
-import com.outofbound.rhinoenginelib.camera.GLCamera3D;
+import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
+import com.outofbound.rhinoenginelib.camera.GLCameraPerspective;
 import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
@@ -191,11 +191,11 @@ public abstract class GLRenderer {
      * Do the rendering.
      * @param screenWidth the screen width.
      * @param screenHeight the screen height.
-     * @param glCamera3D the GLCamera3D.
-     * @param glCamera2D the GLCamera2D.
+     * @param glCameraPerspective the GLCamera3D.
+     * @param glCameraOrthographic the GLCamera2D.
      * @param ms engine time in milliseconds.
      */
-    public abstract void render(int screenWidth, int screenHeight, GLCamera3D glCamera3D, GLCamera2D glCamera2D, long ms);
+    public abstract void render(int screenWidth, int screenHeight, GLCameraPerspective glCameraPerspective, GLCameraOrthographic glCameraOrthographic, long ms);
 
     /**
      * Enable face culling.

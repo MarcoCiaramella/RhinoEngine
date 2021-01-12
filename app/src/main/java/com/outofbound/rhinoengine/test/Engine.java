@@ -3,8 +3,8 @@ package com.outofbound.rhinoengine.test;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.outofbound.rhinoenginelib.camera.GLCamera2D;
-import com.outofbound.rhinoenginelib.camera.GLCamera3D;
+import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
+import com.outofbound.rhinoenginelib.camera.GLCameraPerspective;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer3D;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
@@ -18,11 +18,11 @@ public class Engine extends GLEngine {
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
 
     public Engine(Context context){
-        super(context, new GLCamera3D(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), new GLCamera2D(1,1000), null);
+        super(context, new GLCameraPerspective(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), new GLCameraOrthographic(1,1000), null);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new GLCamera3D(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), new GLCamera2D(1,1000), null);
+        super(context, attrs, new GLCameraPerspective(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), new GLCameraOrthographic(1,1000), null);
     }
 
     @Override

@@ -11,8 +11,8 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import com.outofbound.rhinoenginelib.camera.GLCamera2D;
-import com.outofbound.rhinoenginelib.camera.GLCamera3D;
+import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
+import com.outofbound.rhinoenginelib.camera.GLCameraPerspective;
 import com.outofbound.rhinoenginelib.gesture.GLGesture;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
@@ -37,8 +37,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private GLGesture glGesture = null;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
-    private GLCamera3D camera3D;
-    private GLCamera2D camera2D;
+    private GLCameraPerspective camera3D;
+    private GLCameraOrthographic camera2D;
     private long deltaMs;
     private ScaleGestureDetector scaleDetector;
     private boolean gestureProcessed = false;
@@ -56,7 +56,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @param camera2D a 2D camera.
      * @param gesture a GLGesture.
      */
-    public GLEngine(Context context, GLCamera3D camera3D, GLCamera2D camera2D, GLGesture gesture){
+    public GLEngine(Context context, GLCameraPerspective camera3D, GLCameraOrthographic camera2D, GLGesture gesture){
         super(context);
         config(camera3D, camera2D, gesture);
     }
@@ -69,12 +69,12 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * @param camera2D a 2D camera.
      * @param gesture a GLGesture.
      */
-    public GLEngine(Context context, AttributeSet attrs, GLCamera3D camera3D, GLCamera2D camera2D, GLGesture gesture){
+    public GLEngine(Context context, AttributeSet attrs, GLCameraPerspective camera3D, GLCameraOrthographic camera2D, GLGesture gesture){
         super(context,attrs);
         config(camera3D, camera2D, gesture);
     }
 
-    private void config(GLCamera3D camera3D, GLCamera2D camera2D, GLGesture gesture){
+    private void config(GLCameraPerspective camera3D, GLCameraOrthographic camera2D, GLGesture gesture){
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
         setRenderer(this);
@@ -375,7 +375,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      * Return the 3D camera.
      * @return the 3D camera.
      */
-    public GLCamera3D getCamera3D(){
+    public GLCameraPerspective getCamera3D(){
         return camera3D;
     }
 

@@ -3,7 +3,7 @@ package com.outofbound.rhinoenginelib.renderer.fx;
 import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.camera.GLCamera;
-import com.outofbound.rhinoenginelib.camera.GLCamera2D;
+import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurHorizontalShader;
@@ -53,7 +53,7 @@ public class GLBlur {
         this.scale = scale;
         this.amount = amount;
         this.strength = strength;
-        this.camera = new GLCamera2D(near,far);
+        this.camera = new GLCameraOrthographic(near,far);
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
         verticesBuffer = bb_vertex.asFloatBuffer();
