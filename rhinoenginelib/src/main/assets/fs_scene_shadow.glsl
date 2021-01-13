@@ -13,6 +13,7 @@ varying vec3 vNormal;
 varying vec4 vPositionFromLight;
 
 
+const float ambientLight = 0.5;
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
@@ -23,7 +24,7 @@ float calcShadow();
 
 void main() {
     float diffuse = calcDiffuseLight(uLightsPos[0], uLightsIntensity[0], vPosition, vNormal);
-    gl_FragColor = vColor * (diffuse*vec4(uLightsColor[0],1.0)) * calcShadow();
+    gl_FragColor = vColor * ((diffuse*vec4(uLightsColor[0],1.0)) * calcShadow() + ambientLight);
 }
 
 float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal){
