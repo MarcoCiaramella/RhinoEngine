@@ -5,7 +5,7 @@ import android.opengl.GLES20;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 
-public class ShadowMapShader extends GLShader {
+public final class ShadowMapShader extends GLShader {
 
     private int uMVPMatrixLocation;
     private int aPositionLocation;

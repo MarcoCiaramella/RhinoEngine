@@ -18,7 +18,7 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 /**
  * The OpenGL renderer.
  */
-public class GLRenderer {
+public final class GLRenderer {
 
     private final SceneShader sceneShader;
     private SceneWithShadowShader sceneWithShadowShader;

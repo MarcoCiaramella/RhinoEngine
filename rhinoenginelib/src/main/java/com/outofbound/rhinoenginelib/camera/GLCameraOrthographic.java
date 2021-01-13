@@ -4,7 +4,7 @@ import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
-public class GLCameraOrthographic extends GLCamera{
+public final class GLCameraOrthographic extends GLCamera{
 
     private final float size;
 

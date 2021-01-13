@@ -4,7 +4,7 @@ import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
-public class GLCameraPerspective extends GLCamera{
+public final class GLCameraPerspective extends GLCamera{
 
     public GLCameraPerspective(Vector3f eye, Vector3f up, Vector3f center, float near, float far) {
         super(eye, up, center, near, far);

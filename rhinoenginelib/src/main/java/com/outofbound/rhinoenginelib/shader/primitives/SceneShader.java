@@ -6,7 +6,7 @@ import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 
-public class SceneShader extends GLShader {
+public final class SceneShader extends GLShader {
 
     private int uMVPMatrixLocation;
     private int uMVMatrixLocation;

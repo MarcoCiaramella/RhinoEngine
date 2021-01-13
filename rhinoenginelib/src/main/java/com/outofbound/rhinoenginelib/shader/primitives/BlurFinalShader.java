@@ -6,7 +6,7 @@ import com.outofbound.rhinoenginelib.shader.GLShader;
 
 import java.nio.FloatBuffer;
 
-public class BlurFinalShader extends GLShader {
+public final class BlurFinalShader extends GLShader {
 
     private int aPosition;
     private int aTexture;

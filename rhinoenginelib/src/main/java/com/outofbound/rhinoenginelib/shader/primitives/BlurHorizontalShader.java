@@ -6,7 +6,7 @@ import com.outofbound.rhinoenginelib.shader.GLShader;
 
 import java.nio.FloatBuffer;
 
-public class BlurHorizontalShader extends GLShader {
+public final class BlurHorizontalShader extends GLShader {
 
     private int uMVPMatrix;
     private int aPosition;
