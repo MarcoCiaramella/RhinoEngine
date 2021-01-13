@@ -6,16 +6,16 @@ import com.outofbound.rhinoenginelib.util.number.Numbers;
 public class CubeMotion extends Motion {
 
     public CubeMotion(){
-        position.x = Numbers.randomFloat(0,3);
-        position.y = 1;
-        position.z = Numbers.randomFloat(0,3);
-        scale.x = 0.5f;
-        scale.y = 0.5f;
-        scale.z = 0.5f;
+        position.x = Numbers.randomFloat(0,5);
+        position.y = Numbers.randomFloat(0,5);
+        position.z = Numbers.randomFloat(0,5);
+        scale.x = 0.1f;
+        scale.y = 0.1f;
+        scale.z = 0.1f;
     }
 
     @Override
     public void move(long ms) {
-        position.y += 0.01f;
+        rotation.y -= 1f;
     }
 }

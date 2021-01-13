@@ -23,8 +23,7 @@ float calcShadow();
 
 void main() {
     float diffuse = calcDiffuseLight(uLightsPos[0], uLightsIntensity[0], vPosition, vNormal);
-    vec4 color = vColor * (diffuse*vec4(uLightsColor[0],1.0)) * calcShadow();
-    gl_FragColor = color;
+    gl_FragColor = vColor * (diffuse*vec4(uLightsColor[0],1.0)) * calcShadow();
 }
 
 float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal){
@@ -46,8 +45,6 @@ float calcShadow(){
     positionFromLight = (positionFromLight + 1.0) / 2.0;
     float closestFragmentZ = unpack(texture2D(uShadowMap, positionFromLight.xy));
     float currentFragmentZ = positionFromLight.z;
-    // add bias to reduce shadow acne (error margin)
-    float bias = 0.0005;
-    return float(closestFragmentZ > currentFragmentZ - bias);
+    return float(closestFragmentZ > currentFragmentZ);
 }
 

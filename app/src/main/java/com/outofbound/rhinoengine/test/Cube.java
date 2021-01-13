@@ -9,6 +9,7 @@ public class Cube extends com.outofbound.rhinoenginelib.mesh.primitives.Cube {
     @Override
     public void doTransformation(float[] mMatrix) {
         translate(mMatrix);
+        rotateY(mMatrix);
         scale(mMatrix);
     }
 }

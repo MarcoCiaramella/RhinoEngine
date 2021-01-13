@@ -28,7 +28,7 @@ public class Engine extends GLEngine {
     protected void init() {
         setClearColor(0,0,0,1);
         ID.GLRENDERER_ID = addGLRenderer(new GLRenderer());
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 100; i++) {
             getGLRenderer(ID.GLRENDERER_ID).addGLMesh(new Cube().setMotion(new CubeMotion()));
         }
         getGLRenderer(ID.GLRENDERER_ID).addGLMesh(new Cube().setMotion(new PlaneMotion()));
