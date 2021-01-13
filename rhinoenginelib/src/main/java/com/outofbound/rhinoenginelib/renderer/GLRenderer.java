@@ -4,8 +4,6 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.GLCamera;
-import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
-import com.outofbound.rhinoenginelib.camera.GLCameraPerspective;
 import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
@@ -20,7 +18,7 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 /**
  * The OpenGL renderer.
  */
-public abstract class GLRenderer {
+public class GLRenderer {
 
     private final SceneShader sceneShader;
     private SceneWithShadowShader sceneWithShadowShader;
@@ -81,15 +79,14 @@ public abstract class GLRenderer {
     }
 
     /**
-     * Render mesh and shader.
+     * Do the rendering.
      * @param screenWidth the screen width.
      * @param screenHeight the screen height.
      * @param glCamera the GLCamera.
      * @param ms engine time in milliseconds.
      */
-    protected void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
+    public void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
 
-        glCamera.loadVpMatrix(screenWidth, screenHeight);
         this.ms = ms;
 
         if (!shadowEnabled){
@@ -188,16 +185,6 @@ public abstract class GLRenderer {
     }
 
     /**
-     * Do the rendering.
-     * @param screenWidth the screen width.
-     * @param screenHeight the screen height.
-     * @param glCameraPerspective the GLCamera3D.
-     * @param glCameraOrthographic the GLCamera2D.
-     * @param ms engine time in milliseconds.
-     */
-    public abstract void render(int screenWidth, int screenHeight, GLCameraPerspective glCameraPerspective, GLCameraOrthographic glCameraOrthographic, long ms);
-
-    /**
      * Enable face culling.
      * @return this GLRenderer.
      */
@@ -267,7 +254,7 @@ public abstract class GLRenderer {
     }
 
     private void renderSceneWithShadow(int screenWidth, int screenHeight, GLCamera glCamera){
-        glShadowMap.getShadowMapCamera().loadVpMatrix(screenWidth,screenHeight);
+        glShadowMap.getShadowMapCamera().loadVpMatrix();
         int shadowMap = glShadowMap.render(glSceneRenderer,screenWidth,screenHeight);
         this.ms = 0;
 

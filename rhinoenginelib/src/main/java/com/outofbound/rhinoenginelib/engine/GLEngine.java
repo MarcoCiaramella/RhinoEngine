@@ -11,8 +11,7 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
-import com.outofbound.rhinoenginelib.camera.GLCameraPerspective;
+import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.gesture.GLGesture;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
@@ -37,8 +36,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     private GLGesture glGesture = null;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
-    private GLCameraPerspective camera3D;
-    private GLCameraOrthographic camera2D;
+    private GLCamera glCamera;
     private long deltaMs;
     private ScaleGestureDetector scaleDetector;
     private boolean gestureProcessed = false;
@@ -52,37 +50,34 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     /**
      * The engine constructor.
      * @param context the context for this view.
-     * @param camera3D a 3D camera.
-     * @param camera2D a 2D camera.
-     * @param gesture a GLGesture.
+     * @param glCamera the GLCamera.
+     * @param glGesture a GLGesture.
      */
-    public GLEngine(Context context, GLCameraPerspective camera3D, GLCameraOrthographic camera2D, GLGesture gesture){
+    public GLEngine(Context context, GLCamera glCamera, GLGesture glGesture){
         super(context);
-        config(camera3D, camera2D, gesture);
+        config(glCamera, glGesture);
     }
 
     /**
      * The engine constructor.
      * @param context the context for this view.
      * @param attrs the object AttributeSet.
-     * @param camera3D a 3D camera.
-     * @param camera2D a 2D camera.
-     * @param gesture a GLGesture.
+     * @param glCamera the GLCamera.
+     * @param glGesture a GLGesture.
      */
-    public GLEngine(Context context, AttributeSet attrs, GLCameraPerspective camera3D, GLCameraOrthographic camera2D, GLGesture gesture){
+    public GLEngine(Context context, AttributeSet attrs, GLCamera glCamera, GLGesture glGesture){
         super(context,attrs);
-        config(camera3D, camera2D, gesture);
+        config(glCamera, glGesture);
     }
 
-    private void config(GLCameraPerspective camera3D, GLCameraOrthographic camera2D, GLGesture gesture){
+    private void config(GLCamera glCamera, GLGesture glGesture){
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setOnTouchListener(this);
-        this.camera3D = camera3D;
-        this.camera2D = camera2D;
-        this.glGesture = gesture;
+        this.glCamera = glCamera;
+        this.glGesture = glGesture;
         this.glSceneRenderer = this::renderScene;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
         instance = this;
@@ -311,6 +306,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        glCamera.setWidth(width).setHeight(height);
     }
 
     /**
@@ -352,8 +348,9 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     }
 
     private void renderScene(){
+        glCamera.loadVpMatrix();
         for (GLRenderer glRenderer : glRenderers){
-            glRenderer.render(getWidth(), getHeight(), camera3D, camera2D, deltaMs);
+            glRenderer.render(getWidth(), getHeight(), glCamera, deltaMs);
         }
     }
 
@@ -372,11 +369,11 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     }
 
     /**
-     * Return the 3D camera.
-     * @return the 3D camera.
+     * Return the GLCamera.
+     * @return the GLCamera.
      */
-    public GLCameraPerspective getCamera3D(){
-        return camera3D;
+    public GLCamera getGLCamera(){
+        return glCamera;
     }
 
     /**

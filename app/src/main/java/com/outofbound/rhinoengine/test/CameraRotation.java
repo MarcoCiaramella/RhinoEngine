@@ -10,7 +10,7 @@ public class CameraRotation extends GLTask {
     @Override
     public boolean runTask(long ms) {
         float angle = SPEED*ms;
-        GLEngine.getInstance().getCamera3D().rotate(angle,0,1,0);
+        GLEngine.getInstance().getGLCamera().rotate(angle,0,1,0);
         return true;
     }
 }

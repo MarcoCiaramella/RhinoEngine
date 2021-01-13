@@ -19,6 +19,8 @@ public abstract class GLCamera {
     private Vector3f pointToFollow;
     protected final float near;
     protected final float far;
+    protected int width;
+    protected int height;
 
     public GLCamera(Vector3f eye, Vector3f up, Vector3f center, float near, float far){
         vpMatrix = new float[16];
@@ -70,7 +72,7 @@ public abstract class GLCamera {
         return this;
     }
 
-    public abstract void loadVpMatrix(int width, int height);
+    public abstract void loadVpMatrix();
 
     public Vector3f getEye(){
         return eye;
@@ -108,5 +110,15 @@ public abstract class GLCamera {
 
     public float[] getVpMatrix(){
         return vpMatrix;
+    }
+
+    public GLCamera setWidth(int width){
+        this.width = width;
+        return this;
+    }
+
+    public GLCamera setHeight(int height){
+        this.height = height;
+        return this;
     }
 }

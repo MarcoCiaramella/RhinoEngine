@@ -9,6 +9,7 @@ import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurHorizontalShader;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurFinalShader;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurVerticalShader;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -53,7 +54,7 @@ public class GLBlur {
         this.scale = scale;
         this.amount = amount;
         this.strength = strength;
-        this.camera = new GLCameraOrthographic(near,far);
+        this.camera = new GLCameraOrthographic(new Vector3f(0,0,1),new Vector3f(0,-1,0),new Vector3f(0,0,0),near,far,1);
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
         verticesBuffer = bb_vertex.asFloatBuffer();
@@ -84,20 +85,20 @@ public class GLBlur {
     }
 
     public void render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight) {
-        camera.loadVpMatrix(glRendererOnTexture.getFboWidth(), glRendererOnTexture.getFboHeight());
-        float[] vpMatrix = camera.getVpMatrix();
+        camera.setWidth(glRendererOnTexture.getFboWidth()).setHeight(glRendererOnTexture.getFboHeight());
+        camera.loadVpMatrix();
         this.textureInput = glRendererOnTexture.render(glSceneRenderer);
-        blurHorizontal(vpMatrix, verticesBuffer, textureCoordsBuffer);
-        blurVertical(vpMatrix, verticesBuffer, textureCoordsBuffer);
-        renderOnScreen(glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight(),screenWidth,screenHeight);
+        blurHorizontal();
+        blurVertical();
+        renderOnScreen(screenWidth,screenHeight);
     }
 
-    private void blurHorizontal(float[] vpMatrix, FloatBuffer verticesBuffer, FloatBuffer textureCoordsBuffer) {
+    private void blurHorizontal() {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         blurHorizontalShader.setVertices(verticesBuffer);
         blurHorizontalShader.setTextureCoords(textureCoordsBuffer);
-        blurHorizontalShader.setVpMatrix(vpMatrix);
+        blurHorizontalShader.setVpMatrix(camera.getVpMatrix());
         blurHorizontalShader.setTexture(textureInput);
         blurHorizontalShader.setAmount(amount);
         blurHorizontalShader.setScale(scale);
@@ -108,12 +109,12 @@ public class GLBlur {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    private void blurVertical(float[] vpMatrix, FloatBuffer verticesBuffer, FloatBuffer textureCoordsBuffer) {
+    private void blurVertical() {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep2);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         blurVerticalShader.setVertices(verticesBuffer);
         blurVerticalShader.setTextureCoords(textureCoordsBuffer);
-        blurVerticalShader.setVpMatrix(vpMatrix);
+        blurVerticalShader.setVpMatrix(camera.getVpMatrix());
         blurVerticalShader.setTexture(textureStep1);
         blurVerticalShader.setAmount(amount);
         blurVerticalShader.setScale(scale);
@@ -124,9 +125,8 @@ public class GLBlur {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    public void renderOnScreen(int fboWidth, int fboHeight, int screenWidth, int screenHeight){
+    public void renderOnScreen(int screenWidth, int screenHeight){
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
-        camera.loadVpMatrix(fboWidth, fboHeight);
         blurFinalShader.setVpMatrix(camera.getVpMatrix());
         blurFinalShader.setVertices(verticesBuffer);
         blurFinalShader.setTextureCoords(textureCoordsBuffer);
