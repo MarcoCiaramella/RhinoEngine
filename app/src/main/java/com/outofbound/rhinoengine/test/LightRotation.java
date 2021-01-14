@@ -10,7 +10,7 @@ public class LightRotation extends GLTask {
     @Override
     public boolean runTask(long ms) {
         float angle = SPEED*ms;
-        GLEngine.getInstance().getGLRenderer(ID.GLRENDERER_ID).getGLLights().getFirstLight().getPosition().rotate(angle,0,1,0);
+        GLEngine.getInstance().getGLRenderer(ID.GLRENDERER_0).getGLLights().getFirstLight().getPosition().rotate(angle,0,1,0);
         return true;
     }
 }

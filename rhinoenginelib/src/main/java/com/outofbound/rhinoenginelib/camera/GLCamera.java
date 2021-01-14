@@ -26,12 +26,12 @@ public abstract class GLCamera {
         vpMatrix = new float[16];
         projectionMatrix = new float[16];
         viewMatrix = new float[16];
-        this.eye = new Vector3f(eye);
-        this.up = new Vector3f(up);
-        this.center = new Vector3f(center);
+        this.eye = eye;
+        this.up = up;
+        this.center = center;
         this.near = near;
         this.far = far;
-        eyeRes = this.eye.clone();
+        eyeRes = new Vector3f(0,0,0);
         glMeshToFollow = null;
         pointToFollow = null;
     }

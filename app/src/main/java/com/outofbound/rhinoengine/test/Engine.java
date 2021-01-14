@@ -17,25 +17,25 @@ public class Engine extends GLEngine {
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
 
     public Engine(Context context){
-        super(context, new GLCameraPerspective(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), null);
+        super(context, new GLCameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new GLCameraPerspective(CAMERA_EYE.clone(), CAMERA_UP.clone(), CAMERA_CENTER.clone(), 1, 1000), null);
+        super(context, attrs, new GLCameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
     }
 
     @Override
     protected void init() {
         setClearColor(0,0,0,1);
-        ID.GLRENDERER_ID = addGLRenderer(new GLRenderer());
+        ID.GLRENDERER_0 = addGLRenderer(new GLRenderer());
         for (int i = 0; i < 100; i++) {
-            getGLRenderer(ID.GLRENDERER_ID).addGLMesh(new Cube().setMotion(new CubeMotion()));
+            getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Cube().setMotion(new CubeMotion()));
         }
-        getGLRenderer(ID.GLRENDERER_ID).addGLMesh(new Cube().setMotion(new PlaneMotion()));
+        getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Cube().setMotion(new PlaneMotion()));
         addGLTask(new CameraRotation());
-        //addGLTask(new LightRotation());
+        addGLTask(new LightRotation());
         configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
-        getGLRenderer(ID.GLRENDERER_ID).configShadow(GLRendererOnTexture.RESOLUTION_4096,getGLCamera()).enableShadow();
+        getGLRenderer(ID.GLRENDERER_0).configShadow(GLRendererOnTexture.RESOLUTION_4096,getGLCamera()).enableShadow();
     }
 
     public void blurOn(){
