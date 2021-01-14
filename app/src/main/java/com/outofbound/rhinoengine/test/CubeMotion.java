@@ -9,9 +9,7 @@ public class CubeMotion extends Motion {
         position.x = Numbers.randomFloat(0,5);
         position.y = Numbers.randomFloat(0,5);
         position.z = Numbers.randomFloat(0,5);
-        scale.x = 0.1f;
-        scale.y = 0.1f;
-        scale.z = 0.1f;
+        scale = 0.1f;
     }
 
     @Override

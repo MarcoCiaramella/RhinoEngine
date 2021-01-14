@@ -9,14 +9,14 @@ public abstract class Motion {
     public Vector3f speed;
     public Vector3f acceleration;
     public Vector3f rotation;
-    public Vector3f scale;
+    public float scale;
 
     public Motion(){
         position = new Vector3f(0,0,0);
         speed = new Vector3f(0,0,0);
         acceleration = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
-        scale = new Vector3f(1,1,1);
+        scale = 1;
     }
 
     public abstract void move(long ms);

@@ -176,7 +176,7 @@ public abstract class GLMesh {
     }
 
     public GLMesh scale(float[] mvMatrix){
-        Matrix.scaleM(mvMatrix, 0, getMotion().scale.x, getMotion().scale.y, getMotion().scale.z);
+        Matrix.scaleM(mvMatrix, 0, getMotion().scale, getMotion().scale, getMotion().scale);
         return this;
     }
 

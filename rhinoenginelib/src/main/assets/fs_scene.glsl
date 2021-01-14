@@ -12,8 +12,8 @@ varying vec3 vNormal;
 
 
 
-float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal);
-
+float calcDiffuseLight2(vec3 light, float intensity, vec3 vertex, vec3 normal);
+float diffuse(vec3 lightPos, vec3 lightColor);
 
 
 void main() {
@@ -28,6 +28,10 @@ float calcDiffuseLight(vec3 light, float intensity, vec3 vertex, vec3 normal){
     float diffuse = max(dot(normal, lightVector), 0.1);
     diffuse = diffuse * (1.0 / (1.0 + (0.25 * distance * distance))) * intensity;
     return diffuse;
+}
+
+float diffuse(vec3 lightPos, vec3 lightColor){
+    return max(dot(normalize(vNormal), normalize(lightPos-vPosition)), 0.0) * lightColor;
 }
 
 
