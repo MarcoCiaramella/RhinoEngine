@@ -9,10 +9,10 @@ import java.util.Arrays;
 
 public class GLLights {
 
-    private GLLight[] lights;
-    private float[] lightsPositionArray;
-    private float[] lightsColorArray;
-    private float[] lightsIntensityArray;
+    private final GLLight[] lights;
+    private final float[] lightsPositionArray;
+    private final float[] lightsColorArray;
+    private final float[] lightsIntensityArray;
     private final int MAX_SIZE;
     private final int MIN_ID = 0;
     private final int MAX_ID;
