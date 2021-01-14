@@ -15,7 +15,7 @@ float diffuse(vec3 lightPos, vec3 lightColor);
 
 
 void main() {
-    gl_FragColor = vColor;
+    gl_FragColor = vColor * diffuse(uLightsPos[0],uLightsColor[0]);
 }
 
 float diffuse(vec3 lightPos, vec3 lightColor){
