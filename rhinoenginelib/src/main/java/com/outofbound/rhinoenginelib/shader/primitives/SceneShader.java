@@ -15,7 +15,6 @@ public final class SceneShader extends GLShader {
     private int aNormalLocation;
     private int uLightsPositionLocation;
     private int uLightsColorLocation;
-    private int uLightsIntensityLocation;
     private GLMesh glMesh;
     private float[] mvMatrix;
     private float[] mvpMatrix;
@@ -34,7 +33,6 @@ public final class SceneShader extends GLShader {
         uMVMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVMatrix");
         uLightsPositionLocation = GLES20.glGetUniformLocation(programShader,"uLightsPos");
         uLightsColorLocation = GLES20.glGetUniformLocation(programShader,"uLightsColor");
-        uLightsIntensityLocation = GLES20.glGetUniformLocation(programShader,"uLightsIntensity");
     }
 
     @Override
@@ -50,7 +48,6 @@ public final class SceneShader extends GLShader {
         GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
         GLES20.glUniform3fv(uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
         GLES20.glUniform3fv(uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
-        GLES20.glUniform1fv(uLightsIntensityLocation, glLights.size(), glLights.getIntensities(), 0);
     }
 
     @Override

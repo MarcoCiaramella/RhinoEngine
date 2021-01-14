@@ -15,7 +15,6 @@ public final class SceneWithShadowShader extends GLShader {
     private int aNormalLocation;
     private int uLightsPositionLocation;
     private int uLightsColorLocation;
-    private int uLightsIntensityLocation;
     private int uShadowMapLocation;
     private int uShadowMVPMatrixLocation;
     private GLMesh glMesh;
@@ -38,7 +37,6 @@ public final class SceneWithShadowShader extends GLShader {
         uMVMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVMatrix");
         uLightsPositionLocation = GLES20.glGetUniformLocation(programShader,"uLightsPos");
         uLightsColorLocation = GLES20.glGetUniformLocation(programShader,"uLightsColor");
-        uLightsIntensityLocation = GLES20.glGetUniformLocation(programShader,"uLightsIntensity");
         uShadowMapLocation = GLES20.glGetUniformLocation(programShader,"uShadowMap");
         uShadowMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uShadowMVPMatrix");
     }
@@ -56,7 +54,6 @@ public final class SceneWithShadowShader extends GLShader {
         GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
         GLES20.glUniform3fv(uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
         GLES20.glUniform3fv(uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
-        GLES20.glUniform1fv(uLightsIntensityLocation, glLights.size(), glLights.getIntensities(), 0);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
         GLES20.glUniform1i(uShadowMapLocation, 0);

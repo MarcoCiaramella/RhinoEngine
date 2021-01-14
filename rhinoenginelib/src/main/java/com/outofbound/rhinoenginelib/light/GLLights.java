@@ -12,7 +12,6 @@ public class GLLights {
     private final GLLight[] lights;
     private final float[] lightsPositionArray;
     private final float[] lightsColorArray;
-    private final float[] lightsIntensityArray;
     private final int MAX_SIZE;
     private final int MIN_ID = 0;
     private final int MAX_ID;
@@ -25,7 +24,6 @@ public class GLLights {
         lights = new GLLight[MAX_SIZE];
         lightsPositionArray = new float[MAX_SIZE*3];
         lightsColorArray = new float[MAX_SIZE*4];
-        lightsIntensityArray = new float[MAX_SIZE];
         Arrays.fill(lights,null);
     }
 
@@ -114,19 +112,6 @@ public class GLLights {
             return null;
         }
         return lightsColorArray;
-    }
-
-    public synchronized float[] getIntensities(){
-        int index = 0;
-        for (GLLight light : lights){
-            if (light != null) {
-                index = toArray(light.getIntensity(), lightsIntensityArray, index);
-            }
-        }
-        if (index == 0){
-            return null;
-        }
-        return lightsIntensityArray;
     }
 
     public synchronized int nextAvailableID(){
