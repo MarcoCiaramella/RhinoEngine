@@ -110,13 +110,12 @@ public final class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix);
-                Matrix.multiplyMM(mvMatrix, 0, glCamera.getViewMatrix(), 0, mMatrix, 0);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneShader.setGLMesh(glMesh);
-                sceneShader.setMvMatrix(mvMatrix);
+                sceneShader.setMMatrix(mMatrix);
                 sceneShader.setMvpMatrix(mvpMatrix);
                 sceneShader.setGLLights(glLights);
                 sceneShader.bindData();
@@ -270,14 +269,13 @@ public final class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix);
-                Matrix.multiplyMM(mvMatrix, 0, glCamera.getViewMatrix(), 0, mMatrix, 0);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
                 Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneWithShadowShader.setGLMesh(glMesh);
-                sceneWithShadowShader.setMvMatrix(mvMatrix);
+                sceneWithShadowShader.setMMatrix(mMatrix);
                 sceneWithShadowShader.setMvpMatrix(mvpMatrix);
                 sceneWithShadowShader.setGLLights(glLights);
                 sceneWithShadowShader.setShadowMap(shadowMap);

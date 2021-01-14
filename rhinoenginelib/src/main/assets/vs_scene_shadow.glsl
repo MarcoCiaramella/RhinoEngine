@@ -3,7 +3,7 @@
 precision highp float;
 
 uniform mat4 uMVPMatrix;
-uniform mat4 uMVMatrix;
+uniform mat4 uMMatrix;
 uniform mat4 uShadowMVPMatrix;
 attribute vec4 aPosition;
 attribute vec3 aNormal;
@@ -16,8 +16,8 @@ varying vec4 vPositionFromLight;
 
 
 void main() {
-    vPosition = vec3(uMVMatrix * aPosition);
-    vNormal = normalize(vec3(uMVMatrix * vec4(aNormal, 0.0)));
+    vPosition = vec3(uMMatrix * aPosition);
+    vNormal = normalize(vec3(uMMatrix * vec4(aNormal, 0.0)));
     vColor = aColor;
     vPositionFromLight = uShadowMVPMatrix * aPosition;
     gl_Position = uMVPMatrix * aPosition;

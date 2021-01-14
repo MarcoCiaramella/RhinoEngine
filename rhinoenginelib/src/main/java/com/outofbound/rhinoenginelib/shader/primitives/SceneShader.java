@@ -9,14 +9,14 @@ import com.outofbound.rhinoenginelib.shader.GLShader;
 public final class SceneShader extends GLShader {
 
     private int uMVPMatrixLocation;
-    private int uMVMatrixLocation;
+    private int uMMatrixLocation;
     private int aPositionLocation;
     private int aColorLocation;
     private int aNormalLocation;
     private int uLightsPositionLocation;
     private int uLightsColorLocation;
     private GLMesh glMesh;
-    private float[] mvMatrix;
+    private float[] mMatrix;
     private float[] mvpMatrix;
     private GLLights glLights;
 
@@ -30,7 +30,7 @@ public final class SceneShader extends GLShader {
         aColorLocation = GLES20.glGetAttribLocation(programShader,"aColor");
         aNormalLocation = GLES20.glGetAttribLocation(programShader,"aNormal");
         uMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVPMatrix");
-        uMVMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVMatrix");
+        uMMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMMatrix");
         uLightsPositionLocation = GLES20.glGetUniformLocation(programShader,"uLightsPos");
         uLightsColorLocation = GLES20.glGetUniformLocation(programShader,"uLightsColor");
     }
@@ -44,7 +44,7 @@ public final class SceneShader extends GLShader {
         GLES20.glVertexAttribPointer(aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
         GLES20.glVertexAttribPointer(aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
         GLES20.glVertexAttribPointer(aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
-        GLES20.glUniformMatrix4fv(uMVMatrixLocation, 1, false, mvMatrix, 0);
+        GLES20.glUniformMatrix4fv(uMMatrixLocation, 1, false, mMatrix, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
         GLES20.glUniform3fv(uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
         GLES20.glUniform3fv(uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
@@ -62,8 +62,8 @@ public final class SceneShader extends GLShader {
         return this;
     }
 
-    public SceneShader setMvMatrix(float[] mvMatrix){
-        this.mvMatrix = mvMatrix;
+    public SceneShader setMMatrix(float[] mMatrix){
+        this.mMatrix = mMatrix;
         return this;
     }
 
