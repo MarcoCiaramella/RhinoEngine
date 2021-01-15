@@ -24,7 +24,13 @@ float calcShadow();
 
 
 void main() {
-    //gl_FragColor = vColor * (diffuse(uLightsPos[0],uLightsColor[0]) * calcShadow() + ambientLight);
+    vec3 norm = normalize(vNormal);
+    vec3 lightDir = normalize(uLightsPos[0] - vPosition);
+    vec3 ambient = ambientLighting(uLightsColor[0]);
+    vec3 diffuse = diffuseLighting(norm,lightDir,uLightsColor[0]);
+    vec3 specular = specularLighting(norm,lightDir,uLightsColor[0]);
+    float shadow = calcShadow();
+    gl_FragColor = vColor * vec4(ambient + (diffuse + specular) * shadow, 1.0);
 }
 
 vec3 ambientLighting(vec3 lightColor){
