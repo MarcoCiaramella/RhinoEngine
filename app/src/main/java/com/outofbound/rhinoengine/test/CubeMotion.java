@@ -6,9 +6,9 @@ import com.outofbound.rhinoenginelib.util.number.Numbers;
 public class CubeMotion extends Motion {
 
     public CubeMotion(){
-        position.x = Numbers.randomFloat(0,5);
-        position.y = Numbers.randomFloat(0,5);
-        position.z = Numbers.randomFloat(0,5);
+        position.x = Numbers.randomFloat(-2,2);
+        position.y = Numbers.randomFloat(-2,2);
+        position.z = Numbers.randomFloat(-2,2);
         scale = 0.1f;
     }
 

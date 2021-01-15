@@ -31,7 +31,7 @@ public class Engine extends GLEngine {
         for (int i = 0; i < 100; i++) {
             getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Cube().setMotion(new CubeMotion()));
         }
-        getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Cube().setMotion(new PlaneMotion()));
+        getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Pane().setMotion(new PaneMotion()));
         addGLTask(new CameraRotation());
         addGLTask(new LightRotation());
         configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);

@@ -7,7 +7,7 @@ import com.outofbound.rhinoenginelib.util.color.Color;
 
 public class Cube extends GLMesh {
 
-    private static float[] vertices = {
+    private static final float[] vertices = {
             -1,-1,1,
             1,-1,1,
             1,1,1,
@@ -34,7 +34,7 @@ public class Cube extends GLMesh {
             1,1,-1
     };
 
-    private static float[] normals = {
+    private static final float[] normals = {
             0,0,1,
             0,0,1,
             0,0,1,
@@ -61,7 +61,7 @@ public class Cube extends GLMesh {
             0,0,-1
     };
 
-    private static int[] indices = {
+    private static final int[] indices = {
             0,1,2,
             2,3,0,
             4,5,6,
