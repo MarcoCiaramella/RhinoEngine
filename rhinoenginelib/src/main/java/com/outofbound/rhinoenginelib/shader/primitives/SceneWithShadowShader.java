@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public final class SceneWithShadowShader extends GLShader {
 
@@ -17,12 +18,14 @@ public final class SceneWithShadowShader extends GLShader {
     private int uLightsColorLocation;
     private int uShadowMapLocation;
     private int uShadowMVPMatrixLocation;
+    private int uViewPosLocation;
     private GLMesh glMesh;
     private float[] mMatrix;
     private float[] mvpMatrix;
     private GLLights glLights;
     private int shadowMap;
     private float[] shadowMVPMatrix = new float[16];
+    private Vector3f viewPos;
 
     public SceneWithShadowShader(){
         super("vs_scene_shadow.glsl", "fs_scene_shadow.glsl");
@@ -39,6 +42,7 @@ public final class SceneWithShadowShader extends GLShader {
         uLightsColorLocation = GLES20.glGetUniformLocation(programShader,"uLightsColor");
         uShadowMapLocation = GLES20.glGetUniformLocation(programShader,"uShadowMap");
         uShadowMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uShadowMVPMatrix");
+        uViewPosLocation = GLES20.glGetUniformLocation(programShader,"uViewPos");
     }
 
     @Override
@@ -58,6 +62,7 @@ public final class SceneWithShadowShader extends GLShader {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
         GLES20.glUniform1i(uShadowMapLocation, 0);
         GLES20.glUniformMatrix4fv(uShadowMVPMatrixLocation, 1, false, shadowMVPMatrix, 0);
+        GLES20.glUniform3f(uViewPosLocation, viewPos.x, viewPos.y, viewPos.z);
     }
 
     @Override
@@ -94,6 +99,11 @@ public final class SceneWithShadowShader extends GLShader {
 
     public SceneWithShadowShader setShadowMVPMatrix(float[] shadowMVPMatrix){
         this.shadowMVPMatrix = shadowMVPMatrix;
+        return this;
+    }
+
+    public SceneWithShadowShader setViewPos(Vector3f viewPos){
+        this.viewPos = viewPos;
         return this;
     }
 }

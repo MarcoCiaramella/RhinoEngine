@@ -118,6 +118,7 @@ public final class GLRenderer {
                 sceneShader.setMMatrix(mMatrix);
                 sceneShader.setMvpMatrix(mvpMatrix);
                 sceneShader.setGLLights(glLights);
+                sceneShader.setViewPos(glCamera.getEye());
                 sceneShader.bindData();
                 if (glMesh.getIndices() != null) {
                     GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
@@ -280,6 +281,7 @@ public final class GLRenderer {
                 sceneWithShadowShader.setGLLights(glLights);
                 sceneWithShadowShader.setShadowMap(shadowMap);
                 sceneWithShadowShader.setShadowMVPMatrix(shadowMVPMatrix);
+                sceneWithShadowShader.setViewPos(glCamera.getEye());
                 sceneWithShadowShader.bindData();
                 if (glMesh.getIndices() != null) {
                     GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());

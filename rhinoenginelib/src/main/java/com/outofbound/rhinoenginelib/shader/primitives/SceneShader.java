@@ -5,6 +5,7 @@ import android.opengl.GLES20;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public final class SceneShader extends GLShader {
 
@@ -15,10 +16,12 @@ public final class SceneShader extends GLShader {
     private int aNormalLocation;
     private int uLightsPositionLocation;
     private int uLightsColorLocation;
+    private int uViewPosLocation;
     private GLMesh glMesh;
     private float[] mMatrix;
     private float[] mvpMatrix;
     private GLLights glLights;
+    private Vector3f viewPos;
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
@@ -33,6 +36,7 @@ public final class SceneShader extends GLShader {
         uMMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMMatrix");
         uLightsPositionLocation = GLES20.glGetUniformLocation(programShader,"uLightsPos");
         uLightsColorLocation = GLES20.glGetUniformLocation(programShader,"uLightsColor");
+        uViewPosLocation = GLES20.glGetUniformLocation(programShader,"uViewPos");
     }
 
     @Override
@@ -48,6 +52,7 @@ public final class SceneShader extends GLShader {
         GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
         GLES20.glUniform3fv(uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
         GLES20.glUniform3fv(uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
+        GLES20.glUniform3f(uViewPosLocation, viewPos.x, viewPos.y, viewPos.z);
     }
 
     @Override
@@ -74,6 +79,11 @@ public final class SceneShader extends GLShader {
 
     public SceneShader setGLLights(GLLights glLights){
         this.glLights = glLights;
+        return this;
+    }
+
+    public SceneShader setViewPos(Vector3f viewPos){
+        this.viewPos = viewPos;
         return this;
     }
 
