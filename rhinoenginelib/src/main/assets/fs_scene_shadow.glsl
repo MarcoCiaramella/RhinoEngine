@@ -16,7 +16,7 @@ const float ambientLight = 0.5;
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
-float diffuse(vec3 lightPos, vec3 lightColor);
+vec4 diffuse(vec3 lightPos, vec3 lightColor);
 float calcShadow();
 
 
@@ -25,8 +25,8 @@ void main() {
     gl_FragColor = vColor * (diffuse(uLightsPos[0],uLightsColor[0]) * calcShadow() + ambientLight);
 }
 
-float diffuse(vec3 lightPos, vec3 lightColor){
-    return max(dot(normalize(vNormal), normalize(lightPos-vPosition)), 0.0) * lightColor;
+vec4 diffuse(vec3 lightPos, vec3 lightColor){
+    return vec4(max(dot(normalize(vNormal), normalize(lightPos-vPosition)), 0.0) * lightColor, 1.0);
 }
 
 float unpack(vec4 color){

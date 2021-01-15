@@ -11,15 +11,15 @@ varying vec3 vNormal;
 
 
 
-float diffuse(vec3 lightPos, vec3 lightColor);
+vec4 diffuse(vec3 lightPos, vec3 lightColor);
 
 
 void main() {
     gl_FragColor = vColor * diffuse(uLightsPos[0],uLightsColor[0]);
 }
 
-float diffuse(vec3 lightPos, vec3 lightColor){
-    return max(dot(normalize(vNormal), normalize(lightPos-vPosition)), 0.0) * lightColor;
+vec4 diffuse(vec3 lightPos, vec3 lightColor){
+    return vec4(max(dot(normalize(vNormal), normalize(lightPos-vPosition)), 0.0) * lightColor, 1.0);
 }
 
 
