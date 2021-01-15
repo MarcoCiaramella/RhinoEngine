@@ -8,10 +8,10 @@ import com.outofbound.rhinoenginelib.util.color.Color;
 public class Pane extends GLMesh {
 
     private static final float[] vertices = {
-            -1,-1,1,
-            1,-1,1,
-            1,-1,-1,
-            -1,-1,-1
+            -1,0,1,
+            1,0,1,
+            1,0,-1,
+            -1,0,-1
     };
 
     private static final float[] normals = {

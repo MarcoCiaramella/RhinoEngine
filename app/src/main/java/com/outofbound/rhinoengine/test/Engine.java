@@ -12,7 +12,7 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class Engine extends GLEngine {
 
-    private static final Vector3f CAMERA_EYE = new Vector3f(3,5,4);
+    private static final Vector3f CAMERA_EYE = new Vector3f(3,2,3);
     private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
 
