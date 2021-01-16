@@ -2,9 +2,14 @@
 
 precision highp float;
 
+struct light_dir {
+    vec3 direction;
+    vec3 color;
+    float ambientStrength;
+    float specularStrength;
+};
 
-uniform vec3 uLightsPos[1];
-uniform vec3 uLightsColor[1];
+uniform light_dir light;
 uniform vec3 uViewPos;
 varying vec4 vColor;
 varying vec3 vPosition;

@@ -10,6 +10,7 @@ import com.outofbound.rhinoenginelib.engine.GLEngine;
 import com.outofbound.rhinoenginelib.mesh.util.Ply;
 import com.outofbound.rhinoenginelib.util.color.Color;
 import com.outofbound.rhinoenginelib.util.color.Gradient;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -32,7 +33,9 @@ public abstract class GLMesh {
     private long timeToLive = -1;
     private boolean dead = false;
     private BoundingBox boundingBox = null;
-    private Motion motion = null;
+    public Vector3f position;
+    public Vector3f rotation;
+    public float scale;
 
 
     public GLMesh(@NonNull float[] vertices, int sizeVertex, float[] normals, int[] indices, float[] colors){
@@ -79,11 +82,9 @@ public abstract class GLMesh {
 
     private void init(){
         load();
-        motion = new Motion() {
-            @Override
-            public void move(long ms) {
-            }
-        };
+        position = new Vector3f(0,0,0);
+        rotation = new Vector3f(0,0,0);
+        scale = 1;
     }
 
     private void load(){
@@ -158,37 +159,31 @@ public abstract class GLMesh {
         dead = true;
     }
 
-    public abstract void doTransformation(float[] mMatrix);
+    public abstract void doTransformation(float[] mMatrix, long ms);
 
     public GLMesh rotateX(float[] mvMatrix){
-        Matrix.rotateM(mvMatrix, 0, getMotion().rotation.x, 1, 0, 0);
+        Matrix.rotateM(mvMatrix, 0, rotation.x, 1, 0, 0);
         return this;
     }
 
     public GLMesh rotateY(float[] mvMatrix){
-        Matrix.rotateM(mvMatrix, 0, getMotion().rotation.y, 0, 1, 0);
+        Matrix.rotateM(mvMatrix, 0, rotation.y, 0, 1, 0);
         return this;
     }
 
     public GLMesh rotateZ(float[] mvMatrix){
-        Matrix.rotateM(mvMatrix, 0, getMotion().rotation.z, 0, 0, 1);
+        Matrix.rotateM(mvMatrix, 0, rotation.z, 0, 0, 1);
         return this;
     }
 
     public GLMesh scale(float[] mvMatrix){
-        Matrix.scaleM(mvMatrix, 0, getMotion().scale, getMotion().scale, getMotion().scale);
+        Matrix.scaleM(mvMatrix, 0, scale, scale, scale);
         return this;
     }
 
     public GLMesh translate(float[] mvMatrix){
-        Matrix.translateM(mvMatrix, 0, getMotion().position.x, getMotion().position.y, getMotion().position.z);
+        Matrix.translateM(mvMatrix, 0, position.x, position.y, position.z);
         return this;
-    }
-
-    public void move(long ms){
-        if (motion != null) {
-            motion.move(ms);
-        }
     }
 
     public boolean isDead(long ms){
@@ -310,15 +305,6 @@ public abstract class GLMesh {
 
     public int getNumIndices(){
         return indices.length;
-    }
-
-    public GLMesh setMotion(Motion motion){
-        this.motion = motion;
-        return this;
-    }
-
-    public Motion getMotion(){
-        return motion;
     }
 
     public GLMesh createBoundingBox(){

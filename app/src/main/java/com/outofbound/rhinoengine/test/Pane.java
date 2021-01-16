@@ -4,10 +4,12 @@ public class Pane extends com.outofbound.rhinoenginelib.mesh.primitives.Pane {
 
     public Pane() {
         super(new float[]{1,0,0,1});
+        position.y = -2;
+        scale = 10f;
     }
 
     @Override
-    public void doTransformation(float[] mMatrix) {
+    public void doTransformation(float[] mMatrix, long ms) {
         translate(mMatrix);
         rotateY(mMatrix);
         scale(mMatrix);

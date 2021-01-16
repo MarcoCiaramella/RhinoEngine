@@ -29,9 +29,9 @@ public class Engine extends GLEngine {
         setClearColor(0,0,0,1);
         ID.GLRENDERER_0 = addGLRenderer(new GLRenderer());
         for (int i = 0; i < 100; i++) {
-            getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Cube().setMotion(new CubeMotion()));
+            getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Cube());
         }
-        getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Pane().setMotion(new PaneMotion()));
+        getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Pane());
         addGLTask(new CameraRotation());
         //addGLTask(new LightRotation());
         configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);

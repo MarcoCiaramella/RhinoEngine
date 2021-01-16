@@ -325,10 +325,6 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
             deltaMs = currentMs - ms;
         }
 
-        for (GLRenderer glRenderer : glRenderers){
-            glRenderer.move(deltaMs);
-        }
-
         if (glBlur != null && blurEnabled){
             glBlur.render(glSceneRenderer,getWidth(),getHeight());
         }

@@ -5,12 +5,12 @@ import com.outofbound.rhinoenginelib.util.timer.Timer;
 
 public abstract class TrailMesh extends GLMesh {
 
-    private GLMesh source;
+    private final GLMesh source;
     private Timer timer;
-    private float[] newLine;
-    private float[] newColors;
-    private float[] color;
-    private int length;
+    private final float[] newLine;
+    private final float[] newColors;
+    private final float[] color;
+    private final int length;
 
     public TrailMesh(GLMesh source, float[] color, int length, long ms) {
         super(new float[]{},3,null,null,new float[]{});
@@ -27,26 +27,6 @@ public abstract class TrailMesh extends GLMesh {
         super.onAdd();
         removeAllLines();
         timer = new Timer(timer.getMs());
-    }
-
-    @Override
-    public void move(long ms) {
-        if (timer.isOver(ms)){
-            if (getNumLines() == length){
-                removeLine();
-            }
-            addLine();
-            addColors();
-            int line = 0;
-            for (int i = 0; i < getColors().length; i += 8){
-                float alpha = line/(float)getNumLines();
-                getColors()[i+3] = alpha;
-                getColors()[i+7] = alpha;
-                line++;
-            }
-            reloadVertices();
-            reloadColors();
-        }
     }
 
     private void addLine(){
@@ -82,6 +62,26 @@ public abstract class TrailMesh extends GLMesh {
         int numVertices = getNumVertices();
         removeVertices(0,numVertices);
         removeColors(0,numVertices);
+    }
+
+    @Override
+    public void doTransformation(float[] mMatrix, long ms) {
+        if (timer.isOver(ms)){
+            if (getNumLines() == length){
+                removeLine();
+            }
+            addLine();
+            addColors();
+            int line = 0;
+            for (int i = 0; i < getColors().length; i += 8){
+                float alpha = line/(float)getNumLines();
+                getColors()[i+3] = alpha;
+                getColors()[i+7] = alpha;
+                line++;
+            }
+            reloadVertices();
+            reloadColors();
+        }
     }
 
 }

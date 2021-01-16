@@ -109,7 +109,7 @@ public final class GLRenderer {
         for (GLMesh glMesh : glMeshes) {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
-                glMesh.doTransformation(mMatrix);
+                glMesh.doTransformation(mMatrix,ms);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
@@ -143,7 +143,7 @@ public final class GLRenderer {
         for (GLMesh glMesh : glMeshes) {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
-                glMesh.doTransformation(mMatrix);
+                glMesh.doTransformation(mMatrix,ms);
                 Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
@@ -161,16 +161,6 @@ public final class GLRenderer {
             else {
                 glMeshes.remove(glMesh);
             }
-        }
-    }
-
-    /**
-     * Move the mesh.
-     * @param ms engine time in milliseconds.
-     */
-    public void move(long ms){
-        for (GLMesh glMesh : glMeshes) {
-            glMesh.move(ms);
         }
     }
 
@@ -269,7 +259,7 @@ public final class GLRenderer {
         for (GLMesh glMesh : glMeshes) {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
-                glMesh.doTransformation(mMatrix);
+                glMesh.doTransformation(mMatrix,ms);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
                 Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
