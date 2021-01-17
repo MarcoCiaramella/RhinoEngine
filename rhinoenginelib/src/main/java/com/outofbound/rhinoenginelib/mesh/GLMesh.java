@@ -33,9 +33,9 @@ public abstract class GLMesh {
     private long timeToLive = -1;
     private boolean dead = false;
     private BoundingBox boundingBox = null;
-    public Vector3f position;
-    public Vector3f rotation;
-    public float scale;
+    protected Vector3f position;
+    protected Vector3f rotation;
+    protected float scale;
 
 
     public GLMesh(@NonNull float[] vertices, int sizeVertex, float[] normals, int[] indices, float[] colors){
@@ -330,5 +330,17 @@ public abstract class GLMesh {
      */
     public BoundingBox getBoundingBox(){
         return boundingBox;
+    }
+
+    public Vector3f getPosition(){
+        return position;
+    }
+
+    public Vector3f getRotation(){
+        return rotation;
+    }
+
+    public float getScale(){
+        return scale;
     }
 }

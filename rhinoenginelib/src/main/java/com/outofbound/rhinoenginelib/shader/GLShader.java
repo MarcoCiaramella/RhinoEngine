@@ -18,12 +18,8 @@ public abstract class GLShader {
         GLES20.glAttachShader(programShader, compile(GLES20.GL_VERTEX_SHADER,
                 TextFileReader.getString(GLEngine.getInstance().getContext(), vs)));
         GLES20.glLinkProgram(programShader);
-
-        GLES20.glUseProgram(programShader);
-        config(programShader);
     }
 
-    public abstract void config(int programShader);
     public abstract void bindData();
     public abstract void unbindData();
 
@@ -36,5 +32,13 @@ public abstract class GLShader {
 
     public int getProgramShader(){
         return programShader;
+    }
+
+    protected int getAttrib(String name){
+        return GLES20.glGetAttribLocation(programShader,name);
+    }
+
+    protected int getUniform(String name){
+        return GLES20.glGetUniformLocation(programShader,name);
     }
 }

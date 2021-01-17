@@ -1,138 +1,39 @@
 package com.outofbound.rhinoenginelib.light;
 
-import androidx.annotation.NonNull;
 
-import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
-import java.util.Arrays;
+import com.outofbound.rhinoenginelib.util.list.BigList;
+
 
 
 public class GLLights {
 
-    private final GLLight[] lights;
-    private final float[] lightsPositionArray;
-    private final float[] lightsColorArray;
-    private final int MAX_SIZE;
-    private final int MIN_ID = 0;
-    private final int MAX_ID;
-    public static final int NULL_ID = -1;
+    private GLDirLight glDirLight;
+    private final BigList<GLPointLight> glPointLights;
+    private static final int MAX_NUM_POINT_LIGHTS = 16;
 
-
-    public GLLights(int maxSize){
-        MAX_SIZE = maxSize;
-        MAX_ID = MAX_SIZE-1;
-        lights = new GLLight[MAX_SIZE];
-        lightsPositionArray = new float[MAX_SIZE*3];
-        lightsColorArray = new float[MAX_SIZE*4];
-        Arrays.fill(lights,null);
+    public GLLights(GLDirLight glDirLight){
+        this.glDirLight = glDirLight;
+        glPointLights = new BigList<>();
     }
 
-    /**
-     * Add light.
-     * @param id the id must be >= MIN_ID and <= MAX_ID.
-     * @param light the GLLight to add.
-     */
-    public synchronized void add(int id, @NonNull GLLight light){
-        if (id >= MIN_ID && id <= MAX_ID) {
-            lights[id] = light;
+    public GLLights setGLDirLight(GLDirLight glDirLight){
+        this.glDirLight = glDirLight;
+        return this;
+    }
+
+    public GLDirLight getGLDirLight(){
+        return this.glDirLight;
+    }
+
+    public int addGLPointLight(GLPointLight glPointLight){
+        if (glPointLights.size() < MAX_NUM_POINT_LIGHTS) {
+            return glPointLights.add(glPointLight);
         }
+        return -1;
     }
 
-    /**
-     * Return the light with the specified id.
-     * @param id the id must be >= MIN_ID and <= MAX_ID.
-     * @return the GLLight, null if id is out of range.
-     */
-    public GLLight getLight(int id){
-        if (id >= MIN_ID && id <= MAX_ID) {
-            return lights[id];
-        }
-        return null;
-    }
-
-    /**
-     * Remove light based on id.
-     * @param id the id must be >= MIN_ID and <= MAX_ID.
-     */
-    public synchronized void remove(int id){
-        if (id >= MIN_ID && id <= MAX_ID){
-            lights[id] = null;
-        }
-    }
-
-    public synchronized void removeAll(){
-        for (int id = MIN_ID; id <= MAX_ID; id++){
-            remove(id);
-        }
-    }
-
-    public synchronized int size(){
-        int numLights = 0;
-        for (GLLight light : lights){
-            if (light != null){
-                numLights++;
-            }
-        }
-        return numLights;
-    }
-
-    private int toArray(Vector3f v, float[] out, int index){
-        out[index++] = v.x;
-        out[index++] = v.y;
-        out[index++] = v.z;
-        return index;
-    }
-
-    private int toArray(float f, float[] out, int index){
-        out[index++] = f;
-        return index;
-    }
-
-    public synchronized float[] getPositions(){
-        int index = 0;
-        for (GLLight light : lights){
-            if (light != null) {
-                index = toArray(light.getPosition(), lightsPositionArray, index);
-            }
-        }
-        if (index == 0){
-            return null;
-        }
-        return lightsPositionArray;
-    }
-
-    public synchronized float[] getColors(){
-        int index = 0;
-        for (GLLight light : lights){
-            if (light != null) {
-                index = toArray(light.getColor(), lightsColorArray, index);
-            }
-        }
-        if (index == 0){
-            return null;
-        }
-        return lightsColorArray;
-    }
-
-    public synchronized int nextAvailableID(){
-        for (int id = MIN_ID; id <= MAX_ID; id++){
-            if (lights[id] == null){
-                return id;
-            }
-        }
-        return NULL_ID;
-    }
-
-    public int getMaxSize(){
-        return MAX_SIZE;
-    }
-
-    public GLLight getFirstLight(){
-        for (GLLight glLight : lights){
-            if (glLight != null){
-                return glLight;
-            }
-        }
-        return null;
+    public BigList<GLPointLight> getGLPointLights(){
+        return glPointLights;
     }
 }

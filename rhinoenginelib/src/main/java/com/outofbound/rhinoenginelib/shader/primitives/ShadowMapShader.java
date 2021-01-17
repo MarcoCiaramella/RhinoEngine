@@ -7,8 +7,6 @@ import com.outofbound.rhinoenginelib.shader.GLShader;
 
 public final class ShadowMapShader extends GLShader {
 
-    private int uMVPMatrixLocation;
-    private int aPositionLocation;
     private GLMesh glMesh;
     private float[] mvpMatrix;
 
@@ -17,22 +15,16 @@ public final class ShadowMapShader extends GLShader {
     }
 
     @Override
-    public void config(int programShader) {
-        aPositionLocation = GLES20.glGetAttribLocation(programShader,"aPosition");
-        uMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVPMatrix");
-    }
-
-    @Override
     public void bindData() {
         GLES20.glUseProgram(getProgramShader());
-        GLES20.glEnableVertexAttribArray(aPositionLocation);
-        GLES20.glVertexAttribPointer(aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
-        GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
+        GLES20.glEnableVertexAttribArray(getAttrib("aPosition"));
+        GLES20.glVertexAttribPointer(getAttrib("aPosition"), glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
+        GLES20.glUniformMatrix4fv(getUniform("uMVPMatrix"), 1, false, mvpMatrix, 0);
     }
 
     @Override
     public void unbindData() {
-        GLES20.glDisableVertexAttribArray(aPositionLocation);
+        GLES20.glDisableVertexAttribArray(getAttrib("aPosition"));
     }
 
     public ShadowMapShader setGLMesh(GLMesh glMesh){

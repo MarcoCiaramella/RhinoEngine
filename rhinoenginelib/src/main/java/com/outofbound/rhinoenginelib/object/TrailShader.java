@@ -10,11 +10,6 @@ public class TrailShader extends GLShader {
     }
 
     @Override
-    public void config(int programShader) {
-
-    }
-
-    @Override
     public void bindData() {
     }
 

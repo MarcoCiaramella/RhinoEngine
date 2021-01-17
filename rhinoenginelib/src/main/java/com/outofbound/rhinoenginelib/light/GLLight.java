@@ -4,42 +4,27 @@ import androidx.annotation.NonNull;
 
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
-public class GLLight {
+public abstract class GLLight {
 
-    private Vector3f position;
-    private Vector3f color;
-    private float intensity;
+    private final Vector3f ambientColor;
+    private final Vector3f diffuseColor;
+    private final Vector3f specularColor;
 
-    public GLLight(@NonNull Vector3f position, @NonNull Vector3f color, float intensity){
-        this.position = position.clone();
-        this.color = color.clone();
-        this.intensity = intensity;
+    public GLLight(@NonNull Vector3f ambientColor, @NonNull Vector3f diffuseColor, @NonNull Vector3f specularColor){
+        this.ambientColor = ambientColor;
+        this.diffuseColor = diffuseColor;
+        this.specularColor = specularColor;
     }
 
-    public GLLight setPosition(Vector3f position){
-        this.position = position.clone();
-        return this;
+    public Vector3f getAmbientColor(){
+        return ambientColor;
     }
 
-    public GLLight setColor(Vector3f color){
-        this.color = color.clone();
-        return this;
+    public Vector3f getDiffuseColor(){
+        return diffuseColor;
     }
 
-    public GLLight setIntensity(float intensity){
-        this.intensity = intensity;
-        return this;
-    }
-
-    public Vector3f getPosition(){
-        return position;
-    }
-
-    public Vector3f getColor(){
-        return color;
-    }
-
-    public float getIntensity(){
-        return intensity;
+    public Vector3f getSpecularColor(){
+        return specularColor;
     }
 }

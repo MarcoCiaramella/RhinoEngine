@@ -4,7 +4,7 @@ import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
-import com.outofbound.rhinoenginelib.light.GLLight;
+import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
 
@@ -13,9 +13,9 @@ public class GLShadowMap {
     private final GLRendererOnTexture shadowMapRenderer;
     private final GLCameraOrthographic shadowMapCamera;
 
-    public GLShadowMap(int resolution, GLLight light, GLCamera glCamera){
+    public GLShadowMap(int resolution, GLLights glLights, GLCamera glCamera){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
-        shadowMapCamera = new GLCameraOrthographic(light.getPosition(), glCamera.getUp(), glCamera.getCenter(), glCamera.getNear(), glCamera.getFar(), 10);
+        shadowMapCamera = new GLCameraOrthographic(glLights.getGLPointLights().get(0).getPosition(), glCamera.getUp(), glCamera.getCenter(), glCamera.getNear(), glCamera.getFar(), 10);
     }
 
     public GLCameraOrthographic getShadowMapCamera(){

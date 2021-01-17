@@ -38,7 +38,7 @@ public abstract class GLCamera {
 
     protected void createVpMatrix(){
         if (glMeshToFollow != null) {
-            center.copy(glMeshToFollow.getMotion().position);
+            center.copy(glMeshToFollow.getPosition());
             eye.add(center, eyeRes);
         }
         else if (pointToFollow != null){

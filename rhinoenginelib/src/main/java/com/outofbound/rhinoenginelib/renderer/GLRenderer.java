@@ -4,7 +4,7 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.GLCamera;
-import com.outofbound.rhinoenginelib.light.GLLight;
+import com.outofbound.rhinoenginelib.light.GLDirLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
@@ -43,9 +43,7 @@ public final class GLRenderer {
     public GLRenderer(){
         sceneShader = new SceneShader();
         glMeshes = new BigList<>();
-        glLights = new GLLights(1);
-        GLLight glLight = new GLLight(new Vector3f(20,30,50),new Vector3f(1,1,1),1000);
-        glLights.add(0,glLight);
+        glLights = new GLLights(new GLDirLight(new Vector3f(0,-1,0),new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1)));
         glSceneRenderer = this::renderSceneShadowMap;
     }
 
@@ -217,11 +215,11 @@ public final class GLRenderer {
      * @return this GLRenderer.
      */
     public GLRenderer configShadow(int resolution, GLCamera glCamera){
-        if (glLights.size() > 0) {
+        /*if (glLights.size() > 0) {
             glShadowMap = new GLShadowMap(resolution,glLights.getFirstLight(),glCamera);
             shadowMapShader = new ShadowMapShader();
             sceneWithShadowShader = new SceneWithShadowShader();
-        }
+        }*/
         return this;
     }
 

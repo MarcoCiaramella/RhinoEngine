@@ -2,23 +2,15 @@ package com.outofbound.rhinoenginelib.shader.primitives;
 
 import android.opengl.GLES20;
 
+import com.outofbound.rhinoenginelib.light.GLDirLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
+import com.outofbound.rhinoenginelib.light.GLPointLight;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public final class SceneWithShadowShader extends GLShader {
 
-    private int uMVPMatrixLocation;
-    private int uMMatrixLocation;
-    private int aPositionLocation;
-    private int aColorLocation;
-    private int aNormalLocation;
-    private int uLightsPositionLocation;
-    private int uLightsColorLocation;
-    private int uShadowMapLocation;
-    private int uShadowMVPMatrixLocation;
-    private int uViewPosLocation;
     private GLMesh glMesh;
     private float[] mMatrix;
     private float[] mvpMatrix;
@@ -32,44 +24,46 @@ public final class SceneWithShadowShader extends GLShader {
     }
 
     @Override
-    public void config(int programShader) {
-        aPositionLocation = GLES20.glGetAttribLocation(programShader,"aPosition");
-        aColorLocation = GLES20.glGetAttribLocation(programShader,"aColor");
-        aNormalLocation = GLES20.glGetAttribLocation(programShader,"aNormal");
-        uMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMVPMatrix");
-        uMMatrixLocation = GLES20.glGetUniformLocation(programShader,"uMMatrix");
-        uLightsPositionLocation = GLES20.glGetUniformLocation(programShader,"uLightsPos");
-        uLightsColorLocation = GLES20.glGetUniformLocation(programShader,"uLightsColor");
-        uShadowMapLocation = GLES20.glGetUniformLocation(programShader,"uShadowMap");
-        uShadowMVPMatrixLocation = GLES20.glGetUniformLocation(programShader,"uShadowMVPMatrix");
-        uViewPosLocation = GLES20.glGetUniformLocation(programShader,"uViewPos");
-    }
-
-    @Override
     public void bindData() {
         GLES20.glUseProgram(getProgramShader());
-        GLES20.glEnableVertexAttribArray(aPositionLocation);
-        GLES20.glEnableVertexAttribArray(aNormalLocation);
-        GLES20.glEnableVertexAttribArray(aColorLocation);
-        GLES20.glVertexAttribPointer(aPositionLocation, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
-        GLES20.glVertexAttribPointer(aNormalLocation, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
-        GLES20.glVertexAttribPointer(aColorLocation, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
-        GLES20.glUniformMatrix4fv(uMMatrixLocation, 1, false, mMatrix, 0);
-        GLES20.glUniformMatrix4fv(uMVPMatrixLocation, 1, false, mvpMatrix, 0);
-        GLES20.glUniform3fv(uLightsPositionLocation, glLights.size(), glLights.getPositions(), 0);
-        GLES20.glUniform3fv(uLightsColorLocation, glLights.size(), glLights.getColors(), 0);
+        GLES20.glEnableVertexAttribArray(getAttrib("aPosition"));
+        GLES20.glEnableVertexAttribArray(getAttrib("aNormal"));
+        GLES20.glEnableVertexAttribArray(getAttrib("aColor"));
+        GLES20.glVertexAttribPointer(getAttrib("aPosition"), glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
+        GLES20.glVertexAttribPointer(getAttrib("aNormal"), 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
+        GLES20.glVertexAttribPointer(getAttrib("aColor"), 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
+        GLES20.glUniformMatrix4fv(getUniform("uMMatrix"), 1, false, mMatrix, 0);
+        GLES20.glUniformMatrix4fv(getUniform("uMVPMatrix"), 1, false, mvpMatrix, 0);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
-        GLES20.glUniform1i(uShadowMapLocation, 0);
-        GLES20.glUniformMatrix4fv(uShadowMVPMatrixLocation, 1, false, shadowMVPMatrix, 0);
-        GLES20.glUniform3f(uViewPosLocation, viewPos.x, viewPos.y, viewPos.z);
+        GLES20.glUniform1i(getUniform("uShadowMap"), 0);
+        GLES20.glUniformMatrix4fv(getUniform("uShadowMVPMatrix"), 1, false, shadowMVPMatrix, 0);
+        GLES20.glUniform3f(getUniform("uViewPos"), viewPos.x, viewPos.y, viewPos.z);
+        GLDirLight glDirLight = glLights.getGLDirLight();
+        GLES20.glUniform3f(getUniform("uDirLight.direction"), glDirLight.getDirection().x, glDirLight.getDirection().y, glDirLight.getDirection().z);
+        GLES20.glUniform3f(getUniform("uDirLight.ambientColor"), glDirLight.getAmbientColor().x, glDirLight.getAmbientColor().y, glDirLight.getAmbientColor().z);
+        GLES20.glUniform3f(getUniform("uDirLight.diffuseColor"), glDirLight.getDiffuseColor().x, glDirLight.getDiffuseColor().y, glDirLight.getDiffuseColor().z);
+        GLES20.glUniform3f(getUniform("uDirLight.specularColor"), glDirLight.getSpecularColor().x, glDirLight.getSpecularColor().y, glDirLight.getSpecularColor().z);
+        GLES20.glUniform1i(getUniform("uNumPointLights"), glLights.getGLPointLights().size());
+        int i = 0;
+        for (GLPointLight glPointLight : glLights.getGLPointLights()){
+            String name = "uPointLights["+i+"]";
+            i++;
+            GLES20.glUniform3f(getUniform(name+".position"), glPointLight.getPosition().x, glPointLight.getPosition().y, glPointLight.getPosition().z);
+            GLES20.glUniform1f(getUniform(name+".constant"), glPointLight.getConstant());
+            GLES20.glUniform1f(getUniform(name+".linear"), glPointLight.getLinear());
+            GLES20.glUniform1f(getUniform(name+".quadratic"), glPointLight.getQuadratic());
+            GLES20.glUniform3f(getUniform(name+".ambientColor"), glPointLight.getAmbientColor().x, glPointLight.getAmbientColor().y, glPointLight.getAmbientColor().z);
+            GLES20.glUniform3f(getUniform(name+".diffuseColor"), glPointLight.getDiffuseColor().x, glPointLight.getDiffuseColor().y, glPointLight.getDiffuseColor().z);
+            GLES20.glUniform3f(getUniform(name+".specularColor"), glPointLight.getSpecularColor().x, glPointLight.getSpecularColor().y, glPointLight.getSpecularColor().z);
+        }
     }
 
     @Override
     public void unbindData() {
-        GLES20.glDisableVertexAttribArray(aPositionLocation);
-        GLES20.glDisableVertexAttribArray(aNormalLocation);
-        GLES20.glDisableVertexAttribArray(aColorLocation);
+        GLES20.glDisableVertexAttribArray(getAttrib("aPosition"));
+        GLES20.glDisableVertexAttribArray(getAttrib("aNormal"));
+        GLES20.glDisableVertexAttribArray(getAttrib("aColor"));
     }
 
     public SceneWithShadowShader setGLMesh(GLMesh glMesh){
