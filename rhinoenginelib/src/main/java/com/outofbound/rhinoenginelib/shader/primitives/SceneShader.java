@@ -23,7 +23,7 @@ public final class SceneShader extends GLShader {
 
     @Override
     public void bindData() {
-        GLES20.glUseProgram(getProgramShader());
+        GLES20.glUseProgram(getProgram());
         GLES20.glEnableVertexAttribArray(getAttrib("aPosition"));
         GLES20.glEnableVertexAttribArray(getAttrib("aNormal"));
         GLES20.glEnableVertexAttribArray(getAttrib("aColor"));
