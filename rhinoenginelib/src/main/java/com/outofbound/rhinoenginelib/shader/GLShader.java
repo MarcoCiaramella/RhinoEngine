@@ -35,10 +35,17 @@ public abstract class GLShader {
     }
 
     protected int getAttrib(String name){
-        return GLES20.glGetAttribLocation(programShader,name);
+        return check(GLES20.glGetAttribLocation(programShader,name));
     }
 
     protected int getUniform(String name){
-        return GLES20.glGetUniformLocation(programShader,name);
+        return check(GLES20.glGetUniformLocation(programShader,name));
+    }
+
+    private int check(int location){
+        if (location == -1){
+            throw new RuntimeException("RuntimeException: location not found");
+        }
+        return location;
     }
 }
