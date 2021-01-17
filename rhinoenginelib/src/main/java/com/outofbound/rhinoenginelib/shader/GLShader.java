@@ -12,7 +12,6 @@ public abstract class GLShader {
 
     public GLShader(String vs, String fs){
         programShader = GLES20.glCreateProgram();
-
         GLES20.glAttachShader(programShader, compile(GLES20.GL_FRAGMENT_SHADER,
                 TextFileReader.getString(GLEngine.getInstance().getContext(), fs)));
         GLES20.glAttachShader(programShader, compile(GLES20.GL_VERTEX_SHADER,
