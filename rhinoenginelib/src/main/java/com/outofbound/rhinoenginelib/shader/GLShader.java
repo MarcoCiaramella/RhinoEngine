@@ -44,7 +44,7 @@ public abstract class GLShader {
 
     private int check(String name, int location){
         if (location == -1){
-            throw new RuntimeException("RuntimeException: location "+name+" not found");
+            throw new RuntimeException("Location "+name+" not found");
         }
         return location;
     }
