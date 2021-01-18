@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 
 import com.outofbound.rhinoenginelib.camera.GLCameraPerspective;
 import com.outofbound.rhinoenginelib.engine.GLEngine;
+import com.outofbound.rhinoenginelib.light.GLPointLight;
 import com.outofbound.rhinoenginelib.renderer.GLRenderer;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
@@ -36,6 +37,15 @@ public class Engine extends GLEngine {
         //addGLTask(new LightRotation());
         configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
         //getGLRenderer(ID.GLRENDERER_0).configShadow(GLRendererOnTexture.RESOLUTION_4096,getGLCamera()).enableShadow();
+        getGLRenderer(ID.GLRENDERER_0).getGLLights().addGLPointLight(new GLPointLight(
+                new Vector3f(0,0,0),
+                new Vector3f(0.2f,0.2f,0.2f),
+                new Vector3f(0.5f,0.5f,0.5f),
+                new Vector3f(1,1,1),
+                1.0f,
+                0.22f,
+                0.2f
+        ));
     }
 
     public void blurOn(){

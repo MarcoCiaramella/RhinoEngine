@@ -26,6 +26,7 @@ public final class SceneShader extends GLShader {
     private final int uViewPos;
     private final ArrayList<Integer> uDirLight;
     private final int uNumPointLights;
+    private final ArrayList<ArrayList<Integer>> uPointLights;
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
@@ -42,6 +43,7 @@ public final class SceneShader extends GLShader {
         uDirLight.add(getUniform("uDirLight.diffuseColor"));
         uDirLight.add(getUniform("uDirLight.specularColor"));
         uNumPointLights = getUniform("uNumPointLights");
+        uPointLights = new ArrayList<>();
     }
 
     @Override
@@ -64,15 +66,30 @@ public final class SceneShader extends GLShader {
         GLES20.glUniform1i(uNumPointLights, glLights.getGLPointLights().size());
         int i = 0;
         for (GLPointLight glPointLight : glLights.getGLPointLights()){
-            String name = "uPointLights["+i+"]";
+            ArrayList<Integer> uPointLight;
+            if (i+1 > uPointLights.size()){
+                String name = "uPointLights["+i+"]";
+                uPointLight = new ArrayList<>();
+                uPointLight.add(getUniform(name+".position"));
+                uPointLight.add(getUniform(name+".constant"));
+                uPointLight.add(getUniform(name+".linear"));
+                uPointLight.add(getUniform(name+".quadratic"));
+                uPointLight.add(getUniform(name+".ambientColor"));
+                uPointLight.add(getUniform(name+".diffuseColor"));
+                uPointLight.add(getUniform(name+".specularColor"));
+                uPointLights.add(uPointLight);
+            }
+            else {
+                uPointLight = uPointLights.get(i);
+            }
+            GLES20.glUniform3f(uPointLight.get(0), glPointLight.getPosition().x, glPointLight.getPosition().y, glPointLight.getPosition().z);
+            GLES20.glUniform1f(uPointLight.get(1), glPointLight.getConstant());
+            GLES20.glUniform1f(uPointLight.get(2), glPointLight.getLinear());
+            GLES20.glUniform1f(uPointLight.get(3), glPointLight.getQuadratic());
+            GLES20.glUniform3f(uPointLight.get(4), glPointLight.getAmbientColor().x, glPointLight.getAmbientColor().y, glPointLight.getAmbientColor().z);
+            GLES20.glUniform3f(uPointLight.get(5), glPointLight.getDiffuseColor().x, glPointLight.getDiffuseColor().y, glPointLight.getDiffuseColor().z);
+            GLES20.glUniform3f(uPointLight.get(6), glPointLight.getSpecularColor().x, glPointLight.getSpecularColor().y, glPointLight.getSpecularColor().z);
             i++;
-            GLES20.glUniform3f(getUniform(name+".position"), glPointLight.getPosition().x, glPointLight.getPosition().y, glPointLight.getPosition().z);
-            GLES20.glUniform1f(getUniform(name+".constant"), glPointLight.getConstant());
-            GLES20.glUniform1f(getUniform(name+".linear"), glPointLight.getLinear());
-            GLES20.glUniform1f(getUniform(name+".quadratic"), glPointLight.getQuadratic());
-            GLES20.glUniform3f(getUniform(name+".ambientColor"), glPointLight.getAmbientColor().x, glPointLight.getAmbientColor().y, glPointLight.getAmbientColor().z);
-            GLES20.glUniform3f(getUniform(name+".diffuseColor"), glPointLight.getDiffuseColor().x, glPointLight.getDiffuseColor().y, glPointLight.getDiffuseColor().z);
-            GLES20.glUniform3f(getUniform(name+".specularColor"), glPointLight.getSpecularColor().x, glPointLight.getSpecularColor().y, glPointLight.getSpecularColor().z);
         }
     }
 
