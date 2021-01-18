@@ -24,7 +24,6 @@ public final class GLRenderer {
     private SceneWithShadowShader sceneWithShadowShader;
     private final BigList<GLMesh> glMeshes;
     private final float[] mMatrix = new float[16];
-    private final float[] mvMatrix = new float[16];
     private final float[] mvpMatrix = new float[16];
     private GLLights glLights;
     private boolean faceCullingEnabled = true;
