@@ -31,20 +31,6 @@ varying vec3 vPosition;
 varying vec3 vNormal;
 
 
-vec4 calcDirLight(vec3 normal, vec3 viewDir);
-vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir);
-
-
-
-void main() {
-    vec3 normal = normalize(vNormal);
-    vec3 viewDir = normalize(uViewPos - vPosition);
-    vec4 result = calcDirLight(normal, viewDir);
-    for (int i = 0; i < uNumPointLights; i++){
-        result += calcPointLight(uPointLights[i], normal, viewDir);
-    }
-    gl_FragColor = result;
-}
 
 float diffuseLighting(vec3 normal, vec3 lightDir){
     return max(dot(normal, lightDir), 0.0);
@@ -80,3 +66,16 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     specular *= attenuation;
     return ambient + diffuse + specular;
 }
+
+
+
+void main() {
+    vec3 normal = normalize(vNormal);
+    vec3 viewDir = normalize(uViewPos - vPosition);
+    vec4 result = calcDirLight(normal, viewDir);
+    for (int i = 0; i < uNumPointLights; i++){
+        result += calcPointLight(uPointLights[i], normal, viewDir);
+    }
+    gl_FragColor = result;
+}
+
