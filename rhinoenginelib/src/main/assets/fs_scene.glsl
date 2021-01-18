@@ -31,10 +31,8 @@ varying vec3 vPosition;
 varying vec3 vNormal;
 
 
-
 vec4 calcDirLight(vec3 normal, vec3 viewDir);
 vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir);
-
 
 
 
@@ -64,7 +62,7 @@ vec4 calcDirLight(vec3 normal, vec3 viewDir){
     vec4 ambient = vec4(uDirLight.ambientColor, 1.0) * vColor;
     vec4 diffuse = vec4(uDirLight.diffuseColor * diff, 1.0) * vColor;
     vec4 specular = vec4(uDirLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
-    return ambient + diffuse + specualr;
+    return ambient + diffuse + specular;
 }
 
 vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
@@ -80,5 +78,5 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
-    return ambient + diffuse + specualr;
+    return ambient + diffuse + specular;
 }
