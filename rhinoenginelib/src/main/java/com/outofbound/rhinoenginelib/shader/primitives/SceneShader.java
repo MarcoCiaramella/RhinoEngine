@@ -20,6 +20,7 @@ public final class SceneShader extends GLShader {
     private Vector3f viewPos;
     private int shadowMap;
     private float[] shadowMVPMatrix = new float[16];
+    private int shadowEnabled;
     private final int aPosition;
     private final int aNormal;
     private final int aColor;
@@ -31,6 +32,7 @@ public final class SceneShader extends GLShader {
     private final ArrayList<ArrayList<Integer>> uPointLights;
     private final int uShadowMap;
     private final int uShadowMVPMatrix;
+    private final int uShadowEnabled;
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
@@ -50,6 +52,7 @@ public final class SceneShader extends GLShader {
         uPointLights = new ArrayList<>();
         uShadowMap = getUniform("uShadowMap");
         uShadowMVPMatrix = getUniform("uShadowMVPMatrix");
+        uShadowEnabled = getUniform("uShadowEnabled");
     }
 
     @Override
@@ -101,6 +104,7 @@ public final class SceneShader extends GLShader {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
         GLES20.glUniform1i(uShadowMap, 0);
         GLES20.glUniformMatrix4fv(uShadowMVPMatrix, 1, false, shadowMVPMatrix, 0);
+        GLES20.glUniform1i(uShadowEnabled, shadowEnabled);
     }
 
     @Override
@@ -142,6 +146,16 @@ public final class SceneShader extends GLShader {
 
     public SceneShader setShadowMVPMatrix(float[] shadowMVPMatrix){
         this.shadowMVPMatrix = shadowMVPMatrix;
+        return this;
+    }
+
+    public SceneShader setShadowEnabled(boolean shadowEnabled){
+        if (shadowEnabled){
+            this.shadowEnabled = 1;
+        }
+        else {
+            this.shadowEnabled = 0;
+        }
         return this;
     }
 
