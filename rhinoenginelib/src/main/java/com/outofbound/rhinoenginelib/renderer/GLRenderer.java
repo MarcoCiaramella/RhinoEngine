@@ -83,9 +83,7 @@ public final class GLRenderer {
      * @param ms engine time in milliseconds.
      */
     public void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
-
         this.ms = ms;
-
         if (!shadowEnabled){
             renderScene(glCamera);
         }
