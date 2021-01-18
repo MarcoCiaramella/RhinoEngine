@@ -20,7 +20,7 @@ public final class SceneShader extends GLShader {
     private Vector3f viewPos;
     private int shadowMap;
     private float[] shadowMVPMatrix = new float[16];
-    private int shadowEnabled;
+    private int shadowEnabled = 0;
     private final int aPosition;
     private final int aNormal;
     private final int aColor;
