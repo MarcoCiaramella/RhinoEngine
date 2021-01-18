@@ -9,6 +9,8 @@ import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.shader.GLShader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
+import java.util.ArrayList;
+
 public final class SceneShader extends GLShader {
 
     private GLMesh glMesh;
@@ -16,29 +18,50 @@ public final class SceneShader extends GLShader {
     private float[] mvpMatrix;
     private GLLights glLights;
     private Vector3f viewPos;
+    private final int aPosition;
+    private final int aNormal;
+    private final int aColor;
+    private final int uMMatrix;
+    private final int uMVPMatrix;
+    private final int uViewPos;
+    private final ArrayList<Integer> uDirLight;
+    private final int uNumPointLights;
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
+        GLES20.glUseProgram(getProgram());
+        aPosition = getAttrib("aPosition");
+        aNormal = getAttrib("aNormal");
+        aColor = getAttrib("aColor");
+        uMMatrix = getUniform("uMMatrix");
+        uMVPMatrix = getUniform("uMVPMatrix");
+        uViewPos = getUniform("uViewPos");
+        uDirLight = new ArrayList<>();
+        uDirLight.add(getUniform("uDirLight.direction"));
+        uDirLight.add(getUniform("uDirLight.ambientColor"));
+        uDirLight.add(getUniform("uDirLight.diffuseColor"));
+        uDirLight.add(getUniform("uDirLight.specularColor"));
+        uNumPointLights = getUniform("uNumPointLights");
     }
 
     @Override
     public void bindData() {
         GLES20.glUseProgram(getProgram());
-        GLES20.glEnableVertexAttribArray(getAttrib("aPosition"));
-        GLES20.glEnableVertexAttribArray(getAttrib("aNormal"));
-        GLES20.glEnableVertexAttribArray(getAttrib("aColor"));
-        GLES20.glVertexAttribPointer(getAttrib("aPosition"), glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
-        GLES20.glVertexAttribPointer(getAttrib("aNormal"), 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
-        GLES20.glVertexAttribPointer(getAttrib("aColor"), 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
-        GLES20.glUniformMatrix4fv(getUniform("uMMatrix"), 1, false, mMatrix, 0);
-        GLES20.glUniformMatrix4fv(getUniform("uMVPMatrix"), 1, false, mvpMatrix, 0);
-        GLES20.glUniform3f(getUniform("uViewPos"), viewPos.x, viewPos.y, viewPos.z);
+        GLES20.glEnableVertexAttribArray(aPosition);
+        GLES20.glEnableVertexAttribArray(aNormal);
+        GLES20.glEnableVertexAttribArray(aColor);
+        GLES20.glVertexAttribPointer(aPosition, glMesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, glMesh.getVertexBuffer());
+        GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0, glMesh.getNormalBuffer());
+        GLES20.glVertexAttribPointer(aColor, 4, GLES20.GL_FLOAT, false, 0, glMesh.getColorBuffer());
+        GLES20.glUniformMatrix4fv(uMMatrix, 1, false, mMatrix, 0);
+        GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);
+        GLES20.glUniform3f(uViewPos, viewPos.x, viewPos.y, viewPos.z);
         GLDirLight glDirLight = glLights.getGLDirLight();
-        GLES20.glUniform3f(getUniform("uDirLight.direction"), glDirLight.getDirection().x, glDirLight.getDirection().y, glDirLight.getDirection().z);
-        GLES20.glUniform3f(getUniform("uDirLight.ambientColor"), glDirLight.getAmbientColor().x, glDirLight.getAmbientColor().y, glDirLight.getAmbientColor().z);
-        GLES20.glUniform3f(getUniform("uDirLight.diffuseColor"), glDirLight.getDiffuseColor().x, glDirLight.getDiffuseColor().y, glDirLight.getDiffuseColor().z);
-        GLES20.glUniform3f(getUniform("uDirLight.specularColor"), glDirLight.getSpecularColor().x, glDirLight.getSpecularColor().y, glDirLight.getSpecularColor().z);
-        GLES20.glUniform1i(getUniform("uNumPointLights"), glLights.getGLPointLights().size());
+        GLES20.glUniform3f(uDirLight.get(0), glDirLight.getDirection().x, glDirLight.getDirection().y, glDirLight.getDirection().z);
+        GLES20.glUniform3f(uDirLight.get(1), glDirLight.getAmbientColor().x, glDirLight.getAmbientColor().y, glDirLight.getAmbientColor().z);
+        GLES20.glUniform3f(uDirLight.get(2), glDirLight.getDiffuseColor().x, glDirLight.getDiffuseColor().y, glDirLight.getDiffuseColor().z);
+        GLES20.glUniform3f(uDirLight.get(3), glDirLight.getSpecularColor().x, glDirLight.getSpecularColor().y, glDirLight.getSpecularColor().z);
+        GLES20.glUniform1i(uNumPointLights, glLights.getGLPointLights().size());
         int i = 0;
         for (GLPointLight glPointLight : glLights.getGLPointLights()){
             String name = "uPointLights["+i+"]";
@@ -55,9 +78,9 @@ public final class SceneShader extends GLShader {
 
     @Override
     public void unbindData() {
-        GLES20.glDisableVertexAttribArray(getAttrib("aPosition"));
-        GLES20.glDisableVertexAttribArray(getAttrib("aNormal"));
-        GLES20.glDisableVertexAttribArray(getAttrib("aColor"));
+        GLES20.glDisableVertexAttribArray(aPosition);
+        GLES20.glDisableVertexAttribArray(aNormal);
+        GLES20.glDisableVertexAttribArray(aColor);
     }
 
     public SceneShader setGLMesh(GLMesh glMesh){
