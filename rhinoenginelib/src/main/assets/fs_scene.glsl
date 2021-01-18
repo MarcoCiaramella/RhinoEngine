@@ -26,9 +26,13 @@ uniform DirLight uDirLight;
 uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
 uniform int uNumPointLights;
 uniform vec3 uViewPos;
+uniform sampler2D uShadowMap;
+uniform int uShadowEnabled;
 varying vec4 vColor;
 varying vec3 vPosition;
 varying vec3 vNormal;
+varying vec4 vPositionFromLight;
+const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
 
@@ -67,6 +71,23 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     return ambient + diffuse + specular;
 }
 
+float unpack(vec4 color){
+    return dot(color, bitShifts);
+}
+
+// return 0.0 if in shadow.
+// return 1.0 if not in shadow.
+float calcShadow(){
+    if (uShadowEnabled == 0){
+        return 1.0;
+    }
+    vec4 positionFromLight = vPositionFromLight / vPositionFromLight.w;
+    positionFromLight = (positionFromLight + 1.0) / 2.0;
+    float closestFragmentZ = unpack(texture2D(uShadowMap, positionFromLight.xy));
+    float currentFragmentZ = positionFromLight.z;
+    return float(closestFragmentZ > currentFragmentZ);
+}
+
 
 
 void main() {
@@ -76,6 +97,7 @@ void main() {
     for (int i = 0; i < uNumPointLights; i++){
         result += calcPointLight(uPointLights[i], normal, viewDir);
     }
+    result *= calcShadow();
     gl_FragColor = result;
 }
 

@@ -18,6 +18,8 @@ public final class SceneShader extends GLShader {
     private float[] mvpMatrix;
     private GLLights glLights;
     private Vector3f viewPos;
+    private int shadowMap;
+    private float[] shadowMVPMatrix = new float[16];
     private final int aPosition;
     private final int aNormal;
     private final int aColor;
@@ -91,6 +93,10 @@ public final class SceneShader extends GLShader {
             GLES20.glUniform3f(uPointLight.get(6), glPointLight.getSpecularColor().x, glPointLight.getSpecularColor().y, glPointLight.getSpecularColor().z);
             i++;
         }
+        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
+        GLES20.glUniform1i(getUniform("uShadowMap"), 0);
+        GLES20.glUniformMatrix4fv(getUniform("uShadowMVPMatrix"), 1, false, shadowMVPMatrix, 0);
     }
 
     @Override
@@ -122,6 +128,16 @@ public final class SceneShader extends GLShader {
 
     public SceneShader setViewPos(Vector3f viewPos){
         this.viewPos = viewPos;
+        return this;
+    }
+
+    public SceneShader setShadowMap(int shadowMap){
+        this.shadowMap = shadowMap;
+        return this;
+    }
+
+    public SceneShader setShadowMVPMatrix(float[] shadowMVPMatrix){
+        this.shadowMVPMatrix = shadowMVPMatrix;
         return this;
     }
 
