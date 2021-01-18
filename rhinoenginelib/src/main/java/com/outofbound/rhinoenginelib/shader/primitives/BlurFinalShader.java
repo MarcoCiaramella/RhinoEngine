@@ -13,31 +13,42 @@ public final class BlurFinalShader extends GLShader {
     private FloatBuffer textureCoords;
     private int texture1;
     private int texture2;
+    private final int aPosition;
+    private final int aTexCoords;
+    private final int uTextId1;
+    private final int uTextId2;
+    private final int uMVPMatrix;
 
     public BlurFinalShader() {
         super("vs_blur.glsl", "fs_blur_final.glsl");
+        GLES20.glUseProgram(getProgram());
+        aPosition = getAttrib("aPosition");
+        aTexCoords = getAttrib("aTexCoords");
+        uTextId1 = getUniform("uTextId1");
+        uTextId2 = getUniform("uTextId2");
+        uMVPMatrix = getUniform("uMVPMatrix");
     }
 
     @Override
     public void bindData() {
         GLES20.glUseProgram(getProgram());
-        GLES20.glVertexAttribPointer(getAttrib("aPosition"), 2, GLES20.GL_FLOAT, false, 0, vertices);
-        GLES20.glEnableVertexAttribArray(getAttrib("aPosition"));
-        GLES20.glVertexAttribPointer(getAttrib("aTexCoords"), 2, GLES20.GL_FLOAT, false, 0, textureCoords);
-        GLES20.glEnableVertexAttribArray(getAttrib("aTexCoords"));
+        GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_FLOAT, false, 0, vertices);
+        GLES20.glEnableVertexAttribArray(aPosition);
+        GLES20.glVertexAttribPointer(aTexCoords, 2, GLES20.GL_FLOAT, false, 0, textureCoords);
+        GLES20.glEnableVertexAttribArray(aTexCoords);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture1);
-        GLES20.glUniform1i(getUniform("uTextId1"), 0);
+        GLES20.glUniform1i(uTextId1, 0);
         GLES20.glActiveTexture(GLES20.GL_TEXTURE1);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture2);
-        GLES20.glUniform1i(getUniform("uTextId2"), 1);
-        GLES20.glUniformMatrix4fv(getUniform("uMVPMatrix"), 1, false, vpMatrix, 0);
+        GLES20.glUniform1i(uTextId2, 1);
+        GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, vpMatrix, 0);
     }
 
     @Override
     public void unbindData() {
-        GLES20.glDisableVertexAttribArray(getAttrib("aPosition"));
-        GLES20.glDisableVertexAttribArray(getAttrib("aTexCoords"));
+        GLES20.glDisableVertexAttribArray(aPosition);
+        GLES20.glDisableVertexAttribArray(aTexCoords);
     }
 
     public BlurFinalShader setVpMatrix(float[] vpMatrix){
