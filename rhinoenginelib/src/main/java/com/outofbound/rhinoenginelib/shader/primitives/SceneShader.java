@@ -29,6 +29,8 @@ public final class SceneShader extends GLShader {
     private final ArrayList<Integer> uDirLight;
     private final int uNumPointLights;
     private final ArrayList<ArrayList<Integer>> uPointLights;
+    private final int uShadowMap;
+    private final int uShadowMVPMatrix;
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
@@ -46,6 +48,8 @@ public final class SceneShader extends GLShader {
         uDirLight.add(getUniform("uDirLight.specularColor"));
         uNumPointLights = getUniform("uNumPointLights");
         uPointLights = new ArrayList<>();
+        uShadowMap = getUniform("uShadowMap");
+        uShadowMVPMatrix = getUniform("uShadowMVPMatrix");
     }
 
     @Override
@@ -95,8 +99,8 @@ public final class SceneShader extends GLShader {
         }
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
-        GLES20.glUniform1i(getUniform("uShadowMap"), 0);
-        GLES20.glUniformMatrix4fv(getUniform("uShadowMVPMatrix"), 1, false, shadowMVPMatrix, 0);
+        GLES20.glUniform1i(uShadowMap, 0);
+        GLES20.glUniformMatrix4fv(uShadowMVPMatrix, 1, false, shadowMVPMatrix, 0);
     }
 
     @Override
