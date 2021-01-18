@@ -45,12 +45,12 @@ void main() {
     gl_FragColor = result;
 }
 
-float diffuseLighting(vec3 norm, vec3 lightDir){
-    return max(dot(norm, lightDir), 0.0);
+float diffuseLighting(vec3 normal, vec3 lightDir){
+    return max(dot(normal, lightDir), 0.0);
 }
 
-float specularLighting(vec3 norm, vec3 lightDir, vec3 viewDir){
-    vec3 reflectDir = reflect(-lightDir, norm);
+float specularLighting(vec3 normal, vec3 lightDir, vec3 viewDir){
+    vec3 reflectDir = reflect(-lightDir, normal);
     return pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
 }
 
