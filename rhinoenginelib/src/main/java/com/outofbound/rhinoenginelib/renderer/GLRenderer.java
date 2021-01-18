@@ -42,7 +42,7 @@ public final class GLRenderer {
     public GLRenderer(){
         sceneShader = new SceneShader();
         glMeshes = new BigList<>();
-        glLights = new GLLights(new GLDirLight(new Vector3f(0,-1,0),new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1)));
+        glLights = new GLLights(new GLDirLight(new Vector3f(0.5f,-1,0),new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1)));
         glSceneRenderer = this::renderSceneShadowMap;
     }
 
