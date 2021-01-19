@@ -7,6 +7,7 @@ import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class GLShadowMap {
 
@@ -15,7 +16,7 @@ public class GLShadowMap {
 
     public GLShadowMap(int resolution, GLLights glLights, GLCamera glCamera){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
-        shadowMapCamera = new GLCameraOrthographic(glLights.getGLDirLight().getPositionAlongDirection(glCamera.getEye().length()), glCamera.getUp(), glCamera.getCenter(), glCamera.getNear(), glCamera.getFar(), 10);
+        shadowMapCamera = new GLCameraOrthographic(glLights.getGLDirLight().getPositionAlongDirection(100), new Vector3f(0,1,0), new Vector3f(0,0,0), glCamera.getNear(), glCamera.getFar(), 10);
     }
 
     public GLCameraOrthographic getShadowMapCamera(){

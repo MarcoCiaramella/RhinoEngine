@@ -15,7 +15,6 @@ public final class GLCameraOrthographic extends GLCamera{
 
     @Override
     public void loadVpMatrix() {
-        //this();
         Matrix.orthoM(projectionMatrix, 0, -size, size, -size, size, near, far);
         createVpMatrix();
     }
