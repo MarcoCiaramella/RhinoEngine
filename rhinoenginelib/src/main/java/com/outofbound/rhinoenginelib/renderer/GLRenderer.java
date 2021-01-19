@@ -9,7 +9,6 @@ import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
 import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
 import com.outofbound.rhinoenginelib.shader.primitives.SceneShader;
-import com.outofbound.rhinoenginelib.shader.primitives.SceneWithShadowShader;
 import com.outofbound.rhinoenginelib.shader.primitives.ShadowMapShader;
 import com.outofbound.rhinoenginelib.util.list.BigList;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
@@ -21,7 +20,6 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 public final class GLRenderer {
 
     private final SceneShader sceneShader;
-    private SceneWithShadowShader sceneWithShadowShader;
     private final BigList<GLMesh> glMeshes;
     private final float[] mMatrix = new float[16];
     private final float[] mvpMatrix = new float[16];
@@ -84,15 +82,19 @@ public final class GLRenderer {
      */
     public void render(int screenWidth, int screenHeight, GLCamera glCamera, long ms) {
         this.ms = ms;
-        if (!shadowEnabled){
-            renderScene(glCamera);
-        }
-        else {
-            renderSceneWithShadow(screenWidth,screenHeight,glCamera);
-        }
+        renderScene(screenWidth,screenHeight,glCamera);
     }
 
-    private void renderScene(GLCamera glCamera){
+    private void renderScene(int screenWidth, int screenHeight, GLCamera glCamera){
+        sceneShader.setGLLights(glLights);
+        sceneShader.setViewPos(glCamera.getEye());
+        sceneShader.setShadowEnabled(shadowEnabled);
+        if (shadowEnabled){
+            glShadowMap.getShadowMapCamera().loadVpMatrix();
+            int shadowMap = glShadowMap.render(glSceneRenderer,screenWidth,screenHeight);
+            sceneShader.setShadowMap(shadowMap);
+            this.ms = 0;
+        }
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
@@ -106,14 +108,16 @@ public final class GLRenderer {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix,ms);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
+                if (shadowEnabled) {
+                    Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
+                    sceneShader.setShadowMVPMatrix(shadowMVPMatrix);
+                }
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
                 sceneShader.setGLMesh(glMesh);
                 sceneShader.setMMatrix(mMatrix);
                 sceneShader.setMvpMatrix(mvpMatrix);
-                sceneShader.setGLLights(glLights);
-                sceneShader.setViewPos(glCamera.getEye());
                 sceneShader.bindData();
                 if (glMesh.getIndices() != null) {
                     GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
@@ -236,55 +240,6 @@ public final class GLRenderer {
     public GLRenderer disableShadow(){
         shadowEnabled = false;
         return this;
-    }
-
-    private void renderSceneWithShadow(int screenWidth, int screenHeight, GLCamera glCamera){
-        glShadowMap.getShadowMapCamera().loadVpMatrix();
-        int shadowMap = glShadowMap.render(glSceneRenderer,screenWidth,screenHeight);
-        this.ms = 0;
-
-        if (blendingEnabled) {
-            GLES20.glEnable(GLES20.GL_BLEND);
-            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-        }
-        if (faceCullingEnabled){
-            GLES20.glEnable(GLES20.GL_CULL_FACE);
-            GLES20.glCullFace(GLES20.GL_BACK);
-        }
-        for (GLMesh glMesh : glMeshes) {
-            if (!glMesh.isDead(ms)) {
-                Matrix.setIdentityM(mMatrix, 0);
-                glMesh.doTransformation(mMatrix,ms);
-                Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
-                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
-                if (glMesh.getBoundingBox() != null) {
-                    glMesh.getBoundingBox().copyMMatrix(mMatrix);
-                }
-                sceneWithShadowShader.setGLMesh(glMesh);
-                sceneWithShadowShader.setMMatrix(mMatrix);
-                sceneWithShadowShader.setMvpMatrix(mvpMatrix);
-                sceneWithShadowShader.setGLLights(glLights);
-                sceneWithShadowShader.setShadowMap(shadowMap);
-                sceneWithShadowShader.setShadowMVPMatrix(shadowMVPMatrix);
-                sceneWithShadowShader.setViewPos(glCamera.getEye());
-                sceneWithShadowShader.bindData();
-                if (glMesh.getIndices() != null) {
-                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, glMesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, glMesh.getIndicesBuffer());
-                } else {
-                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, glMesh.getNumVertices());
-                }
-                sceneWithShadowShader.unbindData();
-            }
-            else {
-                glMeshes.remove(glMesh);
-            }
-        }
-        if (faceCullingEnabled){
-            GLES20.glDisable(GLES20.GL_CULL_FACE);
-        }
-        if (blendingEnabled) {
-            GLES20.glDisable(GLES20.GL_BLEND);
-        }
     }
 
     /**
