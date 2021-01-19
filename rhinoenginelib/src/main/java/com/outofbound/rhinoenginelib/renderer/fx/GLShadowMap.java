@@ -15,7 +15,7 @@ public class GLShadowMap {
 
     public GLShadowMap(int resolution, GLLights glLights, GLCamera glCamera){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
-        shadowMapCamera = new GLCameraOrthographic(glLights.getGLDirLight().getPositionAlongDirection(), glCamera.getUp(), glCamera.getCenter(), glCamera.getNear(), glCamera.getFar(), 10);
+        shadowMapCamera = new GLCameraOrthographic(glLights.getGLDirLight().getPositionAlongDirection(glCamera.getEye().length()), glCamera.getUp(), glCamera.getCenter(), glCamera.getNear(), glCamera.getFar(), 10);
     }
 
     public GLCameraOrthographic getShadowMapCamera(){
