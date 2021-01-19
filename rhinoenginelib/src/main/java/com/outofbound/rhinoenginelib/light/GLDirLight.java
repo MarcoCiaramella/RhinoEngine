@@ -16,4 +16,13 @@ public class GLDirLight extends GLLight {
     public Vector3f getDirection(){
         return direction;
     }
+
+    public Vector3f getPositionAlongDirection(){
+        Vector3f pos = new Vector3f(0,0,0);
+        direction.multS(100,pos);
+        pos.x = -pos.x;
+        pos.y = -pos.y;
+        pos.z = -pos.z;
+        return pos;
+    }
 }
