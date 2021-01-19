@@ -81,7 +81,7 @@ float calcShadow(){
     if (uShadowEnabled == 0){
         return 1.0;
     }
-    vec4 positionFromLight = vPositionFromLight / vPositionFromLight.w;
+    vec3 positionFromLight = vPositionFromLight.xyz / vPositionFromLight.w;
     positionFromLight = (positionFromLight + 1.0) / 2.0;
     float closestFragmentZ = unpack(texture2D(uShadowMap, positionFromLight.xy));
     float currentFragmentZ = positionFromLight.z;

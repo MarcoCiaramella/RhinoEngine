@@ -216,11 +216,10 @@ public final class GLRenderer {
      * @return this GLRenderer.
      */
     public GLRenderer configShadow(int resolution, GLCamera glCamera){
-        /*if (glLights.size() > 0) {
-            glShadowMap = new GLShadowMap(resolution,glLights.getFirstLight(),glCamera);
+        if (glLights.getGLPointLights().size() > 0) {
+            glShadowMap = new GLShadowMap(resolution,glLights,glCamera);
             shadowMapShader = new ShadowMapShader();
-            sceneWithShadowShader = new SceneWithShadowShader();
-        }*/
+        }
         return this;
     }
 
