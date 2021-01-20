@@ -50,6 +50,7 @@ public final class SceneShader extends GLShader {
         uDirLight.add(getUniform("uDirLight.specularColor"));
         uDirLight.add(getUniform("uDirLight.shadowMap"));
         uDirLight.add(getUniform("uDirLight.shadowEnabled"));
+        uDirLight.add(getUniform("uDirLight.uShadowMVPMatrix"));
         uNumPointLights = getUniform("uNumPointLights");
         uPointLights = new ArrayList<>();
         uShadowMap = getUniform("uShadowMap");
@@ -91,6 +92,7 @@ public final class SceneShader extends GLShader {
             uPointLight.add(getUniform(name+".specularColor"));
             uPointLight.add(getUniform(name+".shadowMap"));
             uPointLight.add(getUniform(name+".shadowEnabled"));
+            uPointLight.add(getUniform(name+".uShadowMVPMatrix"));
             uPointLights.add(uPointLight);
         }
         else {

@@ -10,6 +10,7 @@ struct DirLight {
     vec3 specularColor;
     sampler2D shadowMap;
     int shadowEnabled;
+    mat4 shadowMVPMatrix;
 };
 
 struct PointLight {
@@ -22,21 +23,19 @@ struct PointLight {
     vec3 specularColor;
     sampler2D shadowMap;
     int shadowEnabled;
+    mat4 shadowMVPMatrix;
 };
 
 #define MAX_NUM_POINT_LIGHTS 8
-#define MAX_NUM_SHADOWS 9
 
 uniform DirLight uDirLight;
 uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
 uniform int uNumPointLights;
 uniform vec3 uViewPos;
-uniform Shadow uShadows[MAX_NUM_SHADOWS];
 uniform int uNumShadows;
 varying vec4 vColor;
 varying vec3 vPosition;
 varying vec3 vNormal;
-varying vec4 vPositionFromLight[MAX_NUM_SHADOWS];
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
@@ -75,7 +74,7 @@ vec4 calcDirLight(vec3 normal, vec3 viewDir){
     vec4 ambient = vec4(uDirLight.ambientColor, 1.0) * vColor;
     vec4 diffuse = vec4(uDirLight.diffuseColor * diff, 1.0) * vColor;
     vec4 specular = vec4(uDirLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
-    return ambient + (diffuse + specular) * calcShadow(vPositionFromLight[0], uDirLight.shadowMap, uDirLight.shadowEnabled);
+    return ambient + (diffuse + specular) * calcShadow(vec4(vPosition, 1.0) * uDirLight.shadowMVPMatrix, uDirLight.shadowMap, uDirLight.shadowEnabled);
 }
 
 float calcAttenuation(PointLight pointLight, float distance){
@@ -96,7 +95,7 @@ vec4 calcPointLight(int index, vec3 normal, vec3 viewDir){
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
-    return ambient + (diffuse + specular) * calcShadow(vPositionFromLight[index+1], pointLight.shadowMap, pointLight.shadowEnabled);
+    return ambient + (diffuse + specular) * calcShadow(vec4(vPosition, 1.0) * pointLight.shadowMVPMatrix, pointLight.shadowMap, pointLight.shadowEnabled);
 }
 
 
