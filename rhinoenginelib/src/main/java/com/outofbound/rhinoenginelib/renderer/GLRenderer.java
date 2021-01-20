@@ -7,7 +7,6 @@ import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.light.GLDirLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
-import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
 import com.outofbound.rhinoenginelib.shader.primitives.SceneShader;
 import com.outofbound.rhinoenginelib.shader.primitives.ShadowMapShader;
 import com.outofbound.rhinoenginelib.util.list.BigList;
@@ -26,11 +25,9 @@ public final class GLRenderer {
     private GLLights glLights;
     private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
-    private boolean shadowEnabled = false;
     private final GLSceneRenderer glSceneRenderer;
     private long ms;
-    private ShadowMapShader shadowMapShader;
-    private GLShadowMap glShadowMap;
+    private final ShadowMapShader shadowMapShader;
     private final float[] shadowMVPMatrix = new float[16];
 
 
@@ -39,6 +36,7 @@ public final class GLRenderer {
      */
     public GLRenderer(){
         sceneShader = new SceneShader();
+        shadowMapShader = new ShadowMapShader();
         glMeshes = new BigList<>();
         glLights = new GLLights(new GLDirLight(new Vector3f(0.5f,-1,0),new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1)));
         glSceneRenderer = this::renderSceneShadowMap;
@@ -88,10 +86,10 @@ public final class GLRenderer {
     private void renderScene(int screenWidth, int screenHeight, GLCamera glCamera){
         sceneShader.setGLLights(glLights);
         sceneShader.setViewPos(glCamera.getEye());
-        sceneShader.setShadowEnabled(shadowEnabled);
-        if (shadowEnabled){
-            glShadowMap.getShadowMapCamera().loadVpMatrix();
-            int shadowMap = glShadowMap.render(glSceneRenderer,screenWidth,screenHeight);
+        sceneShader.setShadowEnabled(glLights.getGLDirLight().isShadowEnabled());
+        if (glLights.getGLDirLight().isShadowEnabled()){
+            glLights.getGLDirLight().getGLShadowMap().getShadowMapCamera().loadVpMatrix();
+            int shadowMap = glLights.getGLDirLight().getGLShadowMap().render(glSceneRenderer,screenWidth,screenHeight);
             sceneShader.setShadowMap(shadowMap);
             this.ms = 0;
         }
@@ -108,8 +106,8 @@ public final class GLRenderer {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix,ms);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
-                if (shadowEnabled) {
-                    Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
+                if (glLights.getGLDirLight().isShadowEnabled()) {
+                    Matrix.multiplyMM(shadowMVPMatrix, 0, glLights.getGLDirLight().getGLShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
                     sceneShader.setShadowMVPMatrix(shadowMVPMatrix);
                 }
                 if (glMesh.getBoundingBox() != null) {
@@ -143,7 +141,7 @@ public final class GLRenderer {
             if (!glMesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix,ms);
-                Matrix.multiplyMM(shadowMVPMatrix, 0, glShadowMap.getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
+                Matrix.multiplyMM(shadowMVPMatrix, 0, glLights.getGLDirLight().getGLShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
@@ -206,36 +204,6 @@ public final class GLRenderer {
      */
     public GLRenderer disableBlending(){
         blendingEnabled = false;
-        return this;
-    }
-
-    /**
-     * Configure shadow.
-     * @param resolution the quality level. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
-     * @param glCamera the GLCamera.
-     * @return this GLRenderer.
-     */
-    public GLRenderer configShadow(int resolution, GLCamera glCamera){
-        glShadowMap = new GLShadowMap(resolution,glLights,glCamera);
-        shadowMapShader = new ShadowMapShader();
-        return this;
-    }
-
-    /**
-     * Enable shadow.
-     * @return this GLRenderer.
-     */
-    public GLRenderer enableShadow(){
-        shadowEnabled = true;
-        return this;
-    }
-
-    /**
-     * Disable shadow.
-     * @return this GLRenderer.
-     */
-    public GLRenderer disableShadow(){
-        shadowEnabled = false;
         return this;
     }
 

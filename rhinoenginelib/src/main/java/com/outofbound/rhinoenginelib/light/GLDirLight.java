@@ -2,6 +2,7 @@ package com.outofbound.rhinoenginelib.light;
 
 import androidx.annotation.NonNull;
 
+import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class GLDirLight extends GLLight {
@@ -17,12 +18,17 @@ public class GLDirLight extends GLLight {
         return direction;
     }
 
-    public Vector3f getPositionAlongDirection(float distance){
+    private Vector3f getPositionAlongDirection(float distance){
         Vector3f position = new Vector3f(0,0,0);
         direction.multS(distance,position);
         position.x = -position.x;
         position.y = -position.y;
         position.z = -position.z;
         return position;
+    }
+
+    public GLDirLight configShadow(int resolution, float distance, float near, float far, float clippingCubeSize){
+        glShadowMap = new GLShadowMap(resolution,getPositionAlongDirection(distance),near,far,clippingCubeSize);
+        return this;
     }
 }

@@ -45,7 +45,11 @@ public class Engine extends GLEngine {
                 0.22f,
                 0.2f
         ));
-        //getGLRenderer(ID.GLRENDERER_0).configShadow(GLRendererOnTexture.RESOLUTION_4096,getGLCamera()).enableShadow();
+        getGLRenderer(ID.GLRENDERER_0)
+                .getGLLights()
+                .getGLDirLight()
+                .configShadow(GLRendererOnTexture.RESOLUTION_4096,100,1,1000,10)
+                .enableShadow();
     }
 
     public void blurOn(){
