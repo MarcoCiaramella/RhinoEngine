@@ -9,8 +9,8 @@ struct DirLight {
     vec3 diffuseColor;
     vec3 specularColor;
     sampler2D shadowMap;
-    int shadowEnabled;
     mat4 shadowMVPMatrix;
+    int shadowEnabled;
 };
 
 struct PointLight {
@@ -22,8 +22,8 @@ struct PointLight {
     vec3 diffuseColor;
     vec3 specularColor;
     sampler2D shadowMap;
-    int shadowEnabled;
     mat4 shadowMVPMatrix;
+    int shadowEnabled;
 };
 
 #define MAX_NUM_POINT_LIGHTS 8

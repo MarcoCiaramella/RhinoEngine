@@ -30,9 +30,6 @@ public final class SceneShader extends GLShader {
     private final ArrayList<Integer> uDirLight;
     private final int uNumPointLights;
     private final ArrayList<ArrayList<Integer>> uPointLights;
-    private final int uShadowMap;
-    private final int uShadowMVPMatrix;
-    private final int uShadowEnabled;
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
@@ -49,24 +46,10 @@ public final class SceneShader extends GLShader {
         uDirLight.add(getUniform("uDirLight.diffuseColor"));
         uDirLight.add(getUniform("uDirLight.specularColor"));
         uDirLight.add(getUniform("uDirLight.shadowMap"));
+        uDirLight.add(getUniform("uDirLight.shadowMVPMatrix"));
         uDirLight.add(getUniform("uDirLight.shadowEnabled"));
-        uDirLight.add(getUniform("uDirLight.uShadowMVPMatrix"));
         uNumPointLights = getUniform("uNumPointLights");
         uPointLights = new ArrayList<>();
-        uShadowMap = getUniform("uShadowMap");
-        uShadowMVPMatrix = getUniform("uShadowMVPMatrix");
-        uShadowEnabled = getUniform("uShadowEnabled");
-    }
-
-    private void bindShadow(GLLight glLight, int textureIndex){
-        if (glLight.isShadowEnabled()) {
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + textureIndex);
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glLight.getGLShadowMap().getTexture());
-            GLES20.glUniform1i(uShadowMap, 0);
-            Matrix.multiplyMM(shadowMVPMatrix, 0, glLight.getGLShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
-            GLES20.glUniformMatrix4fv(uShadowMVPMatrix, 1, false, shadowMVPMatrix, 0);
-        }
-        GLES20.glUniform1i(uShadowEnabled, glLight.isShadowEnabled() ? 1 : 0);
     }
 
     private void bindGLDirLight(){
@@ -75,7 +58,14 @@ public final class SceneShader extends GLShader {
         GLES20.glUniform3f(uDirLight.get(1), glDirLight.getAmbientColor().x, glDirLight.getAmbientColor().y, glDirLight.getAmbientColor().z);
         GLES20.glUniform3f(uDirLight.get(2), glDirLight.getDiffuseColor().x, glDirLight.getDiffuseColor().y, glDirLight.getDiffuseColor().z);
         GLES20.glUniform3f(uDirLight.get(3), glDirLight.getSpecularColor().x, glDirLight.getSpecularColor().y, glDirLight.getSpecularColor().z);
-        bindShadow(glDirLight,0);
+        if (glDirLight.isShadowEnabled()) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glDirLight.getGLShadowMap().getTexture());
+            GLES20.glUniform1i(uDirLight.get(4), 0);
+            Matrix.multiplyMM(shadowMVPMatrix, 0, glDirLight.getGLShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
+            GLES20.glUniformMatrix4fv(uDirLight.get(5), 1, false, shadowMVPMatrix, 0);
+        }
+        GLES20.glUniform1i(uDirLight.get(6), glDirLight.isShadowEnabled() ? 1 : 0);
     }
 
     private void bindGLPointLight(GLPointLight glPointLight, int index){
@@ -91,8 +81,8 @@ public final class SceneShader extends GLShader {
             uPointLight.add(getUniform(name+".diffuseColor"));
             uPointLight.add(getUniform(name+".specularColor"));
             uPointLight.add(getUniform(name+".shadowMap"));
+            uPointLight.add(getUniform(name+".shadowMVPMatrix"));
             uPointLight.add(getUniform(name+".shadowEnabled"));
-            uPointLight.add(getUniform(name+".uShadowMVPMatrix"));
             uPointLights.add(uPointLight);
         }
         else {
@@ -105,7 +95,14 @@ public final class SceneShader extends GLShader {
         GLES20.glUniform3f(uPointLight.get(4), glPointLight.getAmbientColor().x, glPointLight.getAmbientColor().y, glPointLight.getAmbientColor().z);
         GLES20.glUniform3f(uPointLight.get(5), glPointLight.getDiffuseColor().x, glPointLight.getDiffuseColor().y, glPointLight.getDiffuseColor().z);
         GLES20.glUniform3f(uPointLight.get(6), glPointLight.getSpecularColor().x, glPointLight.getSpecularColor().y, glPointLight.getSpecularColor().z);
-        bindShadow(glPointLight,index+1);
+        if (glPointLight.isShadowEnabled()) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE1 + index);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glPointLight.getGLShadowMap().getTexture());
+            GLES20.glUniform1i(uPointLight.get(7), 0);
+            Matrix.multiplyMM(shadowMVPMatrix, 0, glPointLight.getGLShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
+            GLES20.glUniformMatrix4fv(uPointLight.get(8), 1, false, shadowMVPMatrix, 0);
+        }
+        GLES20.glUniform1i(uPointLight.get(9), glPointLight.isShadowEnabled() ? 1 : 0);
     }
 
     @Override
