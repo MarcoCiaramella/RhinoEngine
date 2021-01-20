@@ -104,7 +104,7 @@ void main() {
     vec3 viewDir = normalize(uViewPos - vPosition);
     vec4 result = calcDirLight(normal, viewDir);
     for (int i = 0; i < uNumPointLights; i++){
-        result += calcPointLight(uPointLights[i], normal, viewDir);
+        result += calcPointLight(i, normal, viewDir);
     }
     gl_FragColor = result;
 }
