@@ -10,13 +10,15 @@ public abstract class GLLight {
     private final Vector3f ambientColor;
     private final Vector3f diffuseColor;
     private final Vector3f specularColor;
-    private boolean shadowEnabled = false;
-    protected GLShadowMap glShadowMap = null;
+    private boolean shadowEnabled;
+    protected GLShadowMap glShadowMap;
 
     public GLLight(@NonNull Vector3f ambientColor, @NonNull Vector3f diffuseColor, @NonNull Vector3f specularColor){
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
         this.specularColor = specularColor;
+        shadowEnabled = false;
+        glShadowMap = null;
     }
 
     public Vector3f getAmbientColor(){

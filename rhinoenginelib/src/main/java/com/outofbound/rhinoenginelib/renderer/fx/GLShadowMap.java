@@ -12,6 +12,7 @@ public class GLShadowMap {
 
     private final GLRendererOnTexture shadowMapRenderer;
     private final GLCameraOrthographic shadowMapCamera;
+    private int texture;
 
     public GLShadowMap(int resolution, Vector3f lightPosition, float near, float far, float clippingCubeSize){
         shadowMapRenderer = new GLRendererOnTexture(resolution);
@@ -22,12 +23,15 @@ public class GLShadowMap {
         return shadowMapCamera;
     }
 
-    public int render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight){
+    public void render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight){
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
-        int texture = shadowMapRenderer.render(glSceneRenderer);
+        texture = shadowMapRenderer.render(glSceneRenderer);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
+    }
+
+    public int getTexture(){
         return texture;
     }
 }

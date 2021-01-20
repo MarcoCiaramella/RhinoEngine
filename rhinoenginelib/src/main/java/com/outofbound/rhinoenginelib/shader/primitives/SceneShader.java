@@ -1,8 +1,10 @@
 package com.outofbound.rhinoenginelib.shader.primitives;
 
 import android.opengl.GLES20;
+import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.light.GLDirLight;
+import com.outofbound.rhinoenginelib.light.GLLight;
 import com.outofbound.rhinoenginelib.light.GLLights;
 import com.outofbound.rhinoenginelib.light.GLPointLight;
 import com.outofbound.rhinoenginelib.mesh.GLMesh;
@@ -18,9 +20,7 @@ public final class SceneShader extends GLShader {
     private float[] mvpMatrix;
     private GLLights glLights;
     private Vector3f viewPos;
-    private int shadowMap;
-    private float[] shadowMVPMatrix = new float[16];
-    private int shadowEnabled = 0;
+    private final float[] shadowMVPMatrix = new float[16];
     private final int aPosition;
     private final int aNormal;
     private final int aColor;
@@ -48,11 +48,62 @@ public final class SceneShader extends GLShader {
         uDirLight.add(getUniform("uDirLight.ambientColor"));
         uDirLight.add(getUniform("uDirLight.diffuseColor"));
         uDirLight.add(getUniform("uDirLight.specularColor"));
+        uDirLight.add(getUniform("uDirLight.shadowMap"));
+        uDirLight.add(getUniform("uDirLight.shadowEnabled"));
         uNumPointLights = getUniform("uNumPointLights");
         uPointLights = new ArrayList<>();
         uShadowMap = getUniform("uShadowMap");
         uShadowMVPMatrix = getUniform("uShadowMVPMatrix");
         uShadowEnabled = getUniform("uShadowEnabled");
+    }
+
+    private void bindShadow(GLLight glLight, int textureIndex){
+        if (glLight.isShadowEnabled()) {
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + textureIndex);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, glLight.getGLShadowMap().getTexture());
+            GLES20.glUniform1i(uShadowMap, 0);
+            Matrix.multiplyMM(shadowMVPMatrix, 0, glLight.getGLShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
+            GLES20.glUniformMatrix4fv(uShadowMVPMatrix, 1, false, shadowMVPMatrix, 0);
+        }
+        GLES20.glUniform1i(uShadowEnabled, glLight.isShadowEnabled() ? 1 : 0);
+    }
+
+    private void bindGLDirLight(){
+        GLDirLight glDirLight = glLights.getGLDirLight();
+        GLES20.glUniform3f(uDirLight.get(0), glDirLight.getDirection().x, glDirLight.getDirection().y, glDirLight.getDirection().z);
+        GLES20.glUniform3f(uDirLight.get(1), glDirLight.getAmbientColor().x, glDirLight.getAmbientColor().y, glDirLight.getAmbientColor().z);
+        GLES20.glUniform3f(uDirLight.get(2), glDirLight.getDiffuseColor().x, glDirLight.getDiffuseColor().y, glDirLight.getDiffuseColor().z);
+        GLES20.glUniform3f(uDirLight.get(3), glDirLight.getSpecularColor().x, glDirLight.getSpecularColor().y, glDirLight.getSpecularColor().z);
+        bindShadow(glDirLight,0);
+    }
+
+    private void bindGLPointLight(GLPointLight glPointLight, int index){
+        ArrayList<Integer> uPointLight;
+        if (index+1 > uPointLights.size()){
+            String name = "uPointLights["+index+"]";
+            uPointLight = new ArrayList<>();
+            uPointLight.add(getUniform(name+".position"));
+            uPointLight.add(getUniform(name+".constant"));
+            uPointLight.add(getUniform(name+".linear"));
+            uPointLight.add(getUniform(name+".quadratic"));
+            uPointLight.add(getUniform(name+".ambientColor"));
+            uPointLight.add(getUniform(name+".diffuseColor"));
+            uPointLight.add(getUniform(name+".specularColor"));
+            uPointLight.add(getUniform(name+".shadowMap"));
+            uPointLight.add(getUniform(name+".shadowEnabled"));
+            uPointLights.add(uPointLight);
+        }
+        else {
+            uPointLight = uPointLights.get(index);
+        }
+        GLES20.glUniform3f(uPointLight.get(0), glPointLight.getPosition().x, glPointLight.getPosition().y, glPointLight.getPosition().z);
+        GLES20.glUniform1f(uPointLight.get(1), glPointLight.getConstant());
+        GLES20.glUniform1f(uPointLight.get(2), glPointLight.getLinear());
+        GLES20.glUniform1f(uPointLight.get(3), glPointLight.getQuadratic());
+        GLES20.glUniform3f(uPointLight.get(4), glPointLight.getAmbientColor().x, glPointLight.getAmbientColor().y, glPointLight.getAmbientColor().z);
+        GLES20.glUniform3f(uPointLight.get(5), glPointLight.getDiffuseColor().x, glPointLight.getDiffuseColor().y, glPointLight.getDiffuseColor().z);
+        GLES20.glUniform3f(uPointLight.get(6), glPointLight.getSpecularColor().x, glPointLight.getSpecularColor().y, glPointLight.getSpecularColor().z);
+        bindShadow(glPointLight,index+1);
     }
 
     @Override
@@ -67,44 +118,12 @@ public final class SceneShader extends GLShader {
         GLES20.glUniformMatrix4fv(uMMatrix, 1, false, mMatrix, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);
         GLES20.glUniform3f(uViewPos, viewPos.x, viewPos.y, viewPos.z);
-        GLDirLight glDirLight = glLights.getGLDirLight();
-        GLES20.glUniform3f(uDirLight.get(0), glDirLight.getDirection().x, glDirLight.getDirection().y, glDirLight.getDirection().z);
-        GLES20.glUniform3f(uDirLight.get(1), glDirLight.getAmbientColor().x, glDirLight.getAmbientColor().y, glDirLight.getAmbientColor().z);
-        GLES20.glUniform3f(uDirLight.get(2), glDirLight.getDiffuseColor().x, glDirLight.getDiffuseColor().y, glDirLight.getDiffuseColor().z);
-        GLES20.glUniform3f(uDirLight.get(3), glDirLight.getSpecularColor().x, glDirLight.getSpecularColor().y, glDirLight.getSpecularColor().z);
+        bindGLDirLight();
         GLES20.glUniform1i(uNumPointLights, glLights.getGLPointLights().size());
         int i = 0;
         for (GLPointLight glPointLight : glLights.getGLPointLights()){
-            ArrayList<Integer> uPointLight;
-            if (i+1 > uPointLights.size()){
-                String name = "uPointLights["+i+"]";
-                uPointLight = new ArrayList<>();
-                uPointLight.add(getUniform(name+".position"));
-                uPointLight.add(getUniform(name+".constant"));
-                uPointLight.add(getUniform(name+".linear"));
-                uPointLight.add(getUniform(name+".quadratic"));
-                uPointLight.add(getUniform(name+".ambientColor"));
-                uPointLight.add(getUniform(name+".diffuseColor"));
-                uPointLight.add(getUniform(name+".specularColor"));
-                uPointLights.add(uPointLight);
-            }
-            else {
-                uPointLight = uPointLights.get(i);
-            }
-            GLES20.glUniform3f(uPointLight.get(0), glPointLight.getPosition().x, glPointLight.getPosition().y, glPointLight.getPosition().z);
-            GLES20.glUniform1f(uPointLight.get(1), glPointLight.getConstant());
-            GLES20.glUniform1f(uPointLight.get(2), glPointLight.getLinear());
-            GLES20.glUniform1f(uPointLight.get(3), glPointLight.getQuadratic());
-            GLES20.glUniform3f(uPointLight.get(4), glPointLight.getAmbientColor().x, glPointLight.getAmbientColor().y, glPointLight.getAmbientColor().z);
-            GLES20.glUniform3f(uPointLight.get(5), glPointLight.getDiffuseColor().x, glPointLight.getDiffuseColor().y, glPointLight.getDiffuseColor().z);
-            GLES20.glUniform3f(uPointLight.get(6), glPointLight.getSpecularColor().x, glPointLight.getSpecularColor().y, glPointLight.getSpecularColor().z);
-            i++;
+            bindGLPointLight(glPointLight,i++);
         }
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shadowMap);
-        GLES20.glUniform1i(uShadowMap, 0);
-        GLES20.glUniformMatrix4fv(uShadowMVPMatrix, 1, false, shadowMVPMatrix, 0);
-        GLES20.glUniform1i(uShadowEnabled, shadowEnabled);
     }
 
     @Override
@@ -136,26 +155,6 @@ public final class SceneShader extends GLShader {
 
     public SceneShader setViewPos(Vector3f viewPos){
         this.viewPos = viewPos;
-        return this;
-    }
-
-    public SceneShader setShadowMap(int shadowMap){
-        this.shadowMap = shadowMap;
-        return this;
-    }
-
-    public SceneShader setShadowMVPMatrix(float[] shadowMVPMatrix){
-        this.shadowMVPMatrix = shadowMVPMatrix;
-        return this;
-    }
-
-    public SceneShader setShadowEnabled(boolean shadowEnabled){
-        if (shadowEnabled){
-            this.shadowEnabled = 1;
-        }
-        else {
-            this.shadowEnabled = 0;
-        }
         return this;
     }
 

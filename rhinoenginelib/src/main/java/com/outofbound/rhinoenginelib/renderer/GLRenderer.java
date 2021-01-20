@@ -86,11 +86,9 @@ public final class GLRenderer {
     private void renderScene(int screenWidth, int screenHeight, GLCamera glCamera){
         sceneShader.setGLLights(glLights);
         sceneShader.setViewPos(glCamera.getEye());
-        sceneShader.setShadowEnabled(glLights.getGLDirLight().isShadowEnabled());
         if (glLights.getGLDirLight().isShadowEnabled()){
             glLights.getGLDirLight().getGLShadowMap().getShadowMapCamera().loadVpMatrix();
-            int shadowMap = glLights.getGLDirLight().getGLShadowMap().render(glSceneRenderer,screenWidth,screenHeight);
-            sceneShader.setShadowMap(shadowMap);
+            glLights.getGLDirLight().getGLShadowMap().render(glSceneRenderer,screenWidth,screenHeight);
             this.ms = 0;
         }
         if (blendingEnabled) {
@@ -106,10 +104,6 @@ public final class GLRenderer {
                 Matrix.setIdentityM(mMatrix, 0);
                 glMesh.doTransformation(mMatrix,ms);
                 Matrix.multiplyMM(mvpMatrix, 0, glCamera.getVpMatrix(), 0, mMatrix, 0);
-                if (glLights.getGLDirLight().isShadowEnabled()) {
-                    Matrix.multiplyMM(shadowMVPMatrix, 0, glLights.getGLDirLight().getGLShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
-                    sceneShader.setShadowMVPMatrix(shadowMVPMatrix);
-                }
                 if (glMesh.getBoundingBox() != null) {
                     glMesh.getBoundingBox().copyMMatrix(mMatrix);
                 }
