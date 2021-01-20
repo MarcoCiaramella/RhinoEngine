@@ -36,6 +36,24 @@ const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 
 
 
 
+
+float unpack(vec4 color){
+    return dot(color, bitShifts);
+}
+
+// return 0.0 if in shadow.
+// return 1.0 if not in shadow.
+float calcShadow(){
+    if (uShadowEnabled == 0){
+        return 1.0;
+    }
+    vec3 positionFromLight = vPositionFromLight.xyz / vPositionFromLight.w;
+    positionFromLight = (positionFromLight + 1.0) / 2.0;
+    float closestFragmentZ = unpack(texture2D(uShadowMap, positionFromLight.xy));
+    float currentFragmentZ = positionFromLight.z;
+    return float(closestFragmentZ > currentFragmentZ);
+}
+
 float diffuseLighting(vec3 normal, vec3 lightDir){
     return max(dot(normal, lightDir), 0.0);
 }
@@ -52,7 +70,7 @@ vec4 calcDirLight(vec3 normal, vec3 viewDir){
     vec4 ambient = vec4(uDirLight.ambientColor, 1.0) * vColor;
     vec4 diffuse = vec4(uDirLight.diffuseColor * diff, 1.0) * vColor;
     vec4 specular = vec4(uDirLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
-    return ambient + diffuse + specular;
+    return ambient + (diffuse + specular) * calcShadow();
 }
 
 float calcAttenuation(PointLight pointLight, float distance){
@@ -75,23 +93,6 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     return ambient + diffuse + specular;
 }
 
-float unpack(vec4 color){
-    return dot(color, bitShifts);
-}
-
-// return 0.0 if in shadow.
-// return 1.0 if not in shadow.
-float calcShadow(){
-    if (uShadowEnabled == 0){
-        return 1.0;
-    }
-    vec3 positionFromLight = vPositionFromLight.xyz / vPositionFromLight.w;
-    positionFromLight = (positionFromLight + 1.0) / 2.0;
-    float closestFragmentZ = unpack(texture2D(uShadowMap, positionFromLight.xy));
-    float currentFragmentZ = positionFromLight.z;
-    return float(closestFragmentZ > currentFragmentZ);
-}
-
 
 
 void main() {
@@ -101,7 +102,6 @@ void main() {
     for (int i = 0; i < uNumPointLights; i++){
         result += calcPointLight(uPointLights[i], normal, viewDir);
     }
-    result *= calcShadow();
     gl_FragColor = result;
 }
 
