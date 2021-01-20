@@ -35,7 +35,7 @@ public class Engine extends GLEngine {
         getGLRenderer(ID.GLRENDERER_0).addGLMesh(new Pane());
         addGLTask(new CameraRotation());
         //addGLTask(new LightRotation());
-        configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
+        configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,1000f,0.1f,1,1000);
         getGLRenderer(ID.GLRENDERER_0).getGLLights().addGLPointLight(new GLPointLight(
                 new Vector3f(0,0,0),
                 new Vector3f(0.2f,0.2f,0.2f),
@@ -45,7 +45,7 @@ public class Engine extends GLEngine {
                 0.22f,
                 0.2f
         ));
-        getGLRenderer(ID.GLRENDERER_0).configShadow(GLRendererOnTexture.RESOLUTION_4096,getGLCamera()).enableShadow();
+        //getGLRenderer(ID.GLRENDERER_0).configShadow(GLRendererOnTexture.RESOLUTION_4096,getGLCamera()).enableShadow();
     }
 
     public void blurOn(){

@@ -6,7 +6,7 @@ import com.outofbound.rhinoenginelib.shader.GLShader;
 
 import java.nio.FloatBuffer;
 
-public final class BlurVerticalShader extends GLShader {
+public final class BlurShader extends GLShader {
 
     private float[] vpMatrix;
     private FloatBuffer vertices;
@@ -15,6 +15,9 @@ public final class BlurVerticalShader extends GLShader {
     private float amount;
     private float strength;
     private int texture;
+    private float screenWidth;
+    private float screenHeight;
+    private int type;
     private final int aPosition;
     private final int aTexCoords;
     private final int uTextId;
@@ -22,9 +25,13 @@ public final class BlurVerticalShader extends GLShader {
     private final int uBlurScale;
     private final int uBlurAmount;
     private final int uBlurStrength;
+    private final int uScreenSize;
+    private final int uType;
+    public static final int HORIZONTAL = 0;
+    public static final int VERTICAL = 1;
 
-    public BlurVerticalShader() {
-        super("vs_blur.glsl", "fs_blur_vertical.glsl");
+    public BlurShader() {
+        super("vs_blur.glsl", "fs_blur.glsl");
         GLES20.glUseProgram(getProgram());
         aPosition = getAttrib("aPosition");
         aTexCoords = getAttrib("aTexCoords");
@@ -33,6 +40,8 @@ public final class BlurVerticalShader extends GLShader {
         uBlurScale = getUniform("uBlurScale");
         uBlurAmount = getUniform("uBlurAmount");
         uBlurStrength = getUniform("uBlurStrength");
+        uScreenSize = getUniform("uScreenSize");
+        uType = getUniform("uType");
     }
 
     @Override
@@ -49,6 +58,8 @@ public final class BlurVerticalShader extends GLShader {
         GLES20.glUniform1f(uBlurScale,scale);
         GLES20.glUniform1f(uBlurAmount,amount);
         GLES20.glUniform1f(uBlurStrength,strength);
+        GLES20.glUniform2f(uScreenSize,screenWidth,screenHeight);
+        GLES20.glUniform1i(uType,type);
     }
 
     @Override
@@ -57,38 +68,49 @@ public final class BlurVerticalShader extends GLShader {
         GLES20.glDisableVertexAttribArray(aTexCoords);
     }
 
-    public BlurVerticalShader setVpMatrix(float[] vpMatrix){
+    public BlurShader setVpMatrix(float[] vpMatrix){
         this.vpMatrix = vpMatrix;
         return this;
     }
 
-    public BlurVerticalShader setVertices(FloatBuffer vertices){
+    public BlurShader setVertices(FloatBuffer vertices){
         this.vertices = vertices;
         return this;
     }
 
-    public BlurVerticalShader setTextureCoords(FloatBuffer textureCoords){
+    public BlurShader setTextureCoords(FloatBuffer textureCoords){
         this.textureCoords = textureCoords;
         return this;
     }
 
-    public BlurVerticalShader setScale(float scale){
+    public BlurShader setScale(float scale){
         this.scale = scale;
         return this;
     }
 
-    public BlurVerticalShader setAmount(float amount){
+    public BlurShader setAmount(float amount){
         this.amount = amount;
         return this;
     }
 
-    public BlurVerticalShader setStrength(float strength){
+    public BlurShader setStrength(float strength){
         this.strength = strength;
         return this;
     }
 
-    public BlurVerticalShader setTexture(int texture){
+    public BlurShader setTexture(int texture){
         this.texture = texture;
+        return this;
+    }
+
+    public BlurShader setScreenSize(int screenWidth, int screenHeight){
+        this.screenWidth = screenWidth;
+        this.screenHeight = screenHeight;
+        return this;
+    }
+
+    public BlurShader setType(int type){
+        this.type = type;
         return this;
     }
 }

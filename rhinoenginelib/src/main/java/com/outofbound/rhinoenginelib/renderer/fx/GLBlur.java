@@ -6,9 +6,8 @@ import com.outofbound.rhinoenginelib.camera.GLCamera;
 import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
 import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
-import com.outofbound.rhinoenginelib.shader.primitives.BlurHorizontalShader;
+import com.outofbound.rhinoenginelib.shader.primitives.BlurShader;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurFinalShader;
-import com.outofbound.rhinoenginelib.shader.primitives.BlurVerticalShader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.nio.ByteBuffer;
@@ -41,8 +40,7 @@ public class GLBlur {
     private final FloatBuffer verticesBuffer;
     private final FloatBuffer textureCoordsBuffer;
     private final GLRendererOnTexture glRendererOnTexture;
-    private final BlurHorizontalShader blurHorizontalShader;
-    private final BlurVerticalShader blurVerticalShader;
+    private final BlurShader blurShader;
     private final BlurFinalShader blurFinalShader;
     private final float scale;
     private final float amount;
@@ -79,8 +77,7 @@ public class GLBlur {
         createFramebuffer(frameBufferStep1,textureStep1, renderBufferStep1,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
         createFramebuffer(frameBufferStep2,textureStep2, renderBufferStep2,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
 
-        blurHorizontalShader = new BlurHorizontalShader();
-        blurVerticalShader = new BlurVerticalShader();
+        blurShader = new BlurShader();
         blurFinalShader = new BlurFinalShader();
     }
 
@@ -88,40 +85,41 @@ public class GLBlur {
         camera.setWidth(glRendererOnTexture.getFboWidth()).setHeight(glRendererOnTexture.getFboHeight());
         camera.loadVpMatrix();
         this.textureInput = glRendererOnTexture.render(glSceneRenderer);
+        blur(screenWidth,screenHeight);
+        renderOnScreen(screenWidth,screenHeight);
+    }
+
+    private void blur(int screenWidth, int screenHeight){
+        blurShader.setVertices(verticesBuffer);
+        blurShader.setTextureCoords(textureCoordsBuffer);
+        blurShader.setVpMatrix(camera.getVpMatrix());
+        blurShader.setAmount(amount);
+        blurShader.setScale(scale);
+        blurShader.setStrength(strength);
+        blurShader.setScreenSize(screenWidth,screenHeight);
         blurHorizontal();
         blurVertical();
-        renderOnScreen(screenWidth,screenHeight);
     }
 
     private void blurHorizontal() {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep1);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        blurHorizontalShader.setVertices(verticesBuffer);
-        blurHorizontalShader.setTextureCoords(textureCoordsBuffer);
-        blurHorizontalShader.setVpMatrix(camera.getVpMatrix());
-        blurHorizontalShader.setTexture(textureInput);
-        blurHorizontalShader.setAmount(amount);
-        blurHorizontalShader.setScale(scale);
-        blurHorizontalShader.setStrength(strength);
-        blurHorizontalShader.bindData();
+        blurShader.setTexture(textureInput);
+        blurShader.setType(BlurShader.HORIZONTAL);
+        blurShader.bindData();
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-        blurHorizontalShader.unbindData();
+        blurShader.unbindData();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
     private void blurVertical() {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBufferStep2);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        blurVerticalShader.setVertices(verticesBuffer);
-        blurVerticalShader.setTextureCoords(textureCoordsBuffer);
-        blurVerticalShader.setVpMatrix(camera.getVpMatrix());
-        blurVerticalShader.setTexture(textureStep1);
-        blurVerticalShader.setAmount(amount);
-        blurVerticalShader.setScale(scale);
-        blurVerticalShader.setStrength(strength);
-        blurVerticalShader.bindData();
+        blurShader.setTexture(textureStep1);
+        blurShader.setType(BlurShader.VERTICAL);
+        blurShader.bindData();
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
-        blurVerticalShader.unbindData();
+        blurShader.unbindData();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
