@@ -7,7 +7,14 @@ import java.util.Arrays;
 
 public class Color {
 
+    private static boolean isNotIn01(float value){
+        return !(value >= 0f) || !(value <= 1f);
+    }
+
     public static float[] getVertexColor(float[] color, int verticesLength){
+        if (isNotIn01(color[0]) || isNotIn01(color[1]) || isNotIn01(color[2]) || isNotIn01(color[3])){
+            throw new IllegalArgumentException("color component must be >= 0.0f and <= 1.0f");
+        }
         // set color for each vertex
         float[] vertexColor = new float[(verticesLength/3)*4];
         for (int i=0; i<vertexColor.length; i+=4){
@@ -20,13 +27,13 @@ public class Color {
     }
 
     public static float[] randomColor(float min, float max, float alpha){
-        if (min < 0f || min > 1f){
+        if (isNotIn01(min)){
             throw new IllegalArgumentException("min must be >= 0.0f and <= 1.0f");
         }
-        if (max < 0f || max > 1f){
+        if (isNotIn01(max)){
             throw new IllegalArgumentException("max must be >= 0.0f and <= 1.0f");
         }
-        if (alpha < 0f || alpha > 1f){
+        if (isNotIn01(alpha)){
             throw new IllegalArgumentException("alpha must be >= 0.0f and <= 1.0f");
         }
         float[] color = new float[4];
@@ -87,6 +94,9 @@ public class Color {
     }
 
     public static int mixColor(int colorMin, int colorMax, float coeff){
+        if (isNotIn01(coeff)){
+            throw new IllegalArgumentException("coeff must be >= 0.0f and <= 1.0f");
+        }
         float c1 = 1f - coeff;
         float c2 = coeff;
         int a = (int) (alphaI(colorMin)*c1 + alphaI(colorMax)*c2);
