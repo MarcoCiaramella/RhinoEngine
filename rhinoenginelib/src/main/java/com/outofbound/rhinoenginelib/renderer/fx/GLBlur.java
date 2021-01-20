@@ -24,17 +24,17 @@ public class GLBlur {
     private final GLCamera camera;
 
     private static final float[] vertices = {
-            -1f, -1f, //bottom - left
-            1f, -1f, //bottom - right
-            -1f, 1f, //top - left
-            1f, 1f //top - right
+            -1f, -1f,
+            1f, -1f,
+            -1f, 1f,
+            1f, 1f
     };
 
     private static final float[] textureCoords = {
-            1, 1, //bottom - left
-            0, 1, // bottom - right
-            1, 0, // top - left
-            0, 0 // top - right
+            1, 1,
+            0, 1,
+            1, 0,
+            0, 0
     };
 
     private final FloatBuffer verticesBuffer;
