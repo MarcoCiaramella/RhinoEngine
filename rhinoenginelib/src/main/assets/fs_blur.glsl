@@ -16,7 +16,7 @@ float gaussianFunction(float x, float dev){
 }
 
 float calcAttenuation(float distance){
-    return 1.0 / (1.0 + 0.2 * distance + 0.2 * (distance * distance));
+    return 1.0 / (1.0 + 0.2 * distance + 0.7 * (distance * distance));
 }
 
 void main(){
