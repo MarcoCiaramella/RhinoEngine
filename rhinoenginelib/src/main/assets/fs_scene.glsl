@@ -8,6 +8,8 @@ struct DirLight {
     vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
+    sampler2D shadowMap;
+    int shadowEnabled;
 };
 
 struct PointLight {
@@ -18,20 +20,23 @@ struct PointLight {
     vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
+    sampler2D shadowMap;
+    int shadowEnabled;
 };
 
+#define MAX_NUM_POINT_LIGHTS 8
+#define MAX_NUM_SHADOWS 9
 
-#define MAX_NUM_POINT_LIGHTS 16
 uniform DirLight uDirLight;
 uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
 uniform int uNumPointLights;
 uniform vec3 uViewPos;
-uniform sampler2D uShadowMap;
-uniform int uShadowEnabled;
+uniform Shadow uShadows[MAX_NUM_SHADOWS];
+uniform int uNumShadows;
 varying vec4 vColor;
 varying vec3 vPosition;
 varying vec3 vNormal;
-varying vec4 vPositionFromLight;
+varying vec4 vPositionFromLight[MAX_NUM_SHADOWS];
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
@@ -43,14 +48,14 @@ float unpack(vec4 color){
 
 // return 0.0 if in shadow.
 // return 1.0 if not in shadow.
-float calcShadow(){
-    if (uShadowEnabled == 0){
+float calcShadow(vec4 positionFromLight, sampler2D shadowMap, int shadowEnabled){
+    if (shadowEnabled == 0){
         return 1.0;
     }
-    vec3 positionFromLight = vPositionFromLight.xyz / vPositionFromLight.w;
-    positionFromLight = (positionFromLight + 1.0) / 2.0;
-    float closestFragmentZ = unpack(texture2D(uShadowMap, positionFromLight.xy));
-    float currentFragmentZ = positionFromLight.z;
+    vec3 positionFromLight3 = positionFromLight.xyz / positionFromLight.w;
+    positionFromLight3 = (positionFromLight3 + 1.0) / 2.0;
+    float closestFragmentZ = unpack(texture2D(shadowMap, positionFromLight3.xy));
+    float currentFragmentZ = positionFromLight3.z;
     return float(closestFragmentZ > currentFragmentZ);
 }
 
@@ -70,14 +75,15 @@ vec4 calcDirLight(vec3 normal, vec3 viewDir){
     vec4 ambient = vec4(uDirLight.ambientColor, 1.0) * vColor;
     vec4 diffuse = vec4(uDirLight.diffuseColor * diff, 1.0) * vColor;
     vec4 specular = vec4(uDirLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
-    return ambient + (diffuse + specular) * calcShadow();
+    return ambient + (diffuse + specular) * calcShadow(vPositionFromLight[0], uDirLight.shadowMap, uDirLight.shadowEnabled);
 }
 
 float calcAttenuation(PointLight pointLight, float distance){
     return 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
 }
 
-vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
+vec4 calcPointLight(int index, vec3 normal, vec3 viewDir){
+    PointLight pointLight = uPointLights[index];
     vec3 d = pointLight.position - vPosition;
     vec3 lightDir = normalize(d);
     float diff = diffuseLighting(normal, lightDir);
@@ -90,7 +96,7 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
-    return ambient + diffuse + specular;
+    return ambient + (diffuse + specular) * calcShadow(vPositionFromLight[index+1], pointLight.shadowMap, pointLight.shadowEnabled);
 }
 
 

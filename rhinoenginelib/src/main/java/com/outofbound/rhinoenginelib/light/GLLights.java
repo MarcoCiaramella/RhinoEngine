@@ -10,7 +10,7 @@ public class GLLights {
 
     private GLDirLight glDirLight;
     private final BigList<GLPointLight> glPointLights;
-    private static final int MAX_NUM_POINT_LIGHTS = 16;
+    private static final int MAX_NUM_POINT_LIGHTS = 8;
 
     public GLLights(GLDirLight glDirLight){
         this.glDirLight = glDirLight;
