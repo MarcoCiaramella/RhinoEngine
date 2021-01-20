@@ -23,20 +23,22 @@ void main(){
     fragCoord01.x /= uScreenSize.x;
     fragCoord01.y /= uScreenSize.y;
     float strength = 1.0 - uBlurStrength;
+    strength *= length(fragCoord01 - screenCenter01);
     float half1 = float(uBlurAmount)*0.5;
     float texel = 1.0/128.0;
-    //int count = int(uBlurAmount);
-    int count = int(uBlurAmount * length(fragCoord01 - screenCenter01));
+    int count = int(uBlurAmount);
+    //int count = int(uBlurAmount * length(fragCoord01 - screenCenter01));
+    float blurScale = uBlurScale * length(fragCoord01 - screenCenter01);
     if (uType == 0) {
         for (int i = 0; i < count; i++){
             float offset = float(i) - half1;
-            color += texture2D(uTextId, vTexCoords+vec2(offset*texel*uBlurScale,0.0))*gaussianFunction(offset*strength, dev);
+            color += texture2D(uTextId, vTexCoords+vec2(offset*texel*blurScale,0.0))*gaussianFunction(offset*strength, dev);
         }
     }
     else {
         for (int i = 0; i < count; i++){
             float offset = float(i) - half1;
-            color += texture2D(uTextId, vTexCoords+vec2(0.0,offset*texel*uBlurScale))*gaussianFunction(offset*strength, dev);
+            color += texture2D(uTextId, vTexCoords+vec2(0.0,offset*texel*blurScale))*gaussianFunction(offset*strength, dev);
         }
     }
     gl_FragColor = clamp(color, 0.0, 1.0);
