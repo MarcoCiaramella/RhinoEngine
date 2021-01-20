@@ -20,6 +20,15 @@ public class Color {
     }
 
     public static float[] randomColor(float min, float max, float alpha){
+        if (min < 0f || min > 1f){
+            throw new IllegalArgumentException("min must be >= 0.0f and <= 1.0f");
+        }
+        if (max < 0f || max > 1f){
+            throw new IllegalArgumentException("max must be >= 0.0f and <= 1.0f");
+        }
+        if (alpha < 0f || alpha > 1f){
+            throw new IllegalArgumentException("alpha must be >= 0.0f and <= 1.0f");
+        }
         float[] color = new float[4];
         color[0] = Numbers.randomFloat(min,max);
         color[1] = Numbers.randomFloat(min,max);
