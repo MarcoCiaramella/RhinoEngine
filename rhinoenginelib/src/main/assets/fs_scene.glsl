@@ -55,13 +55,17 @@ vec4 calcDirLight(vec3 normal, vec3 viewDir){
     return ambient + diffuse + specular;
 }
 
+float calcAttenuation(PointLight pointLight, float distance){
+    return 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
+}
+
 vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     vec3 d = pointLight.position - vPosition;
     vec3 lightDir = normalize(d);
     float diff = diffuseLighting(normal, lightDir);
     float spec = specularLighting(normal, lightDir, viewDir);
     float distance = length(d);
-    float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
+    float attenuation = calcAttenuation(pointLight,distance);
     vec4 ambient = vec4(pointLight.ambientColor, 1.0) * vColor;
     vec4 diffuse = vec4(pointLight.diffuseColor * diff, 1.0) * vColor;
     vec4 specular = vec4(pointLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);

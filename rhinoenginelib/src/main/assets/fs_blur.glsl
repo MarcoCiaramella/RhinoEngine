@@ -15,6 +15,10 @@ float gaussianFunction(float x, float dev){
     return ((1.0/sqrt(2.0*3.142857*dev))*exp(-(x*x)/(2.0*dev)));
 }
 
+float calcAttenuation(float distance){
+    return 1.0 / (1.0 + 0.2 * distance + 0.2 * (distance * distance));
+}
+
 void main(){
     float dev = uBlurAmount*0.5*0.5;
     dev *= dev;
@@ -23,7 +27,7 @@ void main(){
     fragCoord01.x /= uScreenSize.x;
     fragCoord01.y /= uScreenSize.y;
     float strength = 1.0 - uBlurStrength;
-    strength *= length(fragCoord01 - screenCenter01);
+    strength *= calcAttenuation(length(fragCoord01 - screenCenter01));
     float half1 = float(uBlurAmount)*0.5;
     float texel = 1.0/128.0;
     int count = int(uBlurAmount);
