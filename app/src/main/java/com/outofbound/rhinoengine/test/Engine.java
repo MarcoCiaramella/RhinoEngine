@@ -36,7 +36,7 @@ public class Engine extends GLEngine {
         addGLTask(new CameraRotation());
         //addGLTask(new LightRotation());
         configBlur(GLRendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
-        getGLRenderer(ID.GLRENDERER_0).getGLLights().addGLPointLight(new GLPointLight(
+        /*getGLRenderer(ID.GLRENDERER_0).getGLLights().addGLPointLight(new GLPointLight(
                 new Vector3f(0,0,0),
                 new Vector3f(0.2f,0.2f,0.2f),
                 new Vector3f(0.5f,0.5f,0.5f),
@@ -44,7 +44,7 @@ public class Engine extends GLEngine {
                 1.0f,
                 0.22f,
                 0.2f
-        ));
+        ));*/
         getGLRenderer(ID.GLRENDERER_0)
                 .getGLLights()
                 .getGLDirLight()
