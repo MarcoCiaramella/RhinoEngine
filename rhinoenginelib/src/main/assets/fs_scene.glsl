@@ -81,8 +81,7 @@ float calcAttenuation(PointLight pointLight, float distance){
     return 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
 }
 
-vec4 calcPointLight(int index, vec3 normal, vec3 viewDir){
-    PointLight pointLight = uPointLights[index];
+vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     vec3 d = pointLight.position - vec3(vPosition);
     vec3 lightDir = normalize(d);
     float diff = diffuseLighting(normal, lightDir);
@@ -105,7 +104,7 @@ void main() {
     vec3 viewDir = normalize(uViewPos - vec3(vPosition));
     vec4 result = calcDirLight(normal, viewDir);
     for (int i = 0; i < uNumPointLights; i++){
-        result += calcPointLight(i, normal, viewDir);
+        result += calcPointLight(uPointLights[index], normal, viewDir);
     }
     gl_FragColor = result;
 }
