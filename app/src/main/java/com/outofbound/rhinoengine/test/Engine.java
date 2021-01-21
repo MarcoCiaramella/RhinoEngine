@@ -36,7 +36,7 @@ public class Engine extends AbstractEngine {
         //addGLTask(new LightRotation());
         configBlur(RendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
         PointLight pointLight = new PointLight(
-                new Vector3f(0,5,0),
+                new Vector3f(0,1,0),
                 new Vector3f(0.5f,0.5f,0.5f),
                 new Vector3f(0.7f,0.7f,0.7f),
                 new Vector3f(1,1,1),
