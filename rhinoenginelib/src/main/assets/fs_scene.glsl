@@ -32,7 +32,7 @@ uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
 uniform int uNumPointLights;
 uniform vec3 uViewPos;
 varying vec4 vColor;
-varying vec4 vPosition;
+varying vec3 vPosition;
 varying vec3 vNormal;
 varying vec4 vPositionsFromLight[MAX_NUM_SHADOWS];
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
@@ -82,7 +82,7 @@ float calcAttenuation(PointLight pointLight, float distance){
 }
 
 vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
-    vec3 d = pointLight.position - vec3(vPosition);
+    vec3 d = pointLight.position - vPosition;
     vec3 lightDir = normalize(d);
     float diff = diffuseLighting(normal, lightDir);
     float spec = specularLighting(normal, lightDir, viewDir);
@@ -101,7 +101,7 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
 
 void main() {
     vec3 normal = normalize(vNormal);
-    vec3 viewDir = normalize(uViewPos - vec3(vPosition));
+    vec3 viewDir = normalize(uViewPos - vPosition);
     vec4 result = calcDirLight(normal, viewDir);
     for (int i = 0; i < uNumPointLights; i++){
         result += calcPointLight(uPointLights[index], normal, viewDir);
