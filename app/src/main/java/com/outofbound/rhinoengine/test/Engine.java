@@ -5,6 +5,7 @@ import android.util.AttributeSet;
 
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
+import com.outofbound.rhinoenginelib.light.PointLight;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
@@ -34,15 +35,17 @@ public class Engine extends AbstractEngine {
         addTask(new CameraRotation());
         //addGLTask(new LightRotation());
         configBlur(RendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
-        /*getGLRenderer(ID.GLRENDERER_0).getGLLights().addGLPointLight(new PointLight(
-                new Vector3f(0,0,0),
-                new Vector3f(0.2f,0.2f,0.2f),
+        PointLight pointLight = new PointLight(
+                new Vector3f(0,5,0),
                 new Vector3f(0.5f,0.5f,0.5f),
+                new Vector3f(0.7f,0.7f,0.7f),
                 new Vector3f(1,1,1),
                 1.0f,
                 0.22f,
                 0.2f
-        ));*/
+        ).configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
+        pointLight.enableShadow();
+        getRenderer(ID.GLRENDERER_0).getLights().addPointLight(pointLight);
         getRenderer(ID.GLRENDERER_0)
                 .getLights()
                 .getDirLight()

@@ -24,7 +24,7 @@ void main() {
     vNormal = normalize(vec3(uMMatrix * vec4(aNormal, 0.0)));
     vColor = aColor;
     for (int i = 0; i < uNumShadows; i++){
-        vPositionsFromLight[i] = aPosition * uShadowMVPMatrices[i];
+        vPositionsFromLight[i] = uShadowMVPMatrices[i] * aPosition;
     }
     gl_Position = uMVPMatrix * aPosition;
 }
