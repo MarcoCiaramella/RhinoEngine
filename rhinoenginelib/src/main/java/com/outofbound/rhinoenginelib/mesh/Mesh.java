@@ -6,7 +6,7 @@ import android.opengl.Matrix;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.outofbound.rhinoenginelib.engine.GLEngine;
+import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.mesh.util.Ply;
 import com.outofbound.rhinoenginelib.util.color.Color;
 import com.outofbound.rhinoenginelib.util.color.Gradient;
@@ -19,7 +19,7 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 
-public abstract class GLMesh {
+public abstract class Mesh {
 
     private float[] vertices;
     private float[] normals;
@@ -38,7 +38,7 @@ public abstract class GLMesh {
     protected float scale;
 
 
-    public GLMesh(@NonNull float[] vertices, int sizeVertex, float[] normals, int[] indices, float[] colors){
+    public Mesh(@NonNull float[] vertices, int sizeVertex, float[] normals, int[] indices, float[] colors){
         this.vertices = vertices;
         this.sizeVertex = sizeVertex;
         this.normals = normals;
@@ -47,8 +47,8 @@ public abstract class GLMesh {
         init();
     }
 
-    public GLMesh(String mesh){
-        Ply ply = new Ply(GLEngine.getInstance().getContext(), mesh);
+    public Mesh(String mesh){
+        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
         ply.load();
         this.vertices = ply.getVertices();
         this.sizeVertex = 3;
@@ -58,8 +58,8 @@ public abstract class GLMesh {
         init();
     }
 
-    public GLMesh(String mesh, float[] color){
-        Ply ply = new Ply(GLEngine.getInstance().getContext(), mesh);
+    public Mesh(String mesh, float[] color){
+        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
         ply.load();
         this.vertices = ply.getVertices();
         this.sizeVertex = 3;
@@ -69,8 +69,8 @@ public abstract class GLMesh {
         init();
     }
 
-    public GLMesh(String mesh, Gradient[] gradients){
-        Ply ply = new Ply(GLEngine.getInstance().getContext(), mesh);
+    public Mesh(String mesh, Gradient[] gradients){
+        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
         ply.load();
         this.vertices = ply.getVertices();
         this.sizeVertex = 3;
@@ -161,27 +161,27 @@ public abstract class GLMesh {
 
     public abstract void doTransformation(float[] mMatrix, long ms);
 
-    public GLMesh rotateX(float[] mvMatrix){
+    public Mesh rotateX(float[] mvMatrix){
         Matrix.rotateM(mvMatrix, 0, rotation.x, 1, 0, 0);
         return this;
     }
 
-    public GLMesh rotateY(float[] mvMatrix){
+    public Mesh rotateY(float[] mvMatrix){
         Matrix.rotateM(mvMatrix, 0, rotation.y, 0, 1, 0);
         return this;
     }
 
-    public GLMesh rotateZ(float[] mvMatrix){
+    public Mesh rotateZ(float[] mvMatrix){
         Matrix.rotateM(mvMatrix, 0, rotation.z, 0, 0, 1);
         return this;
     }
 
-    public GLMesh scale(float[] mvMatrix){
+    public Mesh scale(float[] mvMatrix){
         Matrix.scaleM(mvMatrix, 0, scale, scale, scale);
         return this;
     }
 
-    public GLMesh translate(float[] mvMatrix){
+    public Mesh translate(float[] mvMatrix){
         Matrix.translateM(mvMatrix, 0, position.x, position.y, position.z);
         return this;
     }
@@ -307,7 +307,7 @@ public abstract class GLMesh {
         return indices.length;
     }
 
-    public GLMesh createBoundingBox(){
+    public Mesh createBoundingBox(){
         if (boundingBox == null && vertices.length > 0) {
             boundingBox = new BoundingBox(vertices, sizeVertex);
         }
@@ -317,9 +317,9 @@ public abstract class GLMesh {
     /**
      * Set time to live. Use value < 0 for a infinite time to live.
      * @param timeToLive the time to live.
-     * @return this GLMesh.
+     * @return this Mesh.
      */
-    public GLMesh setTimeToLive(long timeToLive){
+    public Mesh setTimeToLive(long timeToLive){
         this.timeToLive = timeToLive;
         return this;
     }

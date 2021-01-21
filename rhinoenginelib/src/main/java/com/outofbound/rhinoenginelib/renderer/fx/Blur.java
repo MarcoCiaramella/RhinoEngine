@@ -2,10 +2,10 @@ package com.outofbound.rhinoenginelib.renderer.fx;
 
 import android.opengl.GLES20;
 
-import com.outofbound.rhinoenginelib.camera.GLCamera;
-import com.outofbound.rhinoenginelib.camera.GLCameraOrthographic;
-import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
-import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
+import com.outofbound.rhinoenginelib.camera.Camera;
+import com.outofbound.rhinoenginelib.camera.CameraOrthographic;
+import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
+import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurShader;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurFinalShader;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
@@ -14,14 +14,14 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public class GLBlur {
+public class Blur {
 
     private final int frameBufferStep1;
     private final int frameBufferStep2;
     private int textureInput;
     private final int textureStep1;
     private final int textureStep2;
-    private final GLCamera camera;
+    private final Camera camera;
 
     private static final float[] vertices = {
             -1f, -1f,
@@ -39,7 +39,7 @@ public class GLBlur {
 
     private final FloatBuffer verticesBuffer;
     private final FloatBuffer textureCoordsBuffer;
-    private final GLRendererOnTexture glRendererOnTexture;
+    private final RendererOnTexture rendererOnTexture;
     private final BlurShader blurShader;
     private final BlurFinalShader blurFinalShader;
     private final float scale;
@@ -47,12 +47,12 @@ public class GLBlur {
     private final float strength;
 
 
-    public GLBlur(GLRendererOnTexture glRendererOnTexture, float scale, float amount, float strength, float near, float far) {
-        this.glRendererOnTexture = glRendererOnTexture;
+    public Blur(RendererOnTexture rendererOnTexture, float scale, float amount, float strength, float near, float far) {
+        this.rendererOnTexture = rendererOnTexture;
         this.scale = scale;
         this.amount = amount;
         this.strength = strength;
-        this.camera = new GLCameraOrthographic(new Vector3f(0,0,1),new Vector3f(0,-1,0),new Vector3f(0,0,0),near,far,1);
+        this.camera = new CameraOrthographic(new Vector3f(0,0,1),new Vector3f(0,-1,0),new Vector3f(0,0,0),near,far,1);
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
         verticesBuffer = bb_vertex.asFloatBuffer();
@@ -74,17 +74,17 @@ public class GLBlur {
         GLES20.glGenRenderbuffers(3, buffers, 0);
         int renderBufferStep1 = buffers[0];
         int renderBufferStep2 = buffers[1];
-        createFramebuffer(frameBufferStep1,textureStep1, renderBufferStep1,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
-        createFramebuffer(frameBufferStep2,textureStep2, renderBufferStep2,glRendererOnTexture.getFboWidth(),glRendererOnTexture.getFboHeight());
+        createFramebuffer(frameBufferStep1,textureStep1, renderBufferStep1, rendererOnTexture.getFboWidth(), rendererOnTexture.getFboHeight());
+        createFramebuffer(frameBufferStep2,textureStep2, renderBufferStep2, rendererOnTexture.getFboWidth(), rendererOnTexture.getFboHeight());
 
         blurShader = new BlurShader();
         blurFinalShader = new BlurFinalShader();
     }
 
-    public void render(GLSceneRenderer glSceneRenderer, int screenWidth, int screenHeight) {
-        camera.setWidth(glRendererOnTexture.getFboWidth()).setHeight(glRendererOnTexture.getFboHeight());
+    public void render(SceneRenderer sceneRenderer, int screenWidth, int screenHeight) {
+        camera.setWidth(rendererOnTexture.getFboWidth()).setHeight(rendererOnTexture.getFboHeight());
         camera.loadVpMatrix();
-        this.textureInput = glRendererOnTexture.render(glSceneRenderer);
+        this.textureInput = rendererOnTexture.render(sceneRenderer);
         blur(screenWidth,screenHeight);
         renderOnScreen(screenWidth,screenHeight);
     }

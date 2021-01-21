@@ -2,23 +2,23 @@ package com.outofbound.rhinoenginelib.light;
 
 import androidx.annotation.NonNull;
 
-import com.outofbound.rhinoenginelib.renderer.fx.GLShadowMap;
+import com.outofbound.rhinoenginelib.renderer.fx.ShadowMap;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
-public abstract class GLLight {
+public abstract class Light {
 
     private final Vector3f ambientColor;
     private final Vector3f diffuseColor;
     private final Vector3f specularColor;
     private boolean shadowEnabled;
-    protected GLShadowMap glShadowMap;
+    protected ShadowMap shadowMap;
 
-    public GLLight(@NonNull Vector3f ambientColor, @NonNull Vector3f diffuseColor, @NonNull Vector3f specularColor){
+    public Light(@NonNull Vector3f ambientColor, @NonNull Vector3f diffuseColor, @NonNull Vector3f specularColor){
         this.ambientColor = ambientColor;
         this.diffuseColor = diffuseColor;
         this.specularColor = specularColor;
         shadowEnabled = false;
-        glShadowMap = null;
+        shadowMap = null;
     }
 
     public Vector3f getAmbientColor(){
@@ -33,12 +33,12 @@ public abstract class GLLight {
         return specularColor;
     }
 
-    public GLLight enableShadow(){
+    public Light enableShadow(){
         shadowEnabled = true;
         return this;
     }
 
-    public GLLight disableShadow(){
+    public Light disableShadow(){
         shadowEnabled = false;
         return this;
     }
@@ -47,7 +47,7 @@ public abstract class GLLight {
         return shadowEnabled;
     }
 
-    public GLShadowMap getGLShadowMap(){
-        return glShadowMap;
+    public ShadowMap getShadowMap(){
+        return shadowMap;
     }
 }

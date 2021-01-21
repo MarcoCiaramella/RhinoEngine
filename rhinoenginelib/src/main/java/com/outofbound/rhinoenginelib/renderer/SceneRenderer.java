@@ -1,6 +1,6 @@
 package com.outofbound.rhinoenginelib.renderer;
 
-public interface GLSceneRenderer {
+public interface SceneRenderer {
 
     void doRendering();
 }

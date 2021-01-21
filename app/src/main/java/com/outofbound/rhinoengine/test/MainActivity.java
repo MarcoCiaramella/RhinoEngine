@@ -7,10 +7,10 @@ import android.widget.TextView;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.outofbound.rhinoengine.R;
-import com.outofbound.rhinoenginelib.activity.GLActivity;
-import com.outofbound.rhinoenginelib.engine.GLEngine;
+import com.outofbound.rhinoenginelib.activity.RhinoEngineActivity;
+import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 
-public class MainActivity extends GLActivity {
+public class MainActivity extends RhinoEngineActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +20,7 @@ public class MainActivity extends GLActivity {
         getFPS().post(new Runnable() {
             @Override
             public void run() {
-                getFPS().setText(getString(R.string.fps, GLEngine.getInstance().getFPS()));
+                getFPS().setText(getString(R.string.fps, AbstractEngine.getInstance().getFPS()));
                 getFPS().postDelayed(this,100);
             }
         });

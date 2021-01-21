@@ -12,8 +12,8 @@ public class Ply {
     private float[] colors = null;
     private float[] uvs = null;
     private int[] indices = null;
-    private Context context;
-    private String file;
+    private final Context context;
+    private final String file;
 
     public Ply(Context context, String file){
         this.context = context;

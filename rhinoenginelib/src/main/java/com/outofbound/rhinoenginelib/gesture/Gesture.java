@@ -1,7 +1,7 @@
 package com.outofbound.rhinoenginelib.gesture;
 
 
-public interface GLGesture {
+public interface Gesture {
 	
 	void onClick(float x, float y);
 	void onRelease(float x, float y);

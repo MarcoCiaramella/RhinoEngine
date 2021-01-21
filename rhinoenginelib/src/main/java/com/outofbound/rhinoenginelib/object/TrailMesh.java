@@ -1,18 +1,18 @@
 package com.outofbound.rhinoenginelib.object;
 
-import com.outofbound.rhinoenginelib.mesh.GLMesh;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.util.timer.Timer;
 
-public abstract class TrailMesh extends GLMesh {
+public abstract class TrailMesh extends Mesh {
 
-    private final GLMesh source;
+    private final Mesh source;
     private Timer timer;
     private final float[] newLine;
     private final float[] newColors;
     private final float[] color;
     private final int length;
 
-    public TrailMesh(GLMesh source, float[] color, int length, long ms) {
+    public TrailMesh(Mesh source, float[] color, int length, long ms) {
         super(new float[]{},3,null,null,new float[]{});
         timer = new Timer(ms);
         newLine = new float[2*getSizeVertex()];

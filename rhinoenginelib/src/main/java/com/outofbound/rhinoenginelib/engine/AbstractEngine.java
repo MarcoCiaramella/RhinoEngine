@@ -3,7 +3,6 @@ package com.outofbound.rhinoenginelib.engine;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.opengl.GLSurfaceView.Renderer;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -11,13 +10,12 @@ import android.view.VelocityTracker;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-import com.outofbound.rhinoenginelib.camera.GLCamera;
-import com.outofbound.rhinoenginelib.gesture.GLGesture;
-import com.outofbound.rhinoenginelib.renderer.GLRenderer;
-import com.outofbound.rhinoenginelib.renderer.GLRendererOnTexture;
-import com.outofbound.rhinoenginelib.renderer.GLSceneRenderer;
-import com.outofbound.rhinoenginelib.renderer.fx.GLBlur;
-import com.outofbound.rhinoenginelib.task.GLTask;
+import com.outofbound.rhinoenginelib.camera.Camera;
+import com.outofbound.rhinoenginelib.gesture.Gesture;
+import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
+import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
+import com.outofbound.rhinoenginelib.renderer.fx.Blur;
+import com.outofbound.rhinoenginelib.task.Task;
 import com.outofbound.rhinoenginelib.util.list.BigList;
 
 import java.util.Calendar;
@@ -29,20 +27,20 @@ import javax.microedition.khronos.opengles.GL10;
 /**
  * The engine abstract class.
  */
-public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
+public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceView.Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
-    private final BigList<GLRenderer> glRenderers = new BigList<>();
-    private final BigList<GLTask> glTasks = new BigList<>();
-    private GLGesture glGesture = null;
+    private final BigList<com.outofbound.rhinoenginelib.renderer.Renderer> renderers = new BigList<>();
+    private final BigList<Task> tasks = new BigList<>();
+    private Gesture gesture = null;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
-    private GLCamera glCamera;
+    private Camera camera;
     private long deltaMs;
     private ScaleGestureDetector scaleDetector;
     private boolean gestureProcessed = false;
-    private static GLEngine instance;
-    private GLBlur glBlur = null;
-    private GLSceneRenderer glSceneRenderer;
+    private static AbstractEngine instance;
+    private Blur blur = null;
+    private SceneRenderer sceneRenderer;
     private boolean blurEnabled = false;
 
 
@@ -50,115 +48,115 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     /**
      * The engine constructor.
      * @param context the context for this view.
-     * @param glCamera the GLCamera.
-     * @param glGesture a GLGesture.
+     * @param camera the Camera.
+     * @param gesture a Gesture.
      */
-    public GLEngine(Context context, GLCamera glCamera, GLGesture glGesture){
+    public AbstractEngine(Context context, Camera camera, Gesture gesture){
         super(context);
-        config(glCamera, glGesture);
+        config(camera, gesture);
     }
 
     /**
      * The engine constructor.
      * @param context the context for this view.
      * @param attrs the object AttributeSet.
-     * @param glCamera the GLCamera.
-     * @param glGesture a GLGesture.
+     * @param camera the Camera.
+     * @param gesture a Gesture.
      */
-    public GLEngine(Context context, AttributeSet attrs, GLCamera glCamera, GLGesture glGesture){
+    public AbstractEngine(Context context, AttributeSet attrs, Camera camera, Gesture gesture){
         super(context,attrs);
-        config(glCamera, glGesture);
+        config(camera, gesture);
     }
 
-    private void config(GLCamera glCamera, GLGesture glGesture){
+    private void config(Camera camera, Gesture gesture){
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setOnTouchListener(this);
-        this.glCamera = glCamera;
-        this.glGesture = glGesture;
-        this.glSceneRenderer = this::renderScene;
+        this.camera = camera;
+        this.gesture = gesture;
+        this.sceneRenderer = this::renderScene;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
         instance = this;
     }
 
     /**
-     * Add a GLRenderer.
-     * @param glRenderer the GLRenderer to add.
-     * @return the GLRenderer id, -1 if the input GLRenderer is a duplicate.
+     * Add a Renderer.
+     * @param renderer the Renderer to add.
+     * @return the Renderer id, -1 if the input Renderer is a duplicate.
      */
-    public int addGLRenderer(GLRenderer glRenderer){
-        return glRenderers.add(glRenderer);
+    public int addRenderer(com.outofbound.rhinoenginelib.renderer.Renderer renderer){
+        return renderers.add(renderer);
     }
 
     /**
-     * Add a GLTask.
-     * @param glTask the GLTask to add.
-     * @return the GLTask id, -1 if the input GLTask is a duplicate.
+     * Add a Task.
+     * @param task the Task to add.
+     * @return the Task id, -1 if the input Task is a duplicate.
      */
-    public int addGLTask(GLTask glTask){
-        glTask.onAdd();
-        return glTasks.add(glTask);
+    public int addTask(Task task){
+        task.onAdd();
+        return tasks.add(task);
     }
 
     /**
-     * Remove the GLRenderer with the specified id.
-     * @param id the id of GLRenderer to remove.
-     * @return this GLEngine.
+     * Remove the Renderer with the specified id.
+     * @param id the id of Renderer to remove.
+     * @return this AbstractEngine.
      */
-    public GLEngine removeGLRenderer(int id){
-        glRenderers.remove(id);
+    public AbstractEngine removeRenderer(int id){
+        renderers.remove(id);
         return this;
     }
 
     /**
-     * Remove the GLTask with the specified id.
-     * @param id the id of GLTask to remove.
-     * @return this GLEngine.
+     * Remove the Task with the specified id.
+     * @param id the id of Task to remove.
+     * @return this AbstractEngine.
      */
-    public GLEngine removeGLTask(int id){
-        GLTask glTask = glTasks.remove(id);
-        if (glTask != null){
-            glTask.onRemove();
+    public AbstractEngine removeTask(int id){
+        Task task = tasks.remove(id);
+        if (task != null){
+            task.onRemove();
         }
         return this;
     }
 
     /**
-     * Return the GLRenderer with input id.
+     * Return the Renderer with input id.
      * @param id the id.
-     * @return the GLRenderer if exists, null otherwise.
+     * @return the Renderer if exists, null otherwise.
      */
-    public GLRenderer getGLRenderer(int id){
-        return glRenderers.get(id);
+    public com.outofbound.rhinoenginelib.renderer.Renderer getRenderer(int id){
+        return renderers.get(id);
     }
 
     /**
-     * Return GLTask with the input id.
+     * Return Task with the input id.
      * @param id the id.
-     * @return the GLTask if exists, null otherwise.
+     * @return the Task if exists, null otherwise.
      */
-    public GLTask getGLTask(int id){
-        return glTasks.get(id);
+    public Task getTask(int id){
+        return tasks.get(id);
     }
 
     /**
-     * Set a GLGesture object.
-     * @param glGesture the GLGesture object.
+     * Set a Gesture object.
+     * @param gesture the Gesture object.
      * @return this engine.
      */
-    public GLEngine setGLGesture(GLGesture glGesture){
-        this.glGesture = glGesture;
+    public AbstractEngine setGesture(Gesture gesture){
+        this.gesture = gesture;
         return this;
     }
 
     /**
-     * Return the GLGesture.
-     * @return the GLGesture.
+     * Return the Gesture.
+     * @return the Gesture.
      */
-    public GLGesture getGLGesture(){
-        return glGesture;
+    public Gesture getGesture(){
+        return gesture;
     }
 
     /**
@@ -204,7 +202,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if (glGesture != null) {
+        if (gesture != null) {
             if (!checkMotionEvent(event)){
                 return true;
             }
@@ -226,16 +224,16 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
                     vt.computeCurrentVelocity(1);
                     float velX = vt.getXVelocity();
                     float velY = vt.getYVelocity();
-                    glGesture.onMove(posX, posY, velX, velY);
+                    gesture.onMove(posX, posY, velX, velY);
                     vt.recycle();
                 }
                 break;
                 case MotionEvent.ACTION_DOWN: {
-                    glGesture.onClick(posX, posY);
+                    gesture.onClick(posX, posY);
                 }
                 break;
                 case MotionEvent.ACTION_UP: {
-                    glGesture.onRelease(posX, posY);
+                    gesture.onRelease(posX, posY);
                 }
                 break;
                 default: {
@@ -253,8 +251,8 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
      */
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
-        if (glGesture != null) {
-            glGesture.onScale(detector.getScaleFactor());
+        if (gesture != null) {
+            gesture.onScale(detector.getScaleFactor());
             gestureProcessed = true;
         }
         invalidate();
@@ -306,7 +304,7 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
-        glCamera.setWidth(width).setHeight(height);
+        camera.setWidth(width).setHeight(height);
     }
 
     /**
@@ -325,17 +323,17 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
             deltaMs = currentMs - ms;
         }
 
-        if (glBlur != null && blurEnabled){
-            glBlur.render(glSceneRenderer,getWidth(),getHeight());
+        if (blur != null && blurEnabled){
+            blur.render(sceneRenderer,getWidth(),getHeight());
         }
         else {
-            glSceneRenderer.doRendering();
+            sceneRenderer.doRendering();
         }
 
-        for (GLTask glTask : glTasks){
-            boolean alive = glTask.runTask(deltaMs);
+        for (Task task : tasks){
+            boolean alive = task.runTask(deltaMs);
             if (!alive) {
-                glTasks.remove(glTask);
+                tasks.remove(task);
             }
         }
 
@@ -344,9 +342,9 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     }
 
     private void renderScene(){
-        glCamera.loadVpMatrix();
-        for (GLRenderer glRenderer : glRenderers){
-            glRenderer.render(getWidth(), getHeight(), glCamera, deltaMs);
+        camera.loadVpMatrix();
+        for (com.outofbound.rhinoenginelib.renderer.Renderer renderer : renderers){
+            renderer.render(getWidth(), getHeight(), camera, deltaMs);
         }
     }
 
@@ -365,18 +363,18 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
     }
 
     /**
-     * Return the GLCamera.
-     * @return the GLCamera.
+     * Return the Camera.
+     * @return the Camera.
      */
-    public GLCamera getGLCamera(){
-        return glCamera;
+    public Camera getCamera(){
+        return camera;
     }
 
     /**
-     * Get this GLEngine.
+     * Get this AbstractEngine.
      * @return the instance.
      */
-    public static GLEngine getInstance(){
+    public static AbstractEngine getInstance(){
         return instance;
     }
 
@@ -387,33 +385,33 @@ public abstract class GLEngine extends GLSurfaceView implements Renderer, OnTouc
 
     /**
      * Configure blur effect.
-     * @param resolution the quality level. Must be GLRendererOnTexture.RESOLUTION_256, GLRendererOnTexture.RESOLUTION_512 or GLRendererOnTexture.RESOLUTION_1024.
+     * @param resolution the quality level. Must be RendererOnTexture.RESOLUTION_256, RendererOnTexture.RESOLUTION_512 or RendererOnTexture.RESOLUTION_1024.
      * @param scale the scale.
      * @param amount the amount.
      * @param strength the strength.
      * @param near camera near.
      * @param far camera far.
-     * @return this GLEngine.
+     * @return this AbstractEngine.
      */
-    public GLEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
-        glBlur = new GLBlur(new GLRendererOnTexture(resolution),scale,amount,strength,near,far);
+    public AbstractEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
+        blur = new Blur(new RendererOnTexture(resolution),scale,amount,strength,near,far);
         return this;
     }
 
     /**
      * Enable blur effect.
-     * @return this GLEngine.
+     * @return this AbstractEngine.
      */
-    public GLEngine enableBlur(){
+    public AbstractEngine enableBlur(){
         blurEnabled = true;
         return this;
     }
 
     /**
      * Disable blur effect.
-     * @return this GLEngine.
+     * @return this AbstractEngine.
      */
-    public GLEngine disableBlur(){
+    public AbstractEngine disableBlur(){
         blurEnabled = false;
         return this;
     }

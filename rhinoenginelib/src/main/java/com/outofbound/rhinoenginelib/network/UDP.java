@@ -17,8 +17,7 @@ import java.net.UnknownHostException;
  */
 public class UDP {
 
-    private String host;
-    private int port;
+    private final int port;
     private DatagramSocket udpSocket;
     private InetAddress serverAddr;
 
@@ -29,7 +28,6 @@ public class UDP {
      * @param timeoutMs the timeout for the socket in milliseconds.
      */
     public UDP(String host, int port, int timeoutMs){
-        this.host = host;
         this.port = port;
         try {
             udpSocket = new DatagramSocket(port);

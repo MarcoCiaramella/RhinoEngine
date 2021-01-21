@@ -2,11 +2,11 @@ package com.outofbound.rhinoenginelib.shader.primitives;
 
 import android.opengl.GLES20;
 
-import com.outofbound.rhinoenginelib.shader.GLShader;
+import com.outofbound.rhinoenginelib.shader.Shader;
 
 import java.nio.FloatBuffer;
 
-public final class BlurShader extends GLShader {
+public final class BlurShader extends Shader {
 
     private float[] vpMatrix;
     private FloatBuffer vertices;

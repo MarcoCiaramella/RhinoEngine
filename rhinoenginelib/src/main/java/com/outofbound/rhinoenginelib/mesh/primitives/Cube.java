@@ -2,10 +2,10 @@ package com.outofbound.rhinoenginelib.mesh.primitives;
 
 
 
-import com.outofbound.rhinoenginelib.mesh.GLMesh;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.util.color.Color;
 
-public class Cube extends GLMesh {
+public class Cube extends Mesh {
 
     private static final float[] vertices = {
             -1,-1,1,

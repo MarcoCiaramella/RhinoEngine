@@ -2,20 +2,20 @@ package com.outofbound.rhinoenginelib.shader;
 
 import android.opengl.GLES20;
 
-import com.outofbound.rhinoenginelib.engine.GLEngine;
+import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.util.file.TextFileReader;
 
 
-public abstract class GLShader {
+public abstract class Shader {
 
     private final int program;
 
-    public GLShader(String vs, String fs){
+    public Shader(String vs, String fs){
         program = GLES20.glCreateProgram();
         GLES20.glAttachShader(program, compile(GLES20.GL_VERTEX_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), vs)));
+                TextFileReader.getString(AbstractEngine.getInstance().getContext(), vs)));
         GLES20.glAttachShader(program, compile(GLES20.GL_FRAGMENT_SHADER,
-                TextFileReader.getString(GLEngine.getInstance().getContext(), fs)));
+                TextFileReader.getString(AbstractEngine.getInstance().getContext(), fs)));
         GLES20.glLinkProgram(program);
     }
 

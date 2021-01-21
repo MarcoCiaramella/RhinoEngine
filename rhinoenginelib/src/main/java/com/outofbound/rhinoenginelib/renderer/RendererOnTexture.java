@@ -3,7 +3,7 @@ package com.outofbound.rhinoenginelib.renderer;
 import android.opengl.GLES20;
 
 
-public class GLRendererOnTexture {
+public class RendererOnTexture {
 
     // Make sure that dimensions are in POT (Power Of Two), because some devices may not support NPOT textures.
     private final int fboWidth;
@@ -20,9 +20,9 @@ public class GLRendererOnTexture {
     private static final int[] resolutions = {256,512,1024,2048,4096};
 
 
-    public GLRendererOnTexture(int resolution){
+    public RendererOnTexture(int resolution){
         if (resolution < 0 || resolution > 4){
-            throw new IllegalArgumentException("resolution must be GLRendererOnTexture.RESOLUTION_x");
+            throw new IllegalArgumentException("resolution must be RendererOnTexture.RESOLUTION_x");
         }
         this.fboWidth = resolutions[resolution];
         this.fboHeight = resolutions[resolution];
@@ -40,16 +40,16 @@ public class GLRendererOnTexture {
         createFramebuffer(frameBuffer, texture, renderBuffer, fboWidth, fboHeight);
     }
 
-    private void renderOnFBO(GLSceneRenderer glSceneRenderer){
+    private void renderOnFBO(SceneRenderer sceneRenderer){
         GLES20.glViewport(0, 0, fboWidth, fboHeight);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        glSceneRenderer.doRendering();
+        sceneRenderer.doRendering();
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    public int render(GLSceneRenderer glSceneRenderer) {
-        renderOnFBO(glSceneRenderer);
+    public int render(SceneRenderer sceneRenderer) {
+        renderOnFBO(sceneRenderer);
         return texture;
     }
 

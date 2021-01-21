@@ -3,19 +3,19 @@ package com.outofbound.rhinoenginelib.task;
 import androidx.annotation.CallSuper;
 
 
-public abstract class GLTask {
+public abstract class Task {
 
     private boolean dead;
 
     /**
-     * Instantiate a GLTask.
+     * Instantiate a Task.
      */
-    public GLTask(){
+    public Task(){
         dead = false;
     }
 
     /**
-     * Called when this GLTask is added to GLEngine.
+     * Called when this Task is added to AbstractEngine.
      */
     @CallSuper
     public void onAdd(){
@@ -23,7 +23,7 @@ public abstract class GLTask {
     }
 
     /**
-     * Called when this GLTask is removed from GLEngine.
+     * Called when this Task is removed from AbstractEngine.
      */
     @CallSuper
     public void onRemove(){
@@ -38,15 +38,15 @@ public abstract class GLTask {
     public abstract boolean runTask(long ms);
 
     /**
-     * Kill this GLTask. It will be removed from GLEngine.
+     * Kill this Task. It will be removed from AbstractEngine.
      */
     public void kill(){
         dead = true;
     }
 
     /**
-     * Return true if this GLTask is dead.
-     * @return true if this GLTask is dead, false otherwise.
+     * Return true if this Task is dead.
+     * @return true if this Task is dead, false otherwise.
      */
     public boolean isDead(){
         return dead;

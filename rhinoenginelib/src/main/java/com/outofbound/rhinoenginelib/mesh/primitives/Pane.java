@@ -2,10 +2,10 @@ package com.outofbound.rhinoenginelib.mesh.primitives;
 
 
 
-import com.outofbound.rhinoenginelib.mesh.GLMesh;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.util.color.Color;
 
-public class Pane extends GLMesh {
+public class Pane extends Mesh {
 
     private static final float[] vertices = {
             -1,0,1,
