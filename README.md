@@ -5,6 +5,7 @@
 A graphics engine for Android in OpenGL ES 2.0.
 
 ## How to import in your Android project
+Add JitPack in your root build.gradle at the end of repositories:
 
 ```
 allprojects {
