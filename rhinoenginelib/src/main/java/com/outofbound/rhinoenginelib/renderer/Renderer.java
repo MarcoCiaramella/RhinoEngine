@@ -6,6 +6,7 @@ import android.opengl.Matrix;
 import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.light.DirLight;
 import com.outofbound.rhinoenginelib.light.Lights;
+import com.outofbound.rhinoenginelib.light.PointLight;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.shader.primitives.SceneShader;
 import com.outofbound.rhinoenginelib.shader.primitives.ShadowMapShader;
@@ -87,8 +88,13 @@ public final class Renderer {
         sceneShader.setLights(lights);
         sceneShader.setViewPos(camera.getEye());
         if (lights.getDirLight().isShadowEnabled()){
-            lights.getDirLight().getShadowMap().getShadowMapCamera().loadVpMatrix();
+            lights.getDirLight().getShadowMap().getCamera().loadVpMatrix();
             lights.getDirLight().getShadowMap().render(sceneRenderer,screenWidth,screenHeight);
+            this.ms = 0;
+        }
+        for (PointLight pointLight : lights.getPointLights()){
+            pointLight.getShadowMap().getCamera().loadVpMatrix();
+            pointLight.getShadowMap().render(sceneRenderer,screenWidth,screenHeight);
             this.ms = 0;
         }
         if (blendingEnabled) {
@@ -135,7 +141,7 @@ public final class Renderer {
             if (!mesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 mesh.doTransformation(mMatrix,ms);
-                Matrix.multiplyMM(shadowMVPMatrix, 0, lights.getDirLight().getShadowMap().getShadowMapCamera().getVpMatrix(), 0, mMatrix, 0);
+                Matrix.multiplyMM(shadowMVPMatrix, 0, lights.getDirLight().getShadowMap().getCamera().getVpMatrix(), 0, mMatrix, 0);
                 if (mesh.getBoundingBox() != null) {
                     mesh.getBoundingBox().copyMMatrix(mMatrix);
                 }

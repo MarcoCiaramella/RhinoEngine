@@ -10,16 +10,16 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 public class ShadowMap {
 
     private final RendererOnTexture shadowMapRenderer;
-    private final CameraOrthographic shadowMapCamera;
+    private final CameraOrthographic camera;
     private int texture;
 
     public ShadowMap(int resolution, Vector3f lightPosition, float near, float far, float clippingCubeSize){
         shadowMapRenderer = new RendererOnTexture(resolution);
-        shadowMapCamera = new CameraOrthographic(lightPosition, new Vector3f(0,1,0), new Vector3f(0,0,0), near, far, clippingCubeSize);
+        camera = new CameraOrthographic(lightPosition, new Vector3f(0,1,0), new Vector3f(0,0,0), near, far, clippingCubeSize);
     }
 
-    public CameraOrthographic getShadowMapCamera(){
-        return shadowMapCamera;
+    public CameraOrthographic getCamera(){
+        return camera;
     }
 
     public void render(SceneRenderer sceneRenderer, int screenWidth, int screenHeight){
