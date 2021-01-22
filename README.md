@@ -38,23 +38,23 @@ Add engine to your main activity layout
 Define your implementation
 
 ```java
-public class Engine extends GLEngine {
+public class Engine extends AbstractEngine {
 
     private static final Vector3f CAMERA_EYE = new Vector3f(3,2,3);
     private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
 
     public Engine(Context context){
-        super(context, new GLCameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
+        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new GLCameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
+        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
     }
 
     @Override
     protected void init() {
-        // add here your code
+        // your code
     }
 }
 ```
