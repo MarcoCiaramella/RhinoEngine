@@ -40,7 +40,7 @@ public final class Renderer {
         shadowMapShader = new ShadowMapShader();
         meshes = new BigList<>();
         lights = new Lights(new DirLight(new Vector3f(0.5f,-1,0),new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1)));
-        sceneRenderer = this::renderSceneShadowMap;
+        sceneRenderer = this::renderShadowMap;
     }
 
     /**
@@ -136,7 +136,7 @@ public final class Renderer {
         }
     }
 
-    private void renderSceneShadowMap(Camera camera){
+    private void renderShadowMap(Camera camera){
         for (Mesh mesh : meshes) {
             if (!mesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
