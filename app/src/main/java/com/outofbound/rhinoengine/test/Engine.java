@@ -49,8 +49,9 @@ public class Engine extends AbstractEngine {
         getRenderer(ID.GLRENDERER_0)
                 .getLights()
                 .getDirLight()
-                .configShadow(RendererOnTexture.RESOLUTION_4096,100,1,1000,10);
-                //.enableShadow();
+                .configShadow(RendererOnTexture.RESOLUTION_4096,100,1,1000,10)
+                .enableShadow()
+                .off();
     }
 
     public void blurOn(){
