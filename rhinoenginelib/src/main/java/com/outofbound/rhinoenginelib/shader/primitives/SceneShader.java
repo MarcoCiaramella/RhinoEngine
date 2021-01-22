@@ -74,7 +74,8 @@ public final class SceneShader extends Shader {
         GLES20.glUniform1i(uDirLight.get(5), dirLight.isShadowEnabled() ? 1 : 0);
     }
 
-    private void bindPointLight(PointLight pointLight, int index){
+    private void bindPointLight(int index){
+        PointLight pointLight = lights.getPointLights().get(index);
         ArrayList<Integer> uPointLight;
         if (index + 1 > uPointLights.size()){
             String name = "uPointLights["+index+"]";
@@ -125,9 +126,8 @@ public final class SceneShader extends Shader {
         shadowIndex = 0;
         bindDirLight();
         GLES20.glUniform1i(uNumPointLights, lights.getPointLights().size());
-        int i = 0;
-        for (PointLight pointLight : lights.getPointLights()){
-            bindPointLight(pointLight,i++);
+        for (int i = 0; i < lights.getPointLights().size(); i++){
+            bindPointLight(i);
         }
         GLES20.glUniform1i(uNumShadows, shadowIndex);
     }
