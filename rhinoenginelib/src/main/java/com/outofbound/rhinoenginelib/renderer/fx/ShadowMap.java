@@ -9,12 +9,12 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class ShadowMap {
 
-    private final RendererOnTexture shadowMapRenderer;
+    private final RendererOnTexture renderer;
     private final CameraOrthographic camera;
     private int texture;
 
     public ShadowMap(int resolution, Vector3f lightPosition, float near, float far, float clippingCubeSize){
-        shadowMapRenderer = new RendererOnTexture(resolution);
+        renderer = new RendererOnTexture(resolution);
         camera = new CameraOrthographic(lightPosition, new Vector3f(0,1,0), new Vector3f(0,0,0), near, far, clippingCubeSize);
     }
 
@@ -25,7 +25,7 @@ public class ShadowMap {
     public void render(SceneRenderer sceneRenderer, int screenWidth, int screenHeight){
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
-        texture = shadowMapRenderer.render(sceneRenderer);
+        texture = renderer.render(sceneRenderer);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
     }
