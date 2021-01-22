@@ -12,6 +12,7 @@ public abstract class Light {
     private final Vector3f specularColor;
     private boolean shadowEnabled;
     protected ShadowMap shadowMap;
+    private boolean on;
 
     public Light(@NonNull Vector3f ambientColor, @NonNull Vector3f diffuseColor, @NonNull Vector3f specularColor){
         this.ambientColor = ambientColor;
@@ -19,6 +20,7 @@ public abstract class Light {
         this.specularColor = specularColor;
         shadowEnabled = false;
         shadowMap = null;
+        on = true;
     }
 
     public Vector3f getAmbientColor(){
@@ -49,5 +51,19 @@ public abstract class Light {
 
     public ShadowMap getShadowMap(){
         return shadowMap;
+    }
+
+    public Light on(){
+        on = true;
+        return this;
+    }
+
+    public Light off(){
+        on = false;
+        return this;
+    }
+
+    public boolean isOn(){
+        return on;
     }
 }

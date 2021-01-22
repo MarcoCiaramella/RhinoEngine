@@ -4,6 +4,7 @@ precision highp float;
 
 
 struct DirLight {
+    int on;
     vec3 direction;
     vec3 ambientColor;
     vec3 diffuseColor;
@@ -13,6 +14,7 @@ struct DirLight {
 };
 
 struct PointLight {
+    int on;
     vec3 position;
     float constant;
     float linear;
@@ -103,9 +105,14 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
 void main() {
     vec3 normal = normalize(vNormal);
     vec3 viewDir = normalize(uViewPos - vPosition);
-    vec4 result = calcDirLight(normal, viewDir);
+    vec4 result = vec4(0.0);
+    if (uDirLight.on == 1){
+        result = calcDirLight(normal, viewDir);
+    }
     for (int i = 0; i < uNumPointLights; i++){
-        result += calcPointLight(uPointLights[i], normal, viewDir);
+        if (uPointLights[i].on == 1){
+            result += calcPointLight(uPointLights[i], normal, viewDir);
+        }
     }
     gl_FragColor = result;
 }

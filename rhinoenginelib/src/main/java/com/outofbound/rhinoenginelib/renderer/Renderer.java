@@ -87,12 +87,12 @@ public final class Renderer {
     private void renderScene(int screenWidth, int screenHeight, Camera camera){
         sceneShader.setLights(lights);
         sceneShader.setViewPos(camera.getEye());
-        if (lights.getDirLight().isShadowEnabled()){
+        if (lights.getDirLight().isOn() && lights.getDirLight().isShadowEnabled()){
             lights.getDirLight().getShadowMap().render(sceneRenderer,screenWidth,screenHeight);
             this.ms = 0;
         }
         for (PointLight pointLight : lights.getPointLights()){
-            if (pointLight.isShadowEnabled()) {
+            if (pointLight.isOn() && pointLight.isShadowEnabled()) {
                 pointLight.getShadowMap().render(sceneRenderer, screenWidth, screenHeight);
                 this.ms = 0;
             }
