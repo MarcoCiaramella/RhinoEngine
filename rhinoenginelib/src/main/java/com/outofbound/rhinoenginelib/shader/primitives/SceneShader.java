@@ -77,7 +77,10 @@ public final class SceneShader extends Shader {
     private void bindPointLight(int index){
         PointLight pointLight = lights.getPointLights().get(index);
         ArrayList<Integer> uPointLight;
-        if (index + 1 > uPointLights.size()){
+        if (index < uPointLights.size()){
+            uPointLight = uPointLights.get(index);
+        }
+        else {
             String name = "uPointLights["+index+"]";
             uPointLight = new ArrayList<>();
             uPointLight.add(getUniform(name+".position"));
@@ -91,9 +94,6 @@ public final class SceneShader extends Shader {
             uPointLight.add(getUniform(name+".shadowEnabled"));
             uPointLights.add(uPointLight);
         }
-        else {
-            uPointLight = uPointLights.get(index);
-        }
         GLES20.glUniform3f(uPointLight.get(0), pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
         GLES20.glUniform1f(uPointLight.get(1), pointLight.getConstant());
         GLES20.glUniform1f(uPointLight.get(2), pointLight.getLinear());
@@ -102,7 +102,7 @@ public final class SceneShader extends Shader {
         GLES20.glUniform3f(uPointLight.get(5), pointLight.getDiffuseColor().x, pointLight.getDiffuseColor().y, pointLight.getDiffuseColor().z);
         GLES20.glUniform3f(uPointLight.get(6), pointLight.getSpecularColor().x, pointLight.getSpecularColor().y, pointLight.getSpecularColor().z);
         if (pointLight.isShadowEnabled()) {
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE1 + index);
+            GLES20.glActiveTexture(GLES20.GL_TEXTURE0 + shadowIndex);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, pointLight.getShadowMap().getTexture());
             GLES20.glUniform1i(uPointLight.get(7), 0);
             Matrix.multiplyMM(shadowMVPMatrix, 0, pointLight.getShadowMap().getCamera().getVpMatrix(), 0, mMatrix, 0);
