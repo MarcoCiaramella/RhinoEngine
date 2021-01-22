@@ -1,6 +1,8 @@
 package com.outofbound.rhinoenginelib.renderer;
 
+import com.outofbound.rhinoenginelib.camera.Camera;
+
 public interface SceneRenderer {
 
-    void doRendering();
+    void doRendering(Camera camera);
 }

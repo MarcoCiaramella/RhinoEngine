@@ -2,6 +2,8 @@ package com.outofbound.rhinoenginelib.renderer;
 
 import android.opengl.GLES20;
 
+import com.outofbound.rhinoenginelib.camera.Camera;
+
 
 public class RendererOnTexture {
 
@@ -10,6 +12,7 @@ public class RendererOnTexture {
     private final int fboHeight;
     private int frameBuffer;
     private int texture;
+    private Camera camera;
 
     public static final int RESOLUTION_256 = 0;
     public static final int RESOLUTION_512 = 1;
@@ -20,12 +23,13 @@ public class RendererOnTexture {
     private static final int[] resolutions = {256,512,1024,2048,4096};
 
 
-    public RendererOnTexture(int resolution){
+    public RendererOnTexture(int resolution, Camera camera){
         if (resolution < 0 || resolution > 4){
             throw new IllegalArgumentException("resolution must be RendererOnTexture.RESOLUTION_x");
         }
         this.fboWidth = resolutions[resolution];
         this.fboHeight = resolutions[resolution];
+        this.camera = camera;
         setup();
     }
 
@@ -44,7 +48,7 @@ public class RendererOnTexture {
         GLES20.glViewport(0, 0, fboWidth, fboHeight);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        sceneRenderer.doRendering();
+        sceneRenderer.doRendering(camera);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 

@@ -88,13 +88,11 @@ public final class Renderer {
         sceneShader.setLights(lights);
         sceneShader.setViewPos(camera.getEye());
         if (lights.getDirLight().isShadowEnabled()){
-            lights.getDirLight().getShadowMap().getCamera().loadVpMatrix();
             lights.getDirLight().getShadowMap().render(sceneRenderer,screenWidth,screenHeight);
             this.ms = 0;
         }
         for (PointLight pointLight : lights.getPointLights()){
             if (pointLight.isShadowEnabled()) {
-                pointLight.getShadowMap().getCamera().loadVpMatrix();
                 pointLight.getShadowMap().render(sceneRenderer, screenWidth, screenHeight);
                 this.ms = 0;
             }
@@ -138,12 +136,12 @@ public final class Renderer {
         }
     }
 
-    private void renderSceneShadowMap(){
+    private void renderSceneShadowMap(Camera camera){
         for (Mesh mesh : meshes) {
             if (!mesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
                 mesh.doTransformation(mMatrix,ms);
-                Matrix.multiplyMM(shadowMVPMatrix, 0, lights.getDirLight().getShadowMap().getCamera().getVpMatrix(), 0, mMatrix, 0);
+                Matrix.multiplyMM(shadowMVPMatrix, 0, camera.getVpMatrix(), 0, mMatrix, 0);
                 if (mesh.getBoundingBox() != null) {
                     mesh.getBoundingBox().copyMMatrix(mMatrix);
                 }

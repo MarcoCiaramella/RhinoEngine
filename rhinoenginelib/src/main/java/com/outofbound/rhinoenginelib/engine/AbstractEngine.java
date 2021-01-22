@@ -327,7 +327,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             blur.render(sceneRenderer,getWidth(),getHeight());
         }
         else {
-            sceneRenderer.doRendering();
+            sceneRenderer.doRendering(camera);
         }
 
         for (Task task : tasks){
@@ -341,7 +341,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     }
 
-    private void renderScene(){
+    private void renderScene(Camera camera){
         camera.loadVpMatrix();
         for (com.outofbound.rhinoenginelib.renderer.Renderer renderer : renderers){
             renderer.render(getWidth(), getHeight(), camera, deltaMs);
@@ -394,7 +394,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @return this AbstractEngine.
      */
     public AbstractEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
-        blur = new Blur(new RendererOnTexture(resolution),scale,amount,strength,near,far);
+        blur = new Blur(new RendererOnTexture(resolution,camera),scale,amount,strength,near,far);
         return this;
     }
 
