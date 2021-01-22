@@ -117,11 +117,7 @@ public final class Renderer {
                 sceneShader.setMMatrix(mMatrix);
                 sceneShader.setMvpMatrix(mvpMatrix);
                 sceneShader.bindData();
-                if (mesh.getIndices() != null) {
-                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, mesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, mesh.getIndicesBuffer());
-                } else {
-                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mesh.getNumVertices());
-                }
+                draw(mesh);
                 sceneShader.unbindData();
             }
             else {
@@ -148,16 +144,20 @@ public final class Renderer {
                 shadowMapShader.setMesh(mesh);
                 shadowMapShader.setMvpMatrix(shadowMVPMatrix);
                 shadowMapShader.bindData();
-                if (mesh.getIndices() != null) {
-                    GLES20.glDrawElements(GLES20.GL_TRIANGLES, mesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, mesh.getIndicesBuffer());
-                } else {
-                    GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mesh.getNumVertices());
-                }
+                draw(mesh);
                 shadowMapShader.unbindData();
             }
             else {
                 meshes.remove(mesh);
             }
+        }
+    }
+
+    private void draw(Mesh mesh){
+        if (mesh.getIndices() != null) {
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, mesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, mesh.getIndicesBuffer());
+        } else {
+            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mesh.getNumVertices());
         }
     }
 
