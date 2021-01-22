@@ -93,9 +93,11 @@ public final class Renderer {
             this.ms = 0;
         }
         for (PointLight pointLight : lights.getPointLights()){
-            pointLight.getShadowMap().getCamera().loadVpMatrix();
-            pointLight.getShadowMap().render(sceneRenderer,screenWidth,screenHeight);
-            this.ms = 0;
+            if (pointLight.isShadowEnabled()) {
+                pointLight.getShadowMap().getCamera().loadVpMatrix();
+                pointLight.getShadowMap().render(sceneRenderer, screenWidth, screenHeight);
+                this.ms = 0;
+            }
         }
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);
