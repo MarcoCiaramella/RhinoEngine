@@ -50,8 +50,7 @@ public class Engine extends AbstractEngine {
                 .getLights()
                 .getDirLight()
                 .configShadow(RendererOnTexture.RESOLUTION_4096,100,1,1000,10)
-                .enableShadow()
-                .off();
+                .enableShadow();
     }
 
     public void blurOn(){
