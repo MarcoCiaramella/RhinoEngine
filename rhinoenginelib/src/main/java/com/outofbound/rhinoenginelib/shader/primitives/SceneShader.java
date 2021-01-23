@@ -20,7 +20,6 @@ public final class SceneShader extends Shader {
     private Lights lights;
     private Vector3f viewPos;
     private int textureName;
-
     private final int aPosition;
     private final int aNormal;
     private final int aColor;
