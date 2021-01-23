@@ -19,6 +19,8 @@ public final class SceneShader extends Shader {
     private float[] mvpMatrix;
     private Lights lights;
     private Vector3f viewPos;
+    private int textureName;
+
     private final int aPosition;
     private final int aNormal;
     private final int aColor;
@@ -59,7 +61,7 @@ public final class SceneShader extends Shader {
         GLES20.glUniform3f(uDirLight.get(3), dirLight.getDiffuseColor().x, dirLight.getDiffuseColor().y, dirLight.getDiffuseColor().z);
         GLES20.glUniform3f(uDirLight.get(4), dirLight.getSpecularColor().x, dirLight.getSpecularColor().y, dirLight.getSpecularColor().z);
         if (dirLight.isShadowEnabled()) {
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+            GLES20.glActiveTexture(textureName++);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, dirLight.getShadowMap().getTexture());
             GLES20.glUniform1i(uDirLight.get(5), 0);
             GLES20.glUniformMatrix4fv(uDirLight.get(6), 1, false, dirLight.getShadowMap().getCamera().getVpMatrix(), 0);
@@ -98,7 +100,7 @@ public final class SceneShader extends Shader {
         GLES20.glUniform3f(uPointLight.get(6), pointLight.getDiffuseColor().x, pointLight.getDiffuseColor().y, pointLight.getDiffuseColor().z);
         GLES20.glUniform3f(uPointLight.get(7), pointLight.getSpecularColor().x, pointLight.getSpecularColor().y, pointLight.getSpecularColor().z);
         if (pointLight.isShadowEnabled()) {
-            GLES20.glActiveTexture(GLES20.GL_TEXTURE1 + index);
+            GLES20.glActiveTexture(textureName++);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, pointLight.getShadowMap().getTexture());
             GLES20.glUniform1i(uPointLight.get(8), 0);
             GLES20.glUniformMatrix4fv(uPointLight.get(9), 1, false, pointLight.getShadowMap().getCamera().getVpMatrix(), 0);
@@ -118,6 +120,7 @@ public final class SceneShader extends Shader {
         GLES20.glUniformMatrix4fv(uMMatrix, 1, false, mMatrix, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);
         GLES20.glUniform3f(uViewPos, viewPos.x, viewPos.y, viewPos.z);
+        textureName = GLES20.GL_TEXTURE0;
         bindDirLight();
         GLES20.glUniform1i(uNumPointLights, lights.getPointLights().size());
         for (int i = 0; i < lights.getPointLights().size(); i++){
