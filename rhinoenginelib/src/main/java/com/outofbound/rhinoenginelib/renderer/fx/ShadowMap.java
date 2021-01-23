@@ -11,7 +11,7 @@ public class ShadowMap {
 
     private final RendererOnTexture renderer;
     private int texture;
-    private CameraOrthographic camera;
+    private final CameraOrthographic camera;
 
     public ShadowMap(int resolution, Vector3f lightPosition, float near, float far, float clippingCubeSize){
         camera = new CameraOrthographic(lightPosition, new Vector3f(0,1,0), new Vector3f(0,0,0), near, far, clippingCubeSize);
