@@ -29,7 +29,6 @@ struct PointLight {
 };
 
 #define MAX_NUM_POINT_LIGHTS 8
-#define MAX_NUM_SHADOWS 9
 
 uniform DirLight uDirLight;
 uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
