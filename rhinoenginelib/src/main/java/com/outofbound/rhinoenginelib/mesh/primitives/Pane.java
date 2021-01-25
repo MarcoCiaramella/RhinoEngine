@@ -8,10 +8,10 @@ import com.outofbound.rhinoenginelib.util.color.Color;
 public class Pane extends Mesh {
 
     private static final float[] vertices = {
-            -1,0,1,
-            1,0,1,
-            1,0,-1,
-            -1,0,-1
+            -0.5f,0,0.5f,
+            0.5f,0,0.5f,
+            0.5f,0,-0.5f,
+            -0.5f,0,-0.5f
     };
 
     private static final float[] normals = {
@@ -26,8 +26,16 @@ public class Pane extends Mesh {
             2,3,0
     };
 
-    public Pane(float[] color) {
+    private Pane(float[] vertices, float[] color){
         super(vertices, 3, normals, indices, Color.getVertexColor(color,vertices.length));
+    }
+
+    public Pane(float[] color) {
+        this(vertices,color);
+    }
+
+    public Pane(float sizeX, float sizeZ, float[] color) {
+        this(scale(vertices,sizeX,1,sizeZ),color);
     }
 
     @Override

@@ -8,30 +8,30 @@ import com.outofbound.rhinoenginelib.util.color.Color;
 public class Cube extends Mesh {
 
     private static final float[] vertices = {
-            -1,-1,1,
-            1,-1,1,
-            1,1,1,
-            -1,1,1,
-            1,-1,1,
-            1,-1,-1,
-            1,1,-1,
-            1,1,1,
-            -1,1,1,
-            1,1,1,
-            1,1,-1,
-            -1,1,-1,
-            -1,-1,-1,
-            -1,-1,1,
-            -1,1,1,
-            -1,1,-1,
-            -1,-1,-1,
-            1,-1,-1,
-            1,-1,1,
-            -1,-1,1,
-            1,-1,-1,
-            -1,-1,-1,
-            -1,1,-1,
-            1,1,-1
+            -0.5f,-0.5f,0.5f,
+            0.5f,-0.5f,0.5f,
+            0.5f,0.5f,0.5f,
+            -0.5f,0.5f,0.5f,
+            0.5f,-0.5f,0.5f,
+            0.5f,-0.5f,-0.5f,
+            0.5f,0.5f,-0.5f,
+            0.5f,0.5f,0.5f,
+            -0.5f,0.5f,0.5f,
+            0.5f,0.5f,0.5f,
+            0.5f,0.5f,-0.5f,
+            -0.5f,0.5f,-0.5f,
+            -0.5f,-0.5f,-0.5f,
+            -0.5f,-0.5f,0.5f,
+            -0.5f,0.5f,0.5f,
+            -0.5f,0.5f,-0.5f,
+            -0.5f,-0.5f,-0.5f,
+            0.5f,-0.5f,-0.5f,
+            0.5f,-0.5f,0.5f,
+            -0.5f,-0.5f,0.5f,
+            0.5f,-0.5f,-0.5f,
+            -0.5f,-0.5f,-0.5f,
+            -0.5f,0.5f,-0.5f,
+            0.5f,0.5f,-0.5f
     };
 
     private static final float[] normals = {
@@ -76,8 +76,16 @@ public class Cube extends Mesh {
             22,23,20
     };
 
-    public Cube(float[] color) {
+    private Cube(float[] vertices, float[] color){
         super(vertices, 3, normals, indices, Color.getVertexColor(color,vertices.length));
+    }
+
+    public Cube(float[] color) {
+        this(vertices, color);
+    }
+
+    public Cube(float sizeX, float sizeY, float sizeZ, float[] color) {
+        this(scale(vertices,sizeX,sizeY,sizeZ), color);
     }
 
     @Override

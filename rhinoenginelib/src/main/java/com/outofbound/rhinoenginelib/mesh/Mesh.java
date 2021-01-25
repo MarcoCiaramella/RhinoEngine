@@ -343,4 +343,14 @@ public abstract class Mesh {
     public float getScale(){
         return scale;
     }
+
+    protected static float[] scale(float[] vertices, float scaleX, float scaleY, float scaleZ){
+        float[] res = new float[vertices.length];
+        for (int i = 0; i < vertices.length; i += 3){
+            res[i] = vertices[i] * scaleX;
+            res[i+1] = vertices[i+1] * scaleY;
+            res[i+2] = vertices[i+2] * scaleZ;
+        }
+        return res;
+    }
 }
