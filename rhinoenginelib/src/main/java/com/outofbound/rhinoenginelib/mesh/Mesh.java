@@ -161,28 +161,28 @@ public abstract class Mesh {
 
     public abstract void doTransformation(float[] mMatrix, long ms);
 
-    public Mesh rotateX(float[] mvMatrix){
-        Matrix.rotateM(mvMatrix, 0, rotation.x, 1, 0, 0);
+    public Mesh rotateX(float[] mMatrix){
+        Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
         return this;
     }
 
-    public Mesh rotateY(float[] mvMatrix){
-        Matrix.rotateM(mvMatrix, 0, rotation.y, 0, 1, 0);
+    public Mesh rotateY(float[] mMatrix){
+        Matrix.rotateM(mMatrix, 0, rotation.y, 0, 1, 0);
         return this;
     }
 
-    public Mesh rotateZ(float[] mvMatrix){
-        Matrix.rotateM(mvMatrix, 0, rotation.z, 0, 0, 1);
+    public Mesh rotateZ(float[] mMatrix){
+        Matrix.rotateM(mMatrix, 0, rotation.z, 0, 0, 1);
         return this;
     }
 
-    public Mesh scale(float[] mvMatrix){
-        Matrix.scaleM(mvMatrix, 0, scale, scale, scale);
+    public Mesh scale(float[] mMatrix){
+        Matrix.scaleM(mMatrix, 0, scale, scale, scale);
         return this;
     }
 
-    public Mesh translate(float[] mvMatrix){
-        Matrix.translateM(mvMatrix, 0, position.x, position.y, position.z);
+    public Mesh translate(float[] mMatrix){
+        Matrix.translateM(mMatrix, 0, position.x, position.y, position.z);
         return this;
     }
 
