@@ -2,5 +2,5 @@ package com.outofbound.rhinoengine.test;
 
 public class ID {
 
-    public static int GLRENDERER_0;
+    public static int GLRENDERER_1;
 }
