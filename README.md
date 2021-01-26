@@ -35,7 +35,7 @@ Add OpengGL ES 2.0 as requirement in your AndroidManifest.xml
         android:glEsVersion="0x00020000"
         android:required="true" />
 
-    <application
+    <application ..... >
 	.....
     </application>
 
