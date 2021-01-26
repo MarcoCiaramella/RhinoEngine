@@ -15,16 +15,12 @@ vec4 packToRGBA32(float f){
     return comp;
 }
 
-float getDepth(){
-    return vPosition.z / vPosition.w;
-}
-
 float to01(float f){
     return (f + 1.0) / 2.0;
 }
 
 void main() {
-    gl_FragColor = packToRGBA32(to01(getDepth()));
+    gl_FragColor = packToRGBA32(to01(vPosition.z));
 }
 
 
