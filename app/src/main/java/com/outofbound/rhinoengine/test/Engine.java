@@ -28,9 +28,6 @@ public class Engine extends AbstractEngine {
     protected void init() {
         setClearColor(0,0,0,1);
         ID.GLRENDERER_1 = addRenderer(new com.outofbound.rhinoenginelib.renderer.Renderer());
-        for (int i = 0; i < 100; i++) {
-            getRenderer(ID.GLRENDERER_1).addMesh(new Cube());
-        }
         getRenderer(ID.GLRENDERER_1).addMesh(new Pane());
         addTask(new CameraRotation());
         addTask(new LightAnimation());
@@ -51,6 +48,7 @@ public class Engine extends AbstractEngine {
                 .getDirLight()
                 .configShadow(RendererOnTexture.RESOLUTION_4096,100,1,1000,10)
                 .enableShadow();
+        getRenderer(ID.GLRENDERER_1).addMesh(new TestMesh());
     }
 
     public void blurOn(){
@@ -59,5 +57,17 @@ public class Engine extends AbstractEngine {
 
     public void blurOff(){
         disableBlur();
+    }
+
+    public void addCubes(){
+        for (int i = 0; i < 100; i++) {
+            ID.CUBES.add(getRenderer(ID.GLRENDERER_1).addMesh(new Cube()));
+        }
+    }
+
+    public void removeCubes(){
+        for (int id : ID.CUBES){
+            getRenderer(ID.GLRENDERER_1).removeMesh(id);
+        }
     }
 }

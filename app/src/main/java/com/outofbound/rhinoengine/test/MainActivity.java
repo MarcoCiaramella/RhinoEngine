@@ -32,6 +32,14 @@ public class MainActivity extends RhinoEngineActivity {
                 getEngine().blurOff();
             }
         });
+
+        getCubes().setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                getEngine().addCubes();
+            } else {
+                getEngine().removeCubes();
+            }
+        });
     }
 
     private Engine getEngine(){
@@ -44,5 +52,9 @@ public class MainActivity extends RhinoEngineActivity {
 
     private SwitchCompat getBlur(){
         return findViewById(R.id.blur);
+    }
+
+    private SwitchCompat getCubes(){
+        return findViewById(R.id.cubes);
     }
 }

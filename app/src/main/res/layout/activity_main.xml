@@ -18,20 +18,24 @@
         android:layout_marginStart="30dp"
         android:textColor="@color/white" />
 
-    <LinearLayout
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/blur"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:orientation="vertical">
+        android:layout_below="@+id/fps"
+        android:textColor="@color/white"
+        app:switchPadding="8dp"
+        android:text="@string/blur" />
 
-        <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/blur"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            app:switchPadding="8dp"
-            android:text="@string/blur" />
-
-    </LinearLayout>
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/cubes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/blur"
+        android:textColor="@color/white"
+        app:switchPadding="8dp"
+        android:text="@string/cubes" />
 
 </RelativeLayout>
