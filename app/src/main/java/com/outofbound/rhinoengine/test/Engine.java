@@ -45,7 +45,7 @@ public class Engine extends AbstractEngine {
         getRenderer(ID.RENDERER_1)
                 .getLights()
                 .getDirLight()
-                .configShadow(RendererOnTexture.RESOLUTION_4096,100,1,1000,10);
+                .configShadow(RendererOnTexture.RESOLUTION_4096,1,1,1000,10);
         getRenderer(ID.RENDERER_1).addMesh(new TestMesh());
     }
 
