@@ -4,14 +4,12 @@ import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
-import com.outofbound.rhinoenginelib.light.DirLight;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.light.PointLight;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.shader.primitives.SceneShader;
 import com.outofbound.rhinoenginelib.shader.primitives.ShadowMapShader;
 import com.outofbound.rhinoenginelib.util.list.BigList;
-import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
 /**
@@ -39,7 +37,7 @@ public final class Renderer {
         sceneShader = new SceneShader();
         shadowMapShader = new ShadowMapShader();
         meshes = new BigList<>();
-        lights = new Lights(new DirLight(new Vector3f(0.5f,-1,0),new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1)));
+        lights = new Lights();
         sceneRenderer = this::renderShadowMap;
     }
 
