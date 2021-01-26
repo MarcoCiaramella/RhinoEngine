@@ -26,6 +26,14 @@ dependencies {
 
 ## How to use
 
+Add OpengGL ES 2.0 as requirement in your AndroidManifest.xml
+
+```xml
+<uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+```
+
 Add engine to your main activity layout
 
 ```xml
