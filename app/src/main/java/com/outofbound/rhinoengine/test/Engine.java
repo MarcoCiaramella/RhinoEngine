@@ -27,8 +27,8 @@ public class Engine extends AbstractEngine {
     @Override
     protected void init() {
         setClearColor(0,0,0,1);
-        ID.GLRENDERER_1 = addRenderer(new com.outofbound.rhinoenginelib.renderer.Renderer());
-        getRenderer(ID.GLRENDERER_1).addMesh(new Pane());
+        ID.RENDERER_1 = addRenderer(new com.outofbound.rhinoenginelib.renderer.Renderer());
+        getRenderer(ID.RENDERER_1).addMesh(new Pane());
         addTask(new CameraRotation());
         addTask(new LightAnimation());
         configBlur(RendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
@@ -41,14 +41,12 @@ public class Engine extends AbstractEngine {
                 0.22f,
                 0.2f
         ).configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
-        pointLight.enableShadow();
-        getRenderer(ID.GLRENDERER_1).getLights().addPointLight(pointLight);
-        getRenderer(ID.GLRENDERER_1)
+        getRenderer(ID.RENDERER_1).getLights().addPointLight(pointLight);
+        getRenderer(ID.RENDERER_1)
                 .getLights()
                 .getDirLight()
-                .configShadow(RendererOnTexture.RESOLUTION_4096,100,1,1000,10)
-                .enableShadow();
-        getRenderer(ID.GLRENDERER_1).addMesh(new TestMesh());
+                .configShadow(RendererOnTexture.RESOLUTION_4096,100,1,1000,10);
+        getRenderer(ID.RENDERER_1).addMesh(new TestMesh());
     }
 
     public void blurOn(){
@@ -61,13 +59,27 @@ public class Engine extends AbstractEngine {
 
     public void addCubes(){
         for (int i = 0; i < 100; i++) {
-            ID.CUBES.add(getRenderer(ID.GLRENDERER_1).addMesh(new Cube()));
+            ID.CUBES.add(getRenderer(ID.RENDERER_1).addMesh(new Cube()));
         }
     }
 
     public void removeCubes(){
         for (int id : ID.CUBES){
-            getRenderer(ID.GLRENDERER_1).removeMesh(id);
+            getRenderer(ID.RENDERER_1).removeMesh(id);
+        }
+    }
+
+    public void shadowsOn(){
+        getRenderer(ID.RENDERER_1).getLights().getDirLight().enableShadow();
+        for (PointLight pointLight : getRenderer(ID.RENDERER_1).getLights().getPointLights()){
+            pointLight.enableShadow();
+        }
+    }
+
+    public void shadowsOff(){
+        getRenderer(ID.RENDERER_1).getLights().getDirLight().disableShadow();
+        for (PointLight pointLight : getRenderer(ID.RENDERER_1).getLights().getPointLights()){
+            pointLight.disableShadow();
         }
     }
 }

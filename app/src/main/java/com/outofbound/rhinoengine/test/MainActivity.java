@@ -40,6 +40,14 @@ public class MainActivity extends RhinoEngineActivity {
                 getEngine().removeCubes();
             }
         });
+
+        getShadows().setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                getEngine().shadowsOn();
+            } else {
+                getEngine().shadowsOff();
+            }
+        });
     }
 
     private Engine getEngine(){
@@ -56,5 +64,9 @@ public class MainActivity extends RhinoEngineActivity {
 
     private SwitchCompat getCubes(){
         return findViewById(R.id.cubes);
+    }
+
+    private SwitchCompat getShadows(){
+        return findViewById(R.id.shadows);
     }
 }

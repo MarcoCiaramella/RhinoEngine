@@ -29,11 +29,21 @@
         android:text="@string/blur" />
 
     <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/cubes"
+        android:id="@+id/shadows"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@+id/blur"
+        android:textColor="@color/white"
+        app:switchPadding="8dp"
+        android:text="@string/shadows" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/cubes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/shadows"
         android:textColor="@color/white"
         app:switchPadding="8dp"
         android:text="@string/cubes" />
