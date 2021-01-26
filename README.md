@@ -46,6 +46,8 @@ Add engine to your main activity layout
 Define your implementation
 
 ```java
+package com.your.package;
+
 public class Engine extends AbstractEngine {
 
     private static final Vector3f CAMERA_EYE = new Vector3f(3,2,3);
