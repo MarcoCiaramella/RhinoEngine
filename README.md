@@ -63,11 +63,11 @@ public class Engine extends AbstractEngine {
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
 
     public Engine(Context context){
-        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
+        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), null);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_UP, CAMERA_CENTER, 1, 1000), null);
+        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), null);
     }
 
     @Override
