@@ -6,8 +6,8 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public final class CameraPerspective extends Camera {
 
-    public CameraPerspective(Vector3f eye, Vector3f up, Vector3f center, float near, float far) {
-        super(eye, up, center, near, far);
+    public CameraPerspective(Vector3f eye, Vector3f center, Vector3f up, float near, float far) {
+        super(eye, center, up, near, far);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class Blur {
         this.scale = scale;
         this.amount = amount;
         this.strength = strength;
-        this.camera = new CameraOrthographic(new Vector3f(0,0,1),new Vector3f(0,-1,0),new Vector3f(0,0,0),near,far,1);
+        this.camera = new CameraOrthographic(new Vector3f(0,0,1),new Vector3f(0,0,0),new Vector3f(0,-1,0),near,far,1);
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
         verticesBuffer = bb_vertex.asFloatBuffer();

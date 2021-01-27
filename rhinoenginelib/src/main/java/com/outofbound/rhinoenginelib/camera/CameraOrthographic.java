@@ -8,8 +8,8 @@ public final class CameraOrthographic extends Camera {
 
     private final float size;
 
-    public CameraOrthographic(Vector3f eye, Vector3f up, Vector3f center, float near, float far, float size) {
-        super(eye, up, center, near, far);
+    public CameraOrthographic(Vector3f eye, Vector3f center, Vector3f up, float near, float far, float size) {
+        super(eye, center, up, near, far);
         this.size = size;
     }
 

@@ -22,13 +22,13 @@ public abstract class Camera {
     protected int width;
     protected int height;
 
-    public Camera(Vector3f eye, Vector3f up, Vector3f center, float near, float far){
+    public Camera(Vector3f eye, Vector3f center, Vector3f up, float near, float far){
         vpMatrix = new float[16];
         projectionMatrix = new float[16];
         viewMatrix = new float[16];
         this.eye = eye;
-        this.up = up;
         this.center = center;
+        this.up = up;
         this.near = near;
         this.far = far;
         eyeRes = new Vector3f(0,0,0);
