@@ -189,10 +189,6 @@ public class Vector3f implements Serializable {
         return this;
     }
 
-    public Vector3f clone(){
-        return new Vector3f(x,y,z);
-    }
-
     public void print(String tag){
         Log.i(tag,"x "+x);
         Log.i(tag,"y "+y);
