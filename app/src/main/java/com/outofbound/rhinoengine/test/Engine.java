@@ -40,12 +40,13 @@ public class Engine extends AbstractEngine {
                 1.0f,
                 0.22f,
                 0.2f
-        ).configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
+        );
+        pointLight.configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
         getRenderer(ID.RENDERER_1).getLights().addPointLight(pointLight);
         getRenderer(ID.RENDERER_1)
                 .getLights()
                 .getDirLight()
-                .configShadow(RendererOnTexture.RESOLUTION_4096,1,1,1000,10);
+                .configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
         getRenderer(ID.RENDERER_1).addMesh(new TestMesh());
     }
 

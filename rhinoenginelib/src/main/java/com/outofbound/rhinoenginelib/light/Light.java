@@ -11,8 +11,9 @@ public abstract class Light {
     private final Vector3f diffuseColor;
     private final Vector3f specularColor;
     private boolean shadowEnabled;
-    protected ShadowMap shadowMap;
+    private ShadowMap shadowMap;
     private boolean on;
+    protected Vector3f position;
 
     public Light(@NonNull Vector3f ambientColor, @NonNull Vector3f diffuseColor, @NonNull Vector3f specularColor){
         this.ambientColor = ambientColor;
@@ -65,5 +66,10 @@ public abstract class Light {
 
     public boolean isOn(){
         return on;
+    }
+
+    public Light configShadow(int resolution, float near, float far, float clippingCubeSize){
+        shadowMap = new ShadowMap(resolution,position,near,far,clippingCubeSize);
+        return this;
     }
 }

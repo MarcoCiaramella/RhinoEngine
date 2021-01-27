@@ -2,12 +2,10 @@ package com.outofbound.rhinoenginelib.light;
 
 import androidx.annotation.NonNull;
 
-import com.outofbound.rhinoenginelib.renderer.fx.ShadowMap;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class PointLight extends Light {
 
-    private final Vector3f position;
     private final float constant;
     private final float linear;
     private final float quadratic;
@@ -34,10 +32,5 @@ public class PointLight extends Light {
 
     public float getQuadratic() {
         return quadratic;
-    }
-
-    public PointLight configShadow(int resolution, float near, float far, float clippingCubeSize){
-        shadowMap = new ShadowMap(resolution,position,near,far,clippingCubeSize);
-        return this;
     }
 }
