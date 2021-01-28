@@ -22,7 +22,6 @@ public final class Renderer {
     private final float[] mMatrix = new float[16];
     private final float[] mvpMatrix = new float[16];
     private Lights lights;
-    private boolean faceCullingEnabled = true;
     private boolean blendingEnabled = false;
     private final SceneRenderer sceneRenderer;
     private long ms;
@@ -99,10 +98,6 @@ public final class Renderer {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
-        if (faceCullingEnabled){
-            GLES20.glEnable(GLES20.GL_CULL_FACE);
-            GLES20.glCullFace(GLES20.GL_BACK);
-        }
         for (Mesh mesh : meshes) {
             if (!mesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
@@ -121,9 +116,6 @@ public final class Renderer {
             else {
                 meshes.remove(mesh);
             }
-        }
-        if (faceCullingEnabled){
-            GLES20.glDisable(GLES20.GL_CULL_FACE);
         }
         if (blendingEnabled) {
             GLES20.glDisable(GLES20.GL_BLEND);
@@ -166,24 +158,6 @@ public final class Renderer {
      */
     public Renderer setLights(Lights lights){
         this.lights = lights;
-        return this;
-    }
-
-    /**
-     * Enable face culling.
-     * @return this Renderer.
-     */
-    public Renderer enableFaceCulling(){
-        faceCullingEnabled = true;
-        return this;
-    }
-
-    /**
-     * Disable face culling.
-     * @return this Renderer.
-     */
-    public Renderer disableFaceCulling(){
-        faceCullingEnabled = false;
         return this;
     }
 

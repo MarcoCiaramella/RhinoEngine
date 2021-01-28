@@ -291,6 +291,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         GLES20.glDepthFunc(GLES20.GL_LESS);
         GLES20.glClearDepthf(1.0f);
         GLES20.glFrontFace(GLES20.GL_CCW);
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
+        GLES20.glCullFace(GLES20.GL_BACK);
 
         init();
     }
