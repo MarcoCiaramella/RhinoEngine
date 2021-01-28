@@ -78,8 +78,7 @@ public class Ply {
         int numVertices = 0;
         for (String line : data) {
             String[] values = line.split(" ");
-            if (values.length == 9 || values.length == 10) {
-                // example: 1.011523 2.923269 0.741561 0.143873 -0.582903 0.799703 154 181 0
+            if (isFloat(values[0])) {
                 numVertices++;
             }
         }
@@ -90,14 +89,10 @@ public class Ply {
         int numIndices = 0;
         for (String line : data) {
             String[] values = line.split(" ");
-            if (values.length == 5) {
-                // example: 4 0 1 2 3
-                if (values[0].compareTo("4") == 0) {
-                    // quad split in two triangles
-                    numIndices += 2;
-                }
-                else if (values[0].compareTo("3") == 0) {
-                    numIndices++;
+            if (!isFloat(values[0])) {
+                int num = Integer.parseInt(values[0]);
+                for (int i = 1; i < num - 1; i++){
+                    numIndices += 3;
                 }
             }
         }
@@ -108,8 +103,7 @@ public class Ply {
         int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
-            if (values.length == 9 || values.length == 10) {
-                // example: 1.011523 2.923269 0.741561 0.143873 -0.582903 0.799703 154 181 0
+            if (isFloat(values[0])) {
                 pos = addToArray(vertices,pos,values[0],values[1],values[2]);
             }
         }
@@ -119,7 +113,7 @@ public class Ply {
         int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
-            if (values.length == 9 || values.length == 10) {
+            if (isFloat(values[0])) {
                 pos = addToArray(normals,pos,values[3],values[4],values[5]);
             }
         }
@@ -129,7 +123,7 @@ public class Ply {
         int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
-            if (values.length == 9 || values.length == 10) {
+            if (isFloat(values[0])) {
                 float c1 = Float.parseFloat(values[6]) / 255f;
                 float c2 = Float.parseFloat(values[7]) / 255f;
                 float c3 = Float.parseFloat(values[8]) / 255f;
@@ -146,7 +140,7 @@ public class Ply {
         int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
-            if (values.length == 9 || values.length == 10) {
+            if (isFloat(values[0])) {
                 pos = addToArray(uvs,pos,values[6],values[7]);
             }
         }
@@ -156,19 +150,10 @@ public class Ply {
         int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
-            if (values.length == 5) {
-                // example: 4 0 1 2 3
+            if (!isFloat(values[0])) {
                 int num = Integer.parseInt(values[0]);
-                if (num == 3) {
-                    // triangle
-                    pos = addToArray(indices,pos,values[1],values[2],values[3]);
-                } else if (num == 4) {
-                    // quad split in two triangles.
-                    // quad 1 2 3 4
-                    //==>
-                    //triangle 1 2 3
-                    //triangle 3 4 1
-                    pos = addToArray(indices,pos,values[1],values[2],values[3],values[3],values[4],values[1]);
+                for (int i = 1; i < num - 1; i++){
+                    pos = addToArray(indices,pos,values[1],values[i+1],values[i+2]);
                 }
             }
         }
@@ -193,5 +178,9 @@ public class Ply {
             arr[pos++] = Integer.parseInt(value);
         }
         return pos;
+    }
+
+    private boolean isFloat(String value){
+        return value.contains(".");
     }
 }
