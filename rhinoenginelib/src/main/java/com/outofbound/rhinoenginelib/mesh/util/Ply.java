@@ -105,39 +105,28 @@ public class Ply {
     }
 
     private void loadVertices(String[] data) {
-        int i = 0;
+        int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
             if (values.length == 9 || values.length == 10) {
                 // example: 1.011523 2.923269 0.741561 0.143873 -0.582903 0.799703 154 181 0
-                float v1 = Float.parseFloat(values[0]);
-                float v2 = Float.parseFloat(values[1]);
-                float v3 = Float.parseFloat(values[2]);
-                vertices[i++] = v1;
-                vertices[i++] = v2;
-                vertices[i++] = v3;
+                pos = addToArray(vertices,pos,values[0],values[1],values[2]);
             }
         }
     }
 
     private void loadNormals(String[] data){
-        int i = 0;
+        int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
             if (values.length == 9 || values.length == 10) {
-
-                float n1 = Float.parseFloat(values[3]);
-                float n2 = Float.parseFloat(values[4]);
-                float n3 = Float.parseFloat(values[5]);
-                normals[i++] = n1;
-                normals[i++] = n2;
-                normals[i++] = n3;
+                pos = addToArray(normals,pos,values[3],values[4],values[5]);
             }
         }
     }
 
     private void loadColors(String[] data){
-        int i = 0;
+        int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
             if (values.length == 9 || values.length == 10) {
@@ -148,29 +137,23 @@ public class Ply {
                 if (values.length == 10) {
                     c4 = Float.parseFloat(values[9]) / 255f;
                 }
-                colors[i++] = c1;
-                colors[i++] = c2;
-                colors[i++] = c3;
-                colors[i++] = c4;
+                pos = addToArray(colors,pos,c1,c2,c3,c4);
             }
         }
     }
 
     private void loadTextureCoords(String[] data){
-        int i = 0;
+        int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
             if (values.length == 9 || values.length == 10) {
-                float uv1 = Float.parseFloat(values[6]);
-                float uv2 = Float.parseFloat(values[7]);
-                uvs[i++] = uv1;
-                uvs[i++] = uv2;
+                pos = addToArray(uvs,pos,values[6],values[7]);
             }
         }
     }
 
     private void loadIndices(String[] data){
-        int i = 0;
+        int pos = 0;
         for (String line : data) {
             String[] values = line.split(" ");
             if (values.length == 5) {
@@ -178,30 +161,37 @@ public class Ply {
                 int num = Integer.parseInt(values[0]);
                 if (num == 3) {
                     // triangle
-                    int i1 = Integer.parseInt(values[1]);
-                    int i2 = Integer.parseInt(values[2]);
-                    int i3 = Integer.parseInt(values[3]);
-                    indices[i++] = i1;
-                    indices[i++] = i2;
-                    indices[i++] = i3;
+                    pos = addToArray(indices,pos,values[1],values[2],values[3]);
                 } else if (num == 4) {
                     // quad split in two triangles.
                     // quad 1 2 3 4
                     //==>
                     //triangle 1 2 3
                     //triangle 3 4 1
-                    int i1 = Integer.parseInt(values[1]);
-                    int i2 = Integer.parseInt(values[2]);
-                    int i3 = Integer.parseInt(values[3]);
-                    int i4 = Integer.parseInt(values[4]);
-                    indices[i++] = i1;
-                    indices[i++] = i2;
-                    indices[i++] = i3;
-                    indices[i++] = i3;
-                    indices[i++] = i4;
-                    indices[i++] = i1;
+                    pos = addToArray(indices,pos,values[1],values[2],values[3],values[3],values[4],values[1]);
                 }
             }
         }
+    }
+
+    private int addToArray(float[] arr, int pos, String... values){
+        for (String value : values){
+            arr[pos++] = Float.parseFloat(value);
+        }
+        return pos;
+    }
+
+    private int addToArray(float[] arr, int pos, float... values){
+        for (float value : values){
+            arr[pos++] = value;
+        }
+        return pos;
+    }
+
+    private int addToArray(int[] arr, int pos, String... values){
+        for (String value : values){
+            arr[pos++] = Integer.parseInt(value);
+        }
+        return pos;
     }
 }
