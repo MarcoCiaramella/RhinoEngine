@@ -44,34 +44,44 @@ public class Ply {
         String[] content = TextFileReader.getString(context, file).split("end_header\n");
         String[] header = content[0].split("\n");
         String[] data = content[1].split("\n");
-
         int numVertices = getNumVertices(data);
         int numIndices = getNumIndices(data);
         vertices = new float[numVertices*3];
         normals = new float[numVertices*3];
-        if (isNotTextured(header))
+        if (isColored(header)) {
             colors = new float[numVertices*4];
-        else
+        }
+        if (isTextured(header)){
             uvs = new float[numVertices*2];
+        }
         indices = new int[numIndices*3];
         loadVertices(data);
         loadNormals(data);
-        if (isNotTextured(header)) {
+        if (isColored(header)) {
             loadColors(data);
         }
-        else {
+        if (isTextured(header)){
             loadTextureCoords(data);
         }
         loadIndices(data);
     }
 
-    private boolean isNotTextured(String[] header){
+    private boolean isTextured(String[] header){
         for (String line : header) {
-            if (line.compareTo("property float s") == 0 || line.compareTo("property float t") == 0) {
-                return false;
+            if (line.compareTo("property float s") == 0) {
+                return true;
             }
         }
-        return true;
+        return false;
+    }
+
+    private boolean isColored(String[] header){
+        for (String line : header) {
+            if (line.compareTo("property uchar red") == 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int getNumVertices(String[] data){

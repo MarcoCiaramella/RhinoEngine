@@ -5,7 +5,7 @@ import com.outofbound.rhinoenginelib.mesh.Mesh;
 public class TestMesh extends Mesh {
 
     public TestMesh(){
-        super("test_mesh.ply");
+        super("test_mesh_2.ply");
         position.y = -1.8f;
     }
 
