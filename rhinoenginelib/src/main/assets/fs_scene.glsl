@@ -34,7 +34,7 @@ uniform DirLight uDirLight;
 uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
 uniform int uNumPointLights;
 uniform vec3 uViewPos;
-uniform sampler2D rayMap;
+uniform sampler2D uTexture;
 varying vec4 vColor;
 varying vec4 vPosition;
 varying vec3 vNormal;

@@ -25,10 +25,12 @@ public abstract class Mesh {
     private float[] normals;
     private int[] indices;
     private float[] colors;
+    private float[] texCoords;
     private final int sizeVertex;
     private FloatBuffer vertexBuffer;
     private FloatBuffer normalBuffer;
     private FloatBuffer colorBuffer;
+    private FloatBuffer texCoordsBuffer;
     private IntBuffer indicesBuffer;
     private long timeToLive = -1;
     private boolean dead = false;
@@ -54,6 +56,7 @@ public abstract class Mesh {
         this.sizeVertex = 3;
         this.normals = ply.getNormals();
         this.colors = ply.getColors();
+        this.texCoords = ply.getUvs();
         this.indices = ply.getIndices();
         init();
     }
@@ -91,6 +94,7 @@ public abstract class Mesh {
         loadVertices();
         loadNormals();
         loadColors();
+        loadTexCoords();
         loadIndices();
     }
 
@@ -135,6 +139,16 @@ public abstract class Mesh {
             colorBuffer = bbColor.asFloatBuffer();
             colorBuffer.put(colors);
             colorBuffer.position(0);
+        }
+    }
+
+    private void loadTexCoords(){
+        if (texCoords != null) {
+            ByteBuffer bbTexCoords = ByteBuffer.allocateDirect(texCoords.length * 4);
+            bbTexCoords.order(ByteOrder.nativeOrder());
+            texCoordsBuffer = bbTexCoords.asFloatBuffer();
+            texCoordsBuffer.put(texCoords);
+            texCoordsBuffer.position(0);
         }
     }
 
@@ -212,6 +226,10 @@ public abstract class Mesh {
 
     public FloatBuffer getColorBuffer(){
         return colorBuffer;
+    }
+
+    public FloatBuffer getTexCoordsBuffer() {
+        return texCoordsBuffer;
     }
 
     public IntBuffer getIndicesBuffer(){
@@ -352,5 +370,9 @@ public abstract class Mesh {
             res[i+2] = vertices[i+2] * scaleZ;
         }
         return res;
+    }
+
+    public int getTexture(){
+        return 0;
     }
 }
