@@ -31,6 +31,7 @@ public final class SceneShader extends Shader {
     private final int uNumPointLights;
     private final ArrayList<ArrayList<Integer>> uPointLights;
     private final int uTexture;
+    private final int uIsTextured;
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
@@ -54,6 +55,7 @@ public final class SceneShader extends Shader {
         uNumPointLights = getUniform("uNumPointLights");
         uPointLights = new ArrayList<>();
         uTexture = getUniform("uTexture");
+        uIsTextured = getUniform("uIsTextured");
     }
 
     private void bindDirLight(){
@@ -123,6 +125,9 @@ public final class SceneShader extends Shader {
         GLES20.glUniform3f(uViewPos, viewPos.x, viewPos.y, viewPos.z);
         textureIndex = 0;
         bindTexture(uTexture,mesh.getTexture());
+        // TODO
+        GLES20.glUniform1i(uIsTextured,mesh.getTexture() != -1 ? 1 : 0);
+        //
         bindDirLight();
         GLES20.glUniform1i(uNumPointLights, lights.getPointLights().size());
         for (int i = 0; i < lights.getPointLights().size(); i++){

@@ -1,6 +1,10 @@
 package com.outofbound.rhinoenginelib.mesh;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
 import androidx.annotation.CallSuper;
@@ -38,6 +42,7 @@ public abstract class Mesh {
     protected Vector3f position;
     protected Vector3f rotation;
     protected float scale;
+    private int texture;
 
 
     public Mesh(@NonNull float[] vertices, int sizeVertex, float[] normals, int[] indices, float[] colors){
@@ -96,6 +101,7 @@ public abstract class Mesh {
         loadColors();
         loadTexCoords();
         loadIndices();
+        loadTexture();
     }
 
     public void reloadVertices(){
@@ -373,6 +379,25 @@ public abstract class Mesh {
     }
 
     public int getTexture(){
-        return 0;
+        return texture;
+    }
+
+    private void loadTexture(){
+        int[] texture = new int[1];
+        GLES20.glGenTextures(1, texture, 0);
+        this.texture = texture[0];
+        if (this.texture != 0) {
+            final BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inScaled = false;
+            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.texture);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+            bitmap.recycle();
+        }
+        if (this.texture == 0) {
+            throw new RuntimeException("Error loading texture.");
+        }
     }
 }

@@ -35,13 +35,21 @@ uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
 uniform int uNumPointLights;
 uniform vec3 uViewPos;
 uniform sampler2D uTexture;
+uniform int uIsTextured;
 varying vec4 vColor;
 varying vec4 vPosition;
 varying vec3 vNormal;
+varying vec2 vTexCoords;
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
 
+vec4 getColor(){
+    if (uIsTextured == 1){
+        return texture2D(uTexture,vTexCoords);
+    }
+    return vColor;
+}
 
 float unpack(vec4 color){
     return dot(color, bitShifts);
@@ -73,8 +81,9 @@ vec4 calcDirLight(vec3 normal, vec3 viewDir){
     vec3 lightDir = normalize(-uDirLight.direction);
     float diff = diffuseLighting(normal, lightDir);
     float spec = specularLighting(normal, lightDir, viewDir);
-    vec4 ambient = vec4(uDirLight.ambientColor, 1.0) * vColor;
-    vec4 diffuse = vec4(uDirLight.diffuseColor * diff, 1.0) * vColor;
+    vec4 color = getColor();
+    vec4 ambient = vec4(uDirLight.ambientColor, 1.0) * color;
+    vec4 diffuse = vec4(uDirLight.diffuseColor * diff, 1.0) * color;
     vec4 specular = vec4(uDirLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
     return ambient + (diffuse + specular) * calcShadow(uDirLight.shadowMap, uDirLight.shadowVPMatrix * vPosition, uDirLight.shadowEnabled);
 }
@@ -90,8 +99,9 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     float spec = specularLighting(normal, lightDir, viewDir);
     float distance = length(d);
     float attenuation = calcAttenuation(pointLight,distance);
-    vec4 ambient = vec4(pointLight.ambientColor, 1.0) * vColor;
-    vec4 diffuse = vec4(pointLight.diffuseColor * diff, 1.0) * vColor;
+    vec4 color = getColor();
+    vec4 ambient = vec4(pointLight.ambientColor, 1.0) * color;
+    vec4 diffuse = vec4(pointLight.diffuseColor * diff, 1.0) * color;
     vec4 specular = vec4(pointLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
     ambient *= attenuation;
     diffuse *= attenuation;
