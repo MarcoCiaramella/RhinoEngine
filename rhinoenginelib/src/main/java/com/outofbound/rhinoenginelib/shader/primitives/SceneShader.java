@@ -125,9 +125,7 @@ public final class SceneShader extends Shader {
         GLES20.glUniform3f(uViewPos, viewPos.x, viewPos.y, viewPos.z);
         textureIndex = 0;
         bindTexture(uTexture,mesh.getTexture());
-        // TODO
-        GLES20.glUniform1i(uIsTextured,mesh.getTexture() != -1 ? 1 : 0);
-        //
+        GLES20.glUniform1i(uIsTextured,mesh.getTexture());
         bindDirLight();
         GLES20.glUniform1i(uNumPointLights, lights.getPointLights().size());
         for (int i = 0; i < lights.getPointLights().size(); i++){

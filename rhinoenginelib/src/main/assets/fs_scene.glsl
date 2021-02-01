@@ -45,7 +45,7 @@ const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 
 
 
 vec4 getColor(){
-    if (uIsTextured == 1){
+    if (uIsTextured > 0){
         return texture2D(uTexture,vTexCoords);
     }
     return vColor;

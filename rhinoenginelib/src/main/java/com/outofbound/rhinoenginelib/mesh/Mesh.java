@@ -42,7 +42,8 @@ public abstract class Mesh {
     protected Vector3f position;
     protected Vector3f rotation;
     protected float scale;
-    private int texture;
+    private int texture = 0;
+    private Bitmap textureBitmap;
 
 
     public Mesh(@NonNull float[] vertices, int sizeVertex, float[] normals, int[] indices, float[] colors){
@@ -54,7 +55,7 @@ public abstract class Mesh {
         init();
     }
 
-    public Mesh(String mesh){
+    public Mesh(@NonNull String mesh){
         Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
         ply.load();
         this.vertices = ply.getVertices();
@@ -66,7 +67,7 @@ public abstract class Mesh {
         init();
     }
 
-    public Mesh(String mesh, float[] color){
+    public Mesh(@NonNull String mesh, @NonNull float[] color){
         Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
         ply.load();
         this.vertices = ply.getVertices();
@@ -77,7 +78,7 @@ public abstract class Mesh {
         init();
     }
 
-    public Mesh(String mesh, Gradient[] gradients){
+    public Mesh(@NonNull String mesh, @NonNull Gradient[] gradients){
         Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
         ply.load();
         this.vertices = ply.getVertices();
@@ -85,6 +86,19 @@ public abstract class Mesh {
         this.normals = ply.getNormals();
         this.indices = ply.getIndices();
         this.colors = Color.gradientColoring(this.vertices,this.indices,gradients);
+        init();
+    }
+
+    public Mesh(@NonNull String mesh, @NonNull Bitmap textureBitmap){
+        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
+        ply.load();
+        this.vertices = ply.getVertices();
+        this.sizeVertex = 3;
+        this.normals = ply.getNormals();
+        this.colors = ply.getColors();
+        this.texCoords = ply.getUvs();
+        this.indices = ply.getIndices();
+        this.textureBitmap = textureBitmap;
         init();
     }
 
@@ -383,18 +397,21 @@ public abstract class Mesh {
     }
 
     private void loadTexture(){
+        if (texCoords == null) {
+            if (textureBitmap != null) {
+                throw new RuntimeException("Error loading texture coordinates.");
+            }
+            return;
+        }
         int[] texture = new int[1];
         GLES20.glGenTextures(1, texture, 0);
         this.texture = texture[0];
         if (this.texture != 0) {
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inScaled = false;
-            final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.texture);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-            bitmap.recycle();
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureBitmap, 0);
+            textureBitmap.recycle();
         }
         if (this.texture == 0) {
             throw new RuntimeException("Error loading texture.");
