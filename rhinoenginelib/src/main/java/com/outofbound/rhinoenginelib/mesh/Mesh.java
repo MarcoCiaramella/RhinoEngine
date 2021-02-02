@@ -46,7 +46,7 @@ public abstract class Mesh {
     private Bitmap textureBitmap;
 
 
-    public Mesh(@NonNull float[] vertices, int sizeVertex, float[] normals, int[] indices, float[] colors){
+    public Mesh(@NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
         this.vertices = vertices;
         this.sizeVertex = sizeVertex;
         this.normals = normals;
@@ -143,33 +143,35 @@ public abstract class Mesh {
     }
 
     private void loadNormals(){
-        if (normals != null) {
-            ByteBuffer bbNormal = ByteBuffer.allocateDirect(normals.length * 4);
-            bbNormal.order(ByteOrder.nativeOrder());
-            normalBuffer = bbNormal.asFloatBuffer();
-            normalBuffer.put(normals);
-            normalBuffer.position(0);
-        }
+        ByteBuffer bbNormal = ByteBuffer.allocateDirect(normals.length * 4);
+        bbNormal.order(ByteOrder.nativeOrder());
+        normalBuffer = bbNormal.asFloatBuffer();
+        normalBuffer.put(normals);
+        normalBuffer.position(0);
     }
 
     private void loadColors(){
-        if (colors != null) {
-            ByteBuffer bbColor = ByteBuffer.allocateDirect(colors.length * 4);
-            bbColor.order(ByteOrder.nativeOrder());
-            colorBuffer = bbColor.asFloatBuffer();
-            colorBuffer.put(colors);
-            colorBuffer.position(0);
+        if (colors == null) {
+            colors = new float[getNumVertices() * 4];
+            Arrays.fill(colors,0);
         }
+        ByteBuffer bbColor = ByteBuffer.allocateDirect(colors.length * 4);
+        bbColor.order(ByteOrder.nativeOrder());
+        colorBuffer = bbColor.asFloatBuffer();
+        colorBuffer.put(colors);
+        colorBuffer.position(0);
     }
 
     private void loadTexCoords(){
-        if (texCoords != null) {
-            ByteBuffer bbTexCoords = ByteBuffer.allocateDirect(texCoords.length * 4);
-            bbTexCoords.order(ByteOrder.nativeOrder());
-            texCoordsBuffer = bbTexCoords.asFloatBuffer();
-            texCoordsBuffer.put(texCoords);
-            texCoordsBuffer.position(0);
+        if (texCoords == null) {
+            texCoords = new float[getNumVertices() * 2];
+            Arrays.fill(texCoords,0);
         }
+        ByteBuffer bbTexCoords = ByteBuffer.allocateDirect(texCoords.length * 4);
+        bbTexCoords.order(ByteOrder.nativeOrder());
+        texCoordsBuffer = bbTexCoords.asFloatBuffer();
+        texCoordsBuffer.put(texCoords);
+        texCoordsBuffer.position(0);
     }
 
     private void loadIndices(){
