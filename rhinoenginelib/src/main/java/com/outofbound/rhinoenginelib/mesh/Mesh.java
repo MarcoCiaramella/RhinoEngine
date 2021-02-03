@@ -399,10 +399,7 @@ public abstract class Mesh {
     }
 
     private void loadTexture(){
-        if (texCoords == null) {
-            if (textureBitmap != null) {
-                throw new RuntimeException("Error loading texture coordinates.");
-            }
+        if (textureBitmap == null) {
             return;
         }
         int[] texture = new int[1];
