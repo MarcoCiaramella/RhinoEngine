@@ -23,6 +23,7 @@ public class BitmapUtil {
     private static Bitmap rotate(Bitmap bitmap){
         Matrix matrix = new Matrix();
         matrix.postRotate(180);
+        matrix.postScale(-1,1,bitmap.getWidth()/2f,bitmap.getHeight()/2f);
         return Bitmap.createBitmap(bitmap,0,0,bitmap.getWidth(),bitmap.getHeight(),matrix,true);
     }
 }
