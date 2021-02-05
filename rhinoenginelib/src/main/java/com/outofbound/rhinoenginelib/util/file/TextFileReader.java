@@ -6,10 +6,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public class TextFileReader {
 
-    public static String getString(Context context, String file ){
+    public static String getString(Context context, String fileName){
 
         StringBuilder buf = new StringBuilder();
         InputStream text;
@@ -17,8 +18,8 @@ public class TextFileReader {
         String str;
 
         try {
-            text = context.getAssets().open(file);
-            in = new BufferedReader(new InputStreamReader(text, "UTF-8"));
+            text = context.getAssets().open(fileName);
+            in = new BufferedReader(new InputStreamReader(text, StandardCharsets.UTF_8));
             while ( (str=in.readLine()) != null ) {
                 str = str+'\n';
                 buf.append(str);
@@ -31,7 +32,7 @@ public class TextFileReader {
             e.printStackTrace();
         }
 
-        return null;
+        throw new RuntimeException("Error loading file "+fileName+".");
 
     }
 }

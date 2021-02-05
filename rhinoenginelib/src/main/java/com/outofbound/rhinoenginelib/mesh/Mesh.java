@@ -11,6 +11,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
+import com.outofbound.rhinoenginelib.mesh.util.Obj;
 import com.outofbound.rhinoenginelib.mesh.util.Ply;
 import com.outofbound.rhinoenginelib.util.color.Color;
 import com.outofbound.rhinoenginelib.util.color.Gradient;
@@ -56,50 +57,52 @@ public abstract class Mesh {
     }
 
     public Mesh(@NonNull String mesh){
-        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
-        ply.load();
-        this.vertices = ply.getVertices();
         this.sizeVertex = 3;
-        this.normals = ply.getNormals();
-        this.colors = ply.getColors();
-        this.texCoords = ply.getUvs();
-        this.indices = ply.getIndices();
+        loadFromFile(mesh);
         init();
     }
 
     public Mesh(@NonNull String mesh, @NonNull float[] color){
-        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
-        ply.load();
-        this.vertices = ply.getVertices();
         this.sizeVertex = 3;
-        this.normals = ply.getNormals();
+        loadFromFile(mesh);
         this.colors = Color.getVertexColor(color,vertices.length);
-        this.indices = ply.getIndices();
         init();
     }
 
     public Mesh(@NonNull String mesh, @NonNull Gradient[] gradients){
-        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
-        ply.load();
-        this.vertices = ply.getVertices();
         this.sizeVertex = 3;
-        this.normals = ply.getNormals();
-        this.indices = ply.getIndices();
+        loadFromFile(mesh);
         this.colors = Color.gradientColoring(this.vertices,this.indices,gradients);
         init();
     }
 
     public Mesh(@NonNull String mesh, @NonNull Bitmap textureBitmap){
-        Ply ply = new Ply(AbstractEngine.getInstance().getContext(), mesh);
-        ply.load();
-        this.vertices = ply.getVertices();
+        if (!mesh.endsWith(".ply")){
+            throw new RuntimeException("Mesh must be in .ply format.");
+        }
         this.sizeVertex = 3;
-        this.normals = ply.getNormals();
-        this.colors = ply.getColors();
-        this.texCoords = ply.getUvs();
-        this.indices = ply.getIndices();
+        loadFromFile(mesh);
         this.textureBitmap = textureBitmap;
         init();
+    }
+
+    private void loadFromFile(String fileName){
+        if (fileName.endsWith(".ply")){
+            Ply ply = new Ply(AbstractEngine.getInstance().getContext(), fileName);
+            ply.load();
+            this.vertices = ply.getVertices();
+            this.normals = ply.getNormals();
+            this.colors = ply.getColors();
+            this.texCoords = ply.getUvs();
+            this.indices = ply.getIndices();
+        }
+        else if (fileName.endsWith(".obj")){
+            Obj obj = new Obj(AbstractEngine.getInstance().getContext(), fileName);
+            obj.load();
+            this.vertices = obj.getVertices();
+            this.normals = obj.getNormals();
+            this.indices = obj.getIndices();
+        }
     }
 
     private void init(){

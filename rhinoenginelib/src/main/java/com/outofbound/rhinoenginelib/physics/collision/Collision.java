@@ -1,4 +1,4 @@
-package com.outofbound.rhinoenginelib.collision;
+package com.outofbound.rhinoenginelib.physics.collision;
 
 
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;

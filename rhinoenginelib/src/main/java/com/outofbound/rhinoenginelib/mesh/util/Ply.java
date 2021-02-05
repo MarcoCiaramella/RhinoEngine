@@ -13,11 +13,11 @@ public class Ply {
     private float[] uvs = null;
     private int[] indices = null;
     private final Context context;
-    private final String file;
+    private final String fileName;
 
-    public Ply(Context context, String file){
+    public Ply(Context context, String fileName){
         this.context = context;
-        this.file = file;
+        this.fileName = fileName;
     }
 
     public float[] getVertices(){
@@ -41,7 +41,7 @@ public class Ply {
     }
 
     public void load(){
-        String[] content = TextFileReader.getString(context, file).split("end_header\n");
+        String[] content = TextFileReader.getString(context, fileName).split("end_header\n");
         String[] header = content[0].split("\n");
         String[] data = content[1].split("\n");
         int numVertices = getNumVertices(data);
