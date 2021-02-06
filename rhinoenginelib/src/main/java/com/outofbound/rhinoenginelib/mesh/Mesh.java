@@ -10,9 +10,9 @@ import android.opengl.Matrix;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.outofbound.meshloaderlib.Obj;
+import com.outofbound.meshloaderlib.Ply;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
-import com.outofbound.rhinoenginelib.mesh.util.Obj;
-import com.outofbound.rhinoenginelib.mesh.util.Ply;
 import com.outofbound.rhinoenginelib.util.color.Color;
 import com.outofbound.rhinoenginelib.util.color.Gradient;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;

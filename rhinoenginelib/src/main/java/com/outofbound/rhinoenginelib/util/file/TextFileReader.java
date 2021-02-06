@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets;
 
 public class TextFileReader {
 
-    public static String getString(Context context, String fileName){
+    public static String getString(Context context, String filename){
 
         StringBuilder buf = new StringBuilder();
         InputStream text;
@@ -18,7 +18,7 @@ public class TextFileReader {
         String str;
 
         try {
-            text = context.getAssets().open(fileName);
+            text = context.getAssets().open(filename);
             in = new BufferedReader(new InputStreamReader(text, StandardCharsets.UTF_8));
             while ( (str=in.readLine()) != null ) {
                 str = str+'\n';
@@ -32,7 +32,7 @@ public class TextFileReader {
             e.printStackTrace();
         }
 
-        throw new RuntimeException("Error loading file "+fileName+".");
+        throw new RuntimeException("Error loading file "+filename+".");
 
     }
 }

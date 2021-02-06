@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
-import com.outofbound.rhinoenginelib.mesh.util.Obj;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
