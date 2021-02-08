@@ -9,7 +9,8 @@ public class TestMesh extends Mesh {
 
     public TestMesh(Context context){
         //super("test_mesh_2.ply");
-        super("test_textured_mesh.ply", BitmapUtil.getBitmapFromAsset(context,"Material.001_Base_Color.png"));
+        //super("monkey.ply", BitmapUtil.getBitmapFromAsset(context, "monkey_ply_texture.png"));
+        super("monkey.obj");
         rotation.x = -90;
     }
 

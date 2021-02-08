@@ -3,7 +3,7 @@ package com.outofbound.rhinoenginelib.shader;
 import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
-import com.outofbound.rhinoenginelib.util.file.TextFileReader;
+import com.outofbound.rhinoenginelib.util.file.TextFile;
 
 
 public abstract class Shader {
@@ -13,9 +13,9 @@ public abstract class Shader {
     public Shader(String vs, String fs){
         program = GLES20.glCreateProgram();
         GLES20.glAttachShader(program, compile(GLES20.GL_VERTEX_SHADER,
-                TextFileReader.getString(AbstractEngine.getInstance().getContext(), vs)));
+                TextFile.read(AbstractEngine.getInstance().getContext(), vs)));
         GLES20.glAttachShader(program, compile(GLES20.GL_FRAGMENT_SHADER,
-                TextFileReader.getString(AbstractEngine.getInstance().getContext(), fs)));
+                TextFile.read(AbstractEngine.getInstance().getContext(), fs)));
         GLES20.glLinkProgram(program);
     }
 

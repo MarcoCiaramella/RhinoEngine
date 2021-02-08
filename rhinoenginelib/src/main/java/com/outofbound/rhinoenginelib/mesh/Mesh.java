@@ -2,7 +2,6 @@ package com.outofbound.rhinoenginelib.mesh;
 
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
@@ -10,8 +9,8 @@ import android.opengl.Matrix;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
-import com.outofbound.meshloaderlib.Obj;
-import com.outofbound.meshloaderlib.Ply;
+import com.outofbound.meshloaderlib.obj.Obj;
+import com.outofbound.meshloaderlib.ply.Ply;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.util.color.Color;
 import com.outofbound.rhinoenginelib.util.color.Gradient;
@@ -102,6 +101,7 @@ public abstract class Mesh {
             this.vertices = obj.getVertices();
             this.normals = obj.getNormals();
             this.indices = obj.getIndices();
+            this.textureBitmap = obj.getMaterial().getMapKd();
         }
     }
 
