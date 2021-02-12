@@ -47,7 +47,7 @@ public class Engine extends AbstractEngine {
                 .getLights()
                 .getDirLight()
                 .configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
-        getRenderer(ID.RENDERER_1).addMesh(new TestMesh(getContext()));
+        getRenderer(ID.RENDERER_1).addMesh(new MeshObj());
     }
 
     public void blurOn(){
