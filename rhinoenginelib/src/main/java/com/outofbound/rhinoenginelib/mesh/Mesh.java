@@ -104,6 +104,7 @@ public abstract class Mesh {
             this.normals = obj.getNormals();
             this.indices = obj.getIndices();
             this.textureBitmap = obj.getMaterial().getMapKd();
+            this.material = new Material(new Vector3f(obj.getMaterial().getKa()), new Vector3f(obj.getMaterial().getKd()), new Vector3f(obj.getMaterial().getKs()));
         }
     }
 
@@ -112,7 +113,9 @@ public abstract class Mesh {
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = 1;
-        material = new Material(new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1));
+        if (material == null) {
+            material = new Material(new Vector3f(0.2f, 0.2f, 0.2f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(1, 1, 1));
+        }
     }
 
     private void load(){
