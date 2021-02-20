@@ -1,7 +1,6 @@
 package com.outofbound.rhinoenginelib.shader.primitives;
 
 import android.opengl.GLES20;
-import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.light.DirLight;
 import com.outofbound.rhinoenginelib.light.Lights;
@@ -62,9 +61,9 @@ public final class SceneShader extends Shader {
         DirLight dirLight = lights.getDirLight();
         GLES20.glUniform1i(uDirLight.get(0), dirLight.isOn() ? 1 : 0);
         GLES20.glUniform3f(uDirLight.get(1), dirLight.getDirection().x, dirLight.getDirection().y, dirLight.getDirection().z);
-        GLES20.glUniform3f(uDirLight.get(2), dirLight.getAmbientColor().x, dirLight.getAmbientColor().y, dirLight.getAmbientColor().z);
-        GLES20.glUniform3f(uDirLight.get(3), dirLight.getDiffuseColor().x, dirLight.getDiffuseColor().y, dirLight.getDiffuseColor().z);
-        GLES20.glUniform3f(uDirLight.get(4), dirLight.getSpecularColor().x, dirLight.getSpecularColor().y, dirLight.getSpecularColor().z);
+        GLES20.glUniform3f(uDirLight.get(2), mesh.getMaterial().getAmbientColor().x, mesh.getMaterial().getAmbientColor().y, mesh.getMaterial().getAmbientColor().z);
+        GLES20.glUniform3f(uDirLight.get(3), mesh.getMaterial().getDiffuseColor().x, mesh.getMaterial().getDiffuseColor().y, mesh.getMaterial().getDiffuseColor().z);
+        GLES20.glUniform3f(uDirLight.get(4), mesh.getMaterial().getSpecularColor().x, mesh.getMaterial().getSpecularColor().y, mesh.getMaterial().getSpecularColor().z);
         if (dirLight.isShadowEnabled()) {
             bindTexture(uDirLight.get(5), dirLight.getShadowMap().getTexture());
             GLES20.glUniformMatrix4fv(uDirLight.get(6), 1, false, dirLight.getShadowMap().getCamera().getVpMatrix(), 0);
@@ -99,9 +98,9 @@ public final class SceneShader extends Shader {
         GLES20.glUniform1f(uPointLight.get(2), pointLight.getConstant());
         GLES20.glUniform1f(uPointLight.get(3), pointLight.getLinear());
         GLES20.glUniform1f(uPointLight.get(4), pointLight.getQuadratic());
-        GLES20.glUniform3f(uPointLight.get(5), pointLight.getAmbientColor().x, pointLight.getAmbientColor().y, pointLight.getAmbientColor().z);
-        GLES20.glUniform3f(uPointLight.get(6), pointLight.getDiffuseColor().x, pointLight.getDiffuseColor().y, pointLight.getDiffuseColor().z);
-        GLES20.glUniform3f(uPointLight.get(7), pointLight.getSpecularColor().x, pointLight.getSpecularColor().y, pointLight.getSpecularColor().z);
+        GLES20.glUniform3f(uPointLight.get(5), mesh.getMaterial().getAmbientColor().x, mesh.getMaterial().getAmbientColor().y, mesh.getMaterial().getAmbientColor().z);
+        GLES20.glUniform3f(uPointLight.get(6), mesh.getMaterial().getDiffuseColor().x, mesh.getMaterial().getDiffuseColor().y, mesh.getMaterial().getDiffuseColor().z);
+        GLES20.glUniform3f(uPointLight.get(7), mesh.getMaterial().getSpecularColor().x, mesh.getMaterial().getSpecularColor().y, mesh.getMaterial().getSpecularColor().z);
         if (pointLight.isShadowEnabled()) {
             bindTexture(uPointLight.get(8), pointLight.getShadowMap().getTexture());
             GLES20.glUniformMatrix4fv(uPointLight.get(9), 1, false, pointLight.getShadowMap().getCamera().getVpMatrix(), 0);

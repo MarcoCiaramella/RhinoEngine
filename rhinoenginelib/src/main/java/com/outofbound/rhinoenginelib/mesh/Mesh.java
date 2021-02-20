@@ -44,6 +44,7 @@ public abstract class Mesh {
     protected float scale;
     private int texture = 0;
     private Bitmap textureBitmap;
+    private Material material;
 
 
     public Mesh(@NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -111,6 +112,7 @@ public abstract class Mesh {
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = 1;
+        material = new Material(new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1));
     }
 
     private void load(){
@@ -418,6 +420,51 @@ public abstract class Mesh {
         }
         if (this.texture == 0) {
             throw new RuntimeException("Error loading texture.");
+        }
+    }
+
+    public Mesh setMaterial(Material material){
+        this.material = material;
+        return this;
+    }
+
+    public Material getMaterial(){
+        return material;
+    }
+
+    public static class Material {
+        private Vector3f ambientColor;
+        private Vector3f diffuseColor;
+        private Vector3f specularColor;
+
+        public Material(Vector3f ambientColor, Vector3f diffuseColor, Vector3f specularColor){
+            this.ambientColor = ambientColor;
+            this.diffuseColor = diffuseColor;
+            this.specularColor = specularColor;
+        }
+
+        public void setAmbientColor(Vector3f ambientColor) {
+            this.ambientColor = ambientColor;
+        }
+
+        public void setDiffuseColor(Vector3f diffuseColor) {
+            this.diffuseColor = diffuseColor;
+        }
+
+        public void setSpecularColor(Vector3f specularColor) {
+            this.specularColor = specularColor;
+        }
+
+        public Vector3f getAmbientColor() {
+            return ambientColor;
+        }
+
+        public Vector3f getDiffuseColor() {
+            return diffuseColor;
+        }
+
+        public Vector3f getSpecularColor() {
+            return specularColor;
         }
     }
 }

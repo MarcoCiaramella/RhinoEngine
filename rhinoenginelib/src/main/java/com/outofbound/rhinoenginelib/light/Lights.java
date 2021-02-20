@@ -13,7 +13,7 @@ public class Lights {
     public static final int MAX_NUM_POINT_LIGHTS = 8;
 
     public Lights(){
-        this.dirLight = new DirLight(new Vector3f(1,-1,0),new Vector3f(0.2f,0.2f,0.2f),new Vector3f(0.5f,0.5f,0.5f),new Vector3f(1,1,1));
+        this.dirLight = new DirLight(new Vector3f(1,-1,0));
         pointLights = new BigList<>();
     }
 

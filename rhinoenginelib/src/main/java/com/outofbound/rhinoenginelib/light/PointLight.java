@@ -10,8 +10,8 @@ public class PointLight extends Light {
     private final float linear;
     private final float quadratic;
 
-    public PointLight(@NonNull Vector3f position, @NonNull Vector3f ambientColor, @NonNull Vector3f diffuseColor, @NonNull Vector3f specularColor, float constant, float linear, float quadratic) {
-        super(ambientColor, diffuseColor, specularColor);
+    public PointLight(@NonNull Vector3f position, float constant, float linear, float quadratic) {
+        super();
         this.position = position;
         this.constant = constant;
         this.linear = linear;
