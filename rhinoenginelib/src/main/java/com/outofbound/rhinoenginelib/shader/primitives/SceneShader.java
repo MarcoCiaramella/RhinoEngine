@@ -48,6 +48,7 @@ public final class SceneShader extends Shader {
         uDirLight.add(getUniform("uDirLight.ambientColor"));
         uDirLight.add(getUniform("uDirLight.diffuseColor"));
         uDirLight.add(getUniform("uDirLight.specularColor"));
+        uDirLight.add(getUniform("uDirLight.specularExponent"));
         uDirLight.add(getUniform("uDirLight.shadowMap"));
         uDirLight.add(getUniform("uDirLight.shadowVPMatrix"));
         uDirLight.add(getUniform("uDirLight.shadowEnabled"));
@@ -58,17 +59,19 @@ public final class SceneShader extends Shader {
     }
 
     private void bindDirLight(){
+        int i = 0;
         DirLight dirLight = lights.getDirLight();
-        GLES20.glUniform1i(uDirLight.get(0), dirLight.isOn() ? 1 : 0);
-        GLES20.glUniform3f(uDirLight.get(1), dirLight.getDirection().x, dirLight.getDirection().y, dirLight.getDirection().z);
-        GLES20.glUniform3f(uDirLight.get(2), mesh.getMaterial().getAmbientColor().x, mesh.getMaterial().getAmbientColor().y, mesh.getMaterial().getAmbientColor().z);
-        GLES20.glUniform3f(uDirLight.get(3), mesh.getMaterial().getDiffuseColor().x, mesh.getMaterial().getDiffuseColor().y, mesh.getMaterial().getDiffuseColor().z);
-        GLES20.glUniform3f(uDirLight.get(4), mesh.getMaterial().getSpecularColor().x, mesh.getMaterial().getSpecularColor().y, mesh.getMaterial().getSpecularColor().z);
+        GLES20.glUniform1i(uDirLight.get(i++), dirLight.isOn() ? 1 : 0);
+        GLES20.glUniform3f(uDirLight.get(i++), dirLight.getDirection().x, dirLight.getDirection().y, dirLight.getDirection().z);
+        GLES20.glUniform3f(uDirLight.get(i++), mesh.getMaterial().getAmbientColor().x, mesh.getMaterial().getAmbientColor().y, mesh.getMaterial().getAmbientColor().z);
+        GLES20.glUniform3f(uDirLight.get(i++), mesh.getMaterial().getDiffuseColor().x, mesh.getMaterial().getDiffuseColor().y, mesh.getMaterial().getDiffuseColor().z);
+        GLES20.glUniform3f(uDirLight.get(i++), mesh.getMaterial().getSpecularColor().x, mesh.getMaterial().getSpecularColor().y, mesh.getMaterial().getSpecularColor().z);
+        GLES20.glUniform1f(uDirLight.get(i++), mesh.getMaterial().getSpecularExponent());
         if (dirLight.isShadowEnabled()) {
-            bindTexture(uDirLight.get(5), dirLight.getShadowMap().getTexture());
-            GLES20.glUniformMatrix4fv(uDirLight.get(6), 1, false, dirLight.getShadowMap().getCamera().getVpMatrix(), 0);
+            bindTexture(uDirLight.get(i++), dirLight.getShadowMap().getTexture());
+            GLES20.glUniformMatrix4fv(uDirLight.get(i++), 1, false, dirLight.getShadowMap().getCamera().getVpMatrix(), 0);
         }
-        GLES20.glUniform1i(uDirLight.get(7), dirLight.isShadowEnabled() ? 1 : 0);
+        GLES20.glUniform1i(uDirLight.get(i), dirLight.isShadowEnabled() ? 1 : 0);
     }
 
     private void bindPointLight(int index){
@@ -88,24 +91,27 @@ public final class SceneShader extends Shader {
             uPointLight.add(getUniform(name+".ambientColor"));
             uPointLight.add(getUniform(name+".diffuseColor"));
             uPointLight.add(getUniform(name+".specularColor"));
+            uPointLight.add(getUniform(name+".specularExponent"));
             uPointLight.add(getUniform(name+".shadowMap"));
             uPointLight.add(getUniform(name+".shadowVPMatrix"));
             uPointLight.add(getUniform(name+".shadowEnabled"));
             uPointLights.add(uPointLight);
         }
-        GLES20.glUniform1i(uPointLight.get(0), pointLight.isOn() ? 1 : 0);
-        GLES20.glUniform3f(uPointLight.get(1), pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
-        GLES20.glUniform1f(uPointLight.get(2), pointLight.getConstant());
-        GLES20.glUniform1f(uPointLight.get(3), pointLight.getLinear());
-        GLES20.glUniform1f(uPointLight.get(4), pointLight.getQuadratic());
-        GLES20.glUniform3f(uPointLight.get(5), mesh.getMaterial().getAmbientColor().x, mesh.getMaterial().getAmbientColor().y, mesh.getMaterial().getAmbientColor().z);
-        GLES20.glUniform3f(uPointLight.get(6), mesh.getMaterial().getDiffuseColor().x, mesh.getMaterial().getDiffuseColor().y, mesh.getMaterial().getDiffuseColor().z);
-        GLES20.glUniform3f(uPointLight.get(7), mesh.getMaterial().getSpecularColor().x, mesh.getMaterial().getSpecularColor().y, mesh.getMaterial().getSpecularColor().z);
+        int i = 0;
+        GLES20.glUniform1i(uPointLight.get(i++), pointLight.isOn() ? 1 : 0);
+        GLES20.glUniform3f(uPointLight.get(i++), pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
+        GLES20.glUniform1f(uPointLight.get(i++), pointLight.getConstant());
+        GLES20.glUniform1f(uPointLight.get(i++), pointLight.getLinear());
+        GLES20.glUniform1f(uPointLight.get(i++), pointLight.getQuadratic());
+        GLES20.glUniform3f(uPointLight.get(i++), mesh.getMaterial().getAmbientColor().x, mesh.getMaterial().getAmbientColor().y, mesh.getMaterial().getAmbientColor().z);
+        GLES20.glUniform3f(uPointLight.get(i++), mesh.getMaterial().getDiffuseColor().x, mesh.getMaterial().getDiffuseColor().y, mesh.getMaterial().getDiffuseColor().z);
+        GLES20.glUniform3f(uPointLight.get(i++), mesh.getMaterial().getSpecularColor().x, mesh.getMaterial().getSpecularColor().y, mesh.getMaterial().getSpecularColor().z);
+        GLES20.glUniform1f(uPointLight.get(i++), mesh.getMaterial().getSpecularExponent());
         if (pointLight.isShadowEnabled()) {
-            bindTexture(uPointLight.get(8), pointLight.getShadowMap().getTexture());
-            GLES20.glUniformMatrix4fv(uPointLight.get(9), 1, false, pointLight.getShadowMap().getCamera().getVpMatrix(), 0);
+            bindTexture(uPointLight.get(i++), pointLight.getShadowMap().getTexture());
+            GLES20.glUniformMatrix4fv(uPointLight.get(i++), 1, false, pointLight.getShadowMap().getCamera().getVpMatrix(), 0);
         }
-        GLES20.glUniform1i(uPointLight.get(10), pointLight.isShadowEnabled() ? 1 : 0);
+        GLES20.glUniform1i(uPointLight.get(i), pointLight.isShadowEnabled() ? 1 : 0);
     }
 
     @Override

@@ -104,7 +104,7 @@ public abstract class Mesh {
             this.normals = obj.getNormals();
             this.indices = obj.getIndices();
             this.textureBitmap = obj.getMaterial().getMapKd();
-            this.material = new Material(new Vector3f(obj.getMaterial().getKa()), new Vector3f(obj.getMaterial().getKd()), new Vector3f(obj.getMaterial().getKs()));
+            this.material = new Material(new Vector3f(obj.getMaterial().getKa()), new Vector3f(obj.getMaterial().getKd()), new Vector3f(obj.getMaterial().getKs()),obj.getMaterial().getNs());
         }
     }
 
@@ -114,7 +114,7 @@ public abstract class Mesh {
         rotation = new Vector3f(0,0,0);
         scale = 1;
         if (material == null) {
-            material = new Material(new Vector3f(0.2f, 0.2f, 0.2f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(1, 1, 1));
+            material = new Material(new Vector3f(0.2f, 0.2f, 0.2f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(1, 1, 1),200);
         }
     }
 
@@ -439,11 +439,13 @@ public abstract class Mesh {
         private Vector3f ambientColor;
         private Vector3f diffuseColor;
         private Vector3f specularColor;
+        private float specularExponent;
 
-        public Material(Vector3f ambientColor, Vector3f diffuseColor, Vector3f specularColor){
+        public Material(Vector3f ambientColor, Vector3f diffuseColor, Vector3f specularColor, float specularExponent){
             this.ambientColor = ambientColor;
             this.diffuseColor = diffuseColor;
             this.specularColor = specularColor;
+            this.specularExponent = specularExponent;
         }
 
         public void setAmbientColor(Vector3f ambientColor) {
@@ -458,6 +460,10 @@ public abstract class Mesh {
             this.specularColor = specularColor;
         }
 
+        public void setSpecularExponent(float specularExponent) {
+            this.specularExponent = specularExponent;
+        }
+
         public Vector3f getAmbientColor() {
             return ambientColor;
         }
@@ -468,6 +474,10 @@ public abstract class Mesh {
 
         public Vector3f getSpecularColor() {
             return specularColor;
+        }
+
+        public float getSpecularExponent() {
+            return specularExponent;
         }
     }
 }

@@ -9,6 +9,7 @@ struct DirLight {
     vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
+    float specularExponent;
     sampler2D shadowMap;
     mat4 shadowVPMatrix;
     int shadowEnabled;
@@ -23,6 +24,7 @@ struct PointLight {
     vec3 ambientColor;
     vec3 diffuseColor;
     vec3 specularColor;
+    float specularExponent;
     sampler2D shadowMap;
     mat4 shadowVPMatrix;
     int shadowEnabled;
@@ -72,15 +74,15 @@ float diffuseLighting(vec3 normal, vec3 lightDir){
     return max(dot(normal, lightDir), 0.0);
 }
 
-float specularLighting(vec3 normal, vec3 lightDir, vec3 viewDir){
+float specularLighting(vec3 normal, vec3 lightDir, vec3 viewDir, float specularExponent){
     vec3 reflectDir = reflect(-lightDir, normal);
-    return pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+    return pow(max(dot(viewDir, reflectDir), 0.0), specularExponent);
 }
 
 vec4 calcDirLight(vec3 normal, vec3 viewDir){
     vec3 lightDir = normalize(-uDirLight.direction);
     float diff = diffuseLighting(normal, lightDir);
-    float spec = specularLighting(normal, lightDir, viewDir);
+    float spec = specularLighting(normal, lightDir, viewDir, uDirLight.specularExponent);
     vec4 color = getColor();
     vec4 ambient = vec4(uDirLight.ambientColor, 1.0) * color;
     vec4 diffuse = vec4(uDirLight.diffuseColor * diff, 1.0) * color;
@@ -96,7 +98,7 @@ vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
     vec3 d = pointLight.position - vec3(vPosition);
     vec3 lightDir = normalize(d);
     float diff = diffuseLighting(normal, lightDir);
-    float spec = specularLighting(normal, lightDir, viewDir);
+    float spec = specularLighting(normal, lightDir, viewDir, pointLight.specularExponent);
     float distance = length(d);
     float attenuation = calcAttenuation(pointLight,distance);
     vec4 color = getColor();
