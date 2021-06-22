@@ -6,7 +6,7 @@ import com.outofbound.rhinoenginelib.mesh.Mesh;
 public class MeshObj extends Mesh {
 
     public MeshObj(){
-        super("monkey.obj");
+        super("monkey", "monkey.obj");
     }
 
     @Override

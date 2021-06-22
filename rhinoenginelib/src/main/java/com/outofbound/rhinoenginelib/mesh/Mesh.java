@@ -25,6 +25,52 @@ import java.util.Arrays;
 
 public abstract class Mesh {
 
+    public static class Material {
+        private Vector3f ambientColor;
+        private Vector3f diffuseColor;
+        private Vector3f specularColor;
+        private float specularExponent;
+
+        public Material(Vector3f ambientColor, Vector3f diffuseColor, Vector3f specularColor, float specularExponent){
+            this.ambientColor = ambientColor;
+            this.diffuseColor = diffuseColor;
+            this.specularColor = specularColor;
+            this.specularExponent = specularExponent;
+        }
+
+        public void setAmbientColor(Vector3f ambientColor) {
+            this.ambientColor = ambientColor;
+        }
+
+        public void setDiffuseColor(Vector3f diffuseColor) {
+            this.diffuseColor = diffuseColor;
+        }
+
+        public void setSpecularColor(Vector3f specularColor) {
+            this.specularColor = specularColor;
+        }
+
+        public void setSpecularExponent(float specularExponent) {
+            this.specularExponent = specularExponent;
+        }
+
+        public Vector3f getAmbientColor() {
+            return ambientColor;
+        }
+
+        public Vector3f getDiffuseColor() {
+            return diffuseColor;
+        }
+
+        public Vector3f getSpecularColor() {
+            return specularColor;
+        }
+
+        public float getSpecularExponent() {
+            return specularExponent;
+        }
+    }
+
     private float[] vertices;
     private float[] normals;
     private int[] indices;
@@ -45,9 +91,11 @@ public abstract class Mesh {
     private int texture = 0;
     private Bitmap textureBitmap;
     private Material material;
+    private String name;
 
 
-    public Mesh(@NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
+    public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
+        this.name = name;
         this.vertices = vertices;
         this.sizeVertex = sizeVertex;
         this.normals = normals;
@@ -56,27 +104,31 @@ public abstract class Mesh {
         init();
     }
 
-    public Mesh(@NonNull String mesh){
+    public Mesh(@NonNull String name, @NonNull String mesh){
+        this.name = name;
         this.sizeVertex = 3;
         loadFromFile(mesh);
         init();
     }
 
-    public Mesh(@NonNull String mesh, @NonNull float[] color){
+    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull float[] color){
+        this.name = name;
         this.sizeVertex = 3;
         loadFromFile(mesh);
         this.colors = Color.getVertexColor(color,vertices.length);
         init();
     }
 
-    public Mesh(@NonNull String mesh, @NonNull Gradient[] gradients){
+    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull Gradient[] gradients){
+        this.name = name;
         this.sizeVertex = 3;
         loadFromFile(mesh);
         this.colors = Color.gradientColoring(this.vertices,this.indices,gradients);
         init();
     }
 
-    public Mesh(@NonNull String mesh, @NonNull Bitmap textureBitmap){
+    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull Bitmap textureBitmap){
+        this.name = name;
         if (!mesh.endsWith(".ply")){
             throw new RuntimeException("Mesh must be in .ply format.");
         }
@@ -435,49 +487,7 @@ public abstract class Mesh {
         return material;
     }
 
-    public static class Material {
-        private Vector3f ambientColor;
-        private Vector3f diffuseColor;
-        private Vector3f specularColor;
-        private float specularExponent;
-
-        public Material(Vector3f ambientColor, Vector3f diffuseColor, Vector3f specularColor, float specularExponent){
-            this.ambientColor = ambientColor;
-            this.diffuseColor = diffuseColor;
-            this.specularColor = specularColor;
-            this.specularExponent = specularExponent;
-        }
-
-        public void setAmbientColor(Vector3f ambientColor) {
-            this.ambientColor = ambientColor;
-        }
-
-        public void setDiffuseColor(Vector3f diffuseColor) {
-            this.diffuseColor = diffuseColor;
-        }
-
-        public void setSpecularColor(Vector3f specularColor) {
-            this.specularColor = specularColor;
-        }
-
-        public void setSpecularExponent(float specularExponent) {
-            this.specularExponent = specularExponent;
-        }
-
-        public Vector3f getAmbientColor() {
-            return ambientColor;
-        }
-
-        public Vector3f getDiffuseColor() {
-            return diffuseColor;
-        }
-
-        public Vector3f getSpecularColor() {
-            return specularColor;
-        }
-
-        public float getSpecularExponent() {
-            return specularExponent;
-        }
+    public String getName(){
+        return name;
     }
 }

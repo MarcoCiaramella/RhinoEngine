@@ -12,8 +12,8 @@ public abstract class TrailMesh extends Mesh {
     private final float[] color;
     private final int length;
 
-    public TrailMesh(Mesh source, float[] color, int length, long ms) {
-        super(new float[]{},3,null,null,new float[]{});
+    public TrailMesh(String name, Mesh source, float[] color, int length, long ms) {
+        super(name, new float[]{},3,null,null,new float[]{});
         timer = new Timer(ms);
         newLine = new float[2*getSizeVertex()];
         newColors = new float[2*4];

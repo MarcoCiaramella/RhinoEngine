@@ -26,16 +26,16 @@ public class Pane extends Mesh {
             2,3,0
     };
 
-    private Pane(float[] vertices, float[] color){
-        super(vertices, 3, normals, indices, Color.getVertexColor(color,vertices.length));
+    private Pane(String name, float[] vertices, float[] color){
+        super(name, vertices, 3, normals, indices, Color.getVertexColor(color,vertices.length));
     }
 
-    public Pane(float[] color) {
-        this(vertices,color);
+    public Pane(String name, float[] color) {
+        this(name, vertices,color);
     }
 
-    public Pane(float sizeX, float sizeZ, float[] color) {
-        this(scale(vertices,sizeX,1,sizeZ),color);
+    public Pane(String name, float sizeX, float sizeZ, float[] color) {
+        this(name, scale(vertices,sizeX,1,sizeZ),color);
     }
 
     @Override
