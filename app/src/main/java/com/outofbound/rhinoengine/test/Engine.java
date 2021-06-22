@@ -28,7 +28,6 @@ public class Engine extends AbstractEngine {
     protected void init() {
         setClearColor(0,0,0,1);
         ID.RENDERER_1 = addRenderer(new com.outofbound.rhinoenginelib.renderer.Renderer());
-        getRenderer(ID.RENDERER_1).addMesh(new Pane());
         addTask(new CameraRotation());
         addTask(new LightAnimation());
         configBlur(RendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
@@ -44,6 +43,8 @@ public class Engine extends AbstractEngine {
                 .getLights()
                 .getDirLight()
                 .configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
+
+        getRenderer(ID.RENDERER_1).addMesh(new Pane());
         getRenderer(ID.RENDERER_1).addMesh(new MeshObj());
     }
 
