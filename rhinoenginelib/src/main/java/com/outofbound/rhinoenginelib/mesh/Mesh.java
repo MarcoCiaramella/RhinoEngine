@@ -490,4 +490,9 @@ public abstract class Mesh {
     public String getName(){
         return name;
     }
+
+    public Mesh setScale(float scale){
+        this.scale = scale;
+        return this;
+    }
 }
