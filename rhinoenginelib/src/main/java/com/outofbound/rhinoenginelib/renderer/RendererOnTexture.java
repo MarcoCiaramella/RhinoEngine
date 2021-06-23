@@ -7,12 +7,11 @@ import com.outofbound.rhinoenginelib.camera.Camera;
 
 public class RendererOnTexture {
 
-    // Make sure that dimensions are in POT (Power Of Two), because some devices may not support NPOT textures.
     private final int fboWidth;
     private final int fboHeight;
     private int frameBuffer;
     private int texture;
-    private Camera camera;
+    private final Camera camera;
 
     public static final int RESOLUTION_256 = 0;
     public static final int RESOLUTION_512 = 1;
