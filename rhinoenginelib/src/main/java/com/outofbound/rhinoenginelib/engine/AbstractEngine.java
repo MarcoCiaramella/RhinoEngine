@@ -70,7 +70,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     private void config(Camera camera, Gesture gesture){
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
-        setEGLContextClientVersion(2);
+        setEGLContextClientVersion(3);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setOnTouchListener(this);
