@@ -2,7 +2,7 @@ package com.outofbound.rhinoenginelib.mesh;
 
 
 import android.graphics.Bitmap;
-import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
@@ -464,13 +464,13 @@ public abstract class Mesh {
             return;
         }
         int[] texture = new int[1];
-        GLES20.glGenTextures(1, texture, 0);
+        GLES30.glGenTextures(1, texture, 0);
         this.texture = texture[0];
         if (this.texture != 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.texture);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureBitmap, 0);
+            GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, this.texture);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST);
+            GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_NEAREST);
+            GLUtils.texImage2D(GLES30.GL_TEXTURE_2D, 0, textureBitmap, 0);
             textureBitmap.recycle();
         }
         if (this.texture == 0) {

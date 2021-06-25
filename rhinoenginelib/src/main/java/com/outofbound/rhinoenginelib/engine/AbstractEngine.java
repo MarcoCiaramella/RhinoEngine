@@ -1,7 +1,7 @@
 package com.outofbound.rhinoenginelib.engine;
 
 import android.content.Context;
-import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -70,7 +70,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     private void config(Camera camera, Gesture gesture){
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
-        setEGLContextClientVersion(2);
+        setEGLContextClientVersion(3);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setOnTouchListener(this);
@@ -287,10 +287,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 
-        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-        GLES20.glDepthFunc(GLES20.GL_LESS);
-        GLES20.glClearDepthf(1.0f);
-        GLES20.glFrontFace(GLES20.GL_CCW);
+        GLES30.glEnable(GLES30.GL_DEPTH_TEST);
+        GLES30.glDepthFunc(GLES30.GL_LESS);
+        GLES30.glClearDepthf(1.0f);
+        GLES30.glFrontFace(GLES30.GL_CCW);
 
         init();
     }
@@ -303,7 +303,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      */
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-        GLES20.glViewport(0, 0, width, height);
+        GLES30.glViewport(0, 0, width, height);
         camera.setWidth(width).setHeight(height);
     }
 
@@ -314,8 +314,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     @Override
     public void onDrawFrame(GL10 gl) {
 
-        GLES20.glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+        GLES30.glClearColor(clearColor[0], clearColor[1], clearColor[2], clearColor[3]);
+        GLES30.glClear(GLES30.GL_COLOR_BUFFER_BIT | GLES30.GL_DEPTH_BUFFER_BIT);
 
         deltaMs = 0;
         long currentMs = Calendar.getInstance().getTimeInMillis();
@@ -349,7 +349,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Set the clear color for GLES20.glClearColor method.
+     * Set the clear color for GLES30.glClearColor method.
      * @param r red.
      * @param g green.
      * @param b blue.

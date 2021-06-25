@@ -1,6 +1,6 @@
 package com.outofbound.rhinoenginelib.renderer;
 
-import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
@@ -95,8 +95,8 @@ public final class Renderer {
             }
         }
         if (blendingEnabled) {
-            GLES20.glEnable(GLES20.GL_BLEND);
-            GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+            GLES30.glEnable(GLES30.GL_BLEND);
+            GLES30.glBlendFunc(GLES30.GL_SRC_ALPHA, GLES30.GL_ONE_MINUS_SRC_ALPHA);
         }
         for (Mesh mesh : meshes) {
             if (!mesh.isDead(ms)) {
@@ -118,7 +118,7 @@ public final class Renderer {
             }
         }
         if (blendingEnabled) {
-            GLES20.glDisable(GLES20.GL_BLEND);
+            GLES30.glDisable(GLES30.GL_BLEND);
         }
     }
 
@@ -145,9 +145,9 @@ public final class Renderer {
 
     private void draw(Mesh mesh){
         if (mesh.getIndices() != null) {
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES, mesh.getIndicesBuffer().capacity(), GLES20.GL_UNSIGNED_INT, mesh.getIndicesBuffer());
+            GLES30.glDrawElements(GLES30.GL_TRIANGLES, mesh.getIndicesBuffer().capacity(), GLES30.GL_UNSIGNED_INT, mesh.getIndicesBuffer());
         } else {
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, mesh.getNumVertices());
+            GLES30.glDrawArrays(GLES30.GL_TRIANGLE_STRIP, 0, mesh.getNumVertices());
         }
     }
 
