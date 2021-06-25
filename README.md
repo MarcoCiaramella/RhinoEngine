@@ -2,7 +2,7 @@
 
 [![](https://jitpack.io/v/MarcoCiaramella/RhinoEngine.svg)](https://jitpack.io/#MarcoCiaramella/RhinoEngine)
 
-A graphics engine for Android in OpenGL ES 2.0.
+A graphics engine for Android in OpenGL ES 3.0.
 
 ## How to import in your Android project
 Add JitPack in your root build.gradle at the end of repositories:
@@ -26,13 +26,13 @@ dependencies {
 
 ## How to use
 
-Add OpengGL ES 2.0 as requirement in your AndroidManifest.xml
+Add OpengGL ES 3.0 as requirement in your AndroidManifest.xml
 
 ```xml
 <manifest ..... >
 
     <uses-feature
-        android:glEsVersion="0x00020000"
+        android:glEsVersion="0x00030000"
         android:required="true" />
 
     <application ..... >

@@ -1,6 +1,6 @@
 package com.outofbound.rhinoenginelib.shader.primitives;
 
-import android.opengl.GLES20;
+import android.opengl.GLES30;
 
 import com.outofbound.rhinoenginelib.shader.Shader;
 
@@ -32,7 +32,7 @@ public final class BlurShader extends Shader {
 
     public BlurShader() {
         super("vs_blur.glsl", "fs_blur.glsl");
-        GLES20.glUseProgram(getProgram());
+        GLES30.glUseProgram(getProgram());
         aPosition = getAttrib("aPosition");
         aTexCoords = getAttrib("aTexCoords");
         uTextId = getUniform("uTextId");
@@ -46,26 +46,26 @@ public final class BlurShader extends Shader {
 
     @Override
     public void bindData() {
-        GLES20.glUseProgram(getProgram());
-        GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_FLOAT, false, 0, vertices);
-        GLES20.glEnableVertexAttribArray(aPosition);
-        GLES20.glVertexAttribPointer(aTexCoords, 2, GLES20.GL_FLOAT, false, 0, textureCoords);
-        GLES20.glEnableVertexAttribArray(aTexCoords);
-        GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
-        GLES20.glUniform1i(uTextId, 0);
-        GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, vpMatrix, 0);
-        GLES20.glUniform1f(uBlurScale,scale);
-        GLES20.glUniform1f(uBlurAmount,amount);
-        GLES20.glUniform1f(uBlurStrength,strength);
-        GLES20.glUniform2f(uScreenSize,screenWidth,screenHeight);
-        GLES20.glUniform1i(uType,type);
+        GLES30.glUseProgram(getProgram());
+        GLES30.glVertexAttribPointer(aPosition, 2, GLES30.GL_FLOAT, false, 0, vertices);
+        GLES30.glEnableVertexAttribArray(aPosition);
+        GLES30.glVertexAttribPointer(aTexCoords, 2, GLES30.GL_FLOAT, false, 0, textureCoords);
+        GLES30.glEnableVertexAttribArray(aTexCoords);
+        GLES30.glActiveTexture(GLES30.GL_TEXTURE0);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, texture);
+        GLES30.glUniform1i(uTextId, 0);
+        GLES30.glUniformMatrix4fv(uMVPMatrix, 1, false, vpMatrix, 0);
+        GLES30.glUniform1f(uBlurScale,scale);
+        GLES30.glUniform1f(uBlurAmount,amount);
+        GLES30.glUniform1f(uBlurStrength,strength);
+        GLES30.glUniform2f(uScreenSize,screenWidth,screenHeight);
+        GLES30.glUniform1i(uType,type);
     }
 
     @Override
     public void unbindData() {
-        GLES20.glDisableVertexAttribArray(aPosition);
-        GLES20.glDisableVertexAttribArray(aTexCoords);
+        GLES30.glDisableVertexAttribArray(aPosition);
+        GLES30.glDisableVertexAttribArray(aTexCoords);
     }
 
     public BlurShader setVpMatrix(float[] vpMatrix){
