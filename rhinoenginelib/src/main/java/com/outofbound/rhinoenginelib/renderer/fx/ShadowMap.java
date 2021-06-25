@@ -1,6 +1,6 @@
 package com.outofbound.rhinoenginelib.renderer.fx;
 
-import android.opengl.GLES30;
+import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.camera.CameraOrthographic;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
@@ -19,12 +19,12 @@ public class ShadowMap {
     }
 
     public void render(SceneRenderer sceneRenderer, int screenWidth, int screenHeight){
-        GLES30.glEnable(GLES30.GL_CULL_FACE);
-        GLES30.glCullFace(GLES30.GL_FRONT);
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
+        GLES20.glCullFace(GLES20.GL_FRONT);
         camera.loadVpMatrix();
         texture = renderer.render(sceneRenderer);
-        GLES30.glDisable(GLES30.GL_CULL_FACE);
-        GLES30.glViewport(0, 0, screenWidth, screenHeight);
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
+        GLES20.glViewport(0, 0, screenWidth, screenHeight);
     }
 
     public int getTexture(){

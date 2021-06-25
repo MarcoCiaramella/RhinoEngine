@@ -1,6 +1,6 @@
 package com.outofbound.rhinoenginelib.shader.primitives;
 
-import android.opengl.GLES30;
+import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.shader.Shader;
@@ -14,22 +14,22 @@ public final class ShadowMapShader extends Shader {
 
     public ShadowMapShader() {
         super("vs_shadow_map.glsl","fs_shadow_map.glsl");
-        GLES30.glUseProgram(getProgram());
+        GLES20.glUseProgram(getProgram());
         aPosition = getAttrib("aPosition");
         uMVPMatrix = getUniform("uMVPMatrix");
     }
 
     @Override
     public void bindData() {
-        GLES30.glUseProgram(getProgram());
-        GLES30.glEnableVertexAttribArray(aPosition);
-        GLES30.glVertexAttribPointer(aPosition, mesh.getSizeVertex(), GLES30.GL_FLOAT, false, 0, mesh.getVertexBuffer());
-        GLES30.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);
+        GLES20.glUseProgram(getProgram());
+        GLES20.glEnableVertexAttribArray(aPosition);
+        GLES20.glVertexAttribPointer(aPosition, mesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, mesh.getVertexBuffer());
+        GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);
     }
 
     @Override
     public void unbindData() {
-        GLES30.glDisableVertexAttribArray(aPosition);
+        GLES20.glDisableVertexAttribArray(aPosition);
     }
 
     public ShadowMapShader setMesh(Mesh mesh){
