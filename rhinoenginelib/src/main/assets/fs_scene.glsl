@@ -30,11 +30,8 @@ struct PointLight {
     int shadowEnabled;
 };
 
-#define MAX_NUM_POINT_LIGHTS 8
-
 uniform DirLight uDirLight;
-uniform PointLight uPointLights[MAX_NUM_POINT_LIGHTS];
-uniform int uNumPointLights;
+uniform PointLight uPointLight;
 uniform vec3 uViewPos;
 uniform sampler2D uTexture;
 uniform int uIsTextured;
@@ -90,25 +87,25 @@ vec4 calcDirLight(vec3 normal, vec3 viewDir){
     return ambient + (diffuse + specular) * calcShadow(uDirLight.shadowMap, uDirLight.shadowVPMatrix * vPosition, uDirLight.shadowEnabled);
 }
 
-float calcAttenuation(PointLight pointLight, float distance){
-    return 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
+float calcAttenuation(float distance){
+    return 1.0 / (uPointLight.constant + uPointLight.linear * distance + uPointLight.quadratic * (distance * distance));
 }
 
-vec4 calcPointLight(PointLight pointLight, vec3 normal, vec3 viewDir){
-    vec3 d = pointLight.position - vec3(vPosition);
+vec4 calcPointLight(vec3 normal, vec3 viewDir){
+    vec3 d = uPointLight.position - vec3(vPosition);
     vec3 lightDir = normalize(d);
     float diff = diffuseLighting(normal, lightDir);
-    float spec = specularLighting(normal, lightDir, viewDir, pointLight.specularExponent);
+    float spec = specularLighting(normal, lightDir, viewDir, uPointLight.specularExponent);
     float distance = length(d);
-    float attenuation = calcAttenuation(pointLight,distance);
+    float attenuation = calcAttenuation(distance);
     vec4 color = getColor();
-    vec4 ambient = vec4(pointLight.ambientColor, 1.0) * color;
-    vec4 diffuse = vec4(pointLight.diffuseColor * diff, 1.0) * color;
-    vec4 specular = vec4(pointLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
+    vec4 ambient = vec4(uPointLight.ambientColor, 1.0) * color;
+    vec4 diffuse = vec4(uPointLight.diffuseColor * diff, 1.0) * color;
+    vec4 specular = vec4(uPointLight.specularColor * spec, 1.0) * vec4(0.5,0.5,0.5,1.0);
     ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
-    return ambient + (diffuse + specular) * calcShadow(pointLight.shadowMap, pointLight.shadowVPMatrix * vPosition, pointLight.shadowEnabled);
+    return ambient + (diffuse + specular) * calcShadow(uPointLight.shadowMap, uPointLight.shadowVPMatrix * vPosition, uPointLight.shadowEnabled);
 }
 
 
@@ -120,10 +117,8 @@ void main() {
     if (uDirLight.on == 1){
         result = calcDirLight(normal, viewDir);
     }
-    for (int i = 0; i < uNumPointLights; i++){
-        if (uPointLights[i].on == 1){
-            result += calcPointLight(uPointLights[i], normal, viewDir);
-        }
+    if (uPointLight.on == 1){
+        result += calcPointLight(normal, viewDir);
     }
     gl_FragColor = result;
 }

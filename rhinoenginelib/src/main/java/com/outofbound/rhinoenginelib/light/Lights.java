@@ -2,19 +2,16 @@ package com.outofbound.rhinoenginelib.light;
 
 
 
-import com.outofbound.rhinoenginelib.util.list.BigList;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
 public class Lights {
 
     private DirLight dirLight;
-    private final BigList<PointLight> pointLights;
-    public static final int MAX_NUM_POINT_LIGHTS = 8;
+    private PointLight pointLight;
 
     public Lights(){
         this.dirLight = new DirLight(new Vector3f(1,-1,0));
-        pointLights = new BigList<>();
     }
 
     public Lights setDirLight(DirLight dirLight){
@@ -23,17 +20,15 @@ public class Lights {
     }
 
     public DirLight getDirLight(){
-        return this.dirLight;
+        return dirLight;
     }
 
-    public int addPointLight(PointLight pointLight){
-        if (pointLights.size() < MAX_NUM_POINT_LIGHTS) {
-            return pointLights.add(pointLight);
-        }
-        return -1;
+    public Lights setPointLight(PointLight pointLight){
+        this.pointLight = pointLight;
+        return this;
     }
 
-    public BigList<PointLight> getPointLights(){
-        return pointLights;
+    public PointLight getPointLight(){
+        return pointLight;
     }
 }

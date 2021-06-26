@@ -27,8 +27,7 @@ public final class SceneShader extends Shader {
     private final int uMVPMatrix;
     private final int uViewPos;
     private final ArrayList<Integer> uDirLight;
-    private final int uNumPointLights;
-    private final ArrayList<ArrayList<Integer>> uPointLights;
+    private final ArrayList<Integer> uPointLight;
     private final int uTexture;
     private final int uIsTextured;
 
@@ -42,6 +41,7 @@ public final class SceneShader extends Shader {
         uMMatrix = getUniform("uMMatrix");
         uMVPMatrix = getUniform("uMVPMatrix");
         uViewPos = getUniform("uViewPos");
+
         uDirLight = new ArrayList<>();
         uDirLight.add(getUniform("uDirLight.on"));
         uDirLight.add(getUniform("uDirLight.direction"));
@@ -52,8 +52,21 @@ public final class SceneShader extends Shader {
         uDirLight.add(getUniform("uDirLight.shadowMap"));
         uDirLight.add(getUniform("uDirLight.shadowVPMatrix"));
         uDirLight.add(getUniform("uDirLight.shadowEnabled"));
-        uNumPointLights = getUniform("uNumPointLights");
-        uPointLights = new ArrayList<>();
+
+        uPointLight = new ArrayList<>();
+        uPointLight.add(getUniform("uPointLight.on"));
+        uPointLight.add(getUniform("uPointLight.position"));
+        uPointLight.add(getUniform("uPointLight.constant"));
+        uPointLight.add(getUniform("uPointLight.linear"));
+        uPointLight.add(getUniform("uPointLight.quadratic"));
+        uPointLight.add(getUniform("uPointLight.ambientColor"));
+        uPointLight.add(getUniform("uPointLight.diffuseColor"));
+        uPointLight.add(getUniform("uPointLight.specularColor"));
+        uPointLight.add(getUniform("uPointLight.specularExponent"));
+        uPointLight.add(getUniform("uPointLight.shadowMap"));
+        uPointLight.add(getUniform("uPointLight.shadowVPMatrix"));
+        uPointLight.add(getUniform("uPointLight.shadowEnabled"));
+
         uTexture = getUniform("uTexture");
         uIsTextured = getUniform("uIsTextured");
     }
@@ -74,30 +87,9 @@ public final class SceneShader extends Shader {
         GLES20.glUniform1i(uDirLight.get(i), dirLight.isShadowEnabled() ? 1 : 0);
     }
 
-    private void bindPointLight(int index){
-        PointLight pointLight = lights.getPointLights().get(index);
-        ArrayList<Integer> uPointLight;
-        if (index < uPointLights.size()){
-            uPointLight = uPointLights.get(index);
-        }
-        else {
-            String name = "uPointLights["+index+"]";
-            uPointLight = new ArrayList<>();
-            uPointLight.add(getUniform(name+".on"));
-            uPointLight.add(getUniform(name+".position"));
-            uPointLight.add(getUniform(name+".constant"));
-            uPointLight.add(getUniform(name+".linear"));
-            uPointLight.add(getUniform(name+".quadratic"));
-            uPointLight.add(getUniform(name+".ambientColor"));
-            uPointLight.add(getUniform(name+".diffuseColor"));
-            uPointLight.add(getUniform(name+".specularColor"));
-            uPointLight.add(getUniform(name+".specularExponent"));
-            uPointLight.add(getUniform(name+".shadowMap"));
-            uPointLight.add(getUniform(name+".shadowVPMatrix"));
-            uPointLight.add(getUniform(name+".shadowEnabled"));
-            uPointLights.add(uPointLight);
-        }
+    private void bindPointLight(){
         int i = 0;
+        PointLight pointLight = lights.getPointLight();
         GLES20.glUniform1i(uPointLight.get(i++), pointLight.isOn() ? 1 : 0);
         GLES20.glUniform3f(uPointLight.get(i++), pointLight.getPosition().x, pointLight.getPosition().y, pointLight.getPosition().z);
         GLES20.glUniform1f(uPointLight.get(i++), pointLight.getConstant());
@@ -129,14 +121,10 @@ public final class SceneShader extends Shader {
         GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);
         GLES20.glUniform3f(uViewPos, viewPos.x, viewPos.y, viewPos.z);
         textureIndex = 0;
-        int c = mesh.getTexture();
-        bindTexture(uTexture,c);
+        bindTexture(uTexture,mesh.getTexture());
         GLES20.glUniform1i(uIsTextured,mesh.getTexture());
         bindDirLight();
-        GLES20.glUniform1i(uNumPointLights, lights.getPointLights().size());
-        for (int i = 0; i < lights.getPointLights().size(); i++){
-            bindPointLight(i);
-        }
+        bindPointLight();
     }
 
     @Override

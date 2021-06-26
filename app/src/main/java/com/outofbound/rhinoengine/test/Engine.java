@@ -38,7 +38,7 @@ public class Engine extends AbstractEngine {
                 0.2f
         );
         pointLight.configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
-        getRenderer(ID.RENDERER_1).getLights().addPointLight(pointLight);
+        getRenderer(ID.RENDERER_1).getLights().setPointLight(pointLight);
         getRenderer(ID.RENDERER_1)
                 .getLights()
                 .getDirLight()
@@ -70,15 +70,11 @@ public class Engine extends AbstractEngine {
 
     public void shadowsOn(){
         getRenderer(ID.RENDERER_1).getLights().getDirLight().enableShadow();
-        for (PointLight pointLight : getRenderer(ID.RENDERER_1).getLights().getPointLights()){
-            pointLight.enableShadow();
-        }
+        getRenderer(ID.RENDERER_1).getLights().getPointLight().enableShadow();
     }
 
     public void shadowsOff(){
         getRenderer(ID.RENDERER_1).getLights().getDirLight().disableShadow();
-        for (PointLight pointLight : getRenderer(ID.RENDERER_1).getLights().getPointLights()){
-            pointLight.disableShadow();
-        }
+        getRenderer(ID.RENDERER_1).getLights().getPointLight().disableShadow();
     }
 }
