@@ -6,6 +6,10 @@ import android.view.WindowManager;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * A utility activity that enables fullscreen mode, hides navigation bar and keeps the screen always on.
+ * You can use this activity if you need this UI options enabled.
+ */
 public class RhinoEngineActivity extends AppCompatActivity {
 
     @Override
