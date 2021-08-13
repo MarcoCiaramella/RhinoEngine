@@ -47,9 +47,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     /**
      * The engine constructor.
-     * @param context the context for this view.
-     * @param camera the Camera.
-     * @param gesture a Gesture.
+     * @param context the context for this view
+     * @param camera the Camera
+     * @param gesture a Gesture
      */
     public AbstractEngine(Context context, Camera camera, Gesture gesture){
         super(context);
@@ -58,10 +58,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     /**
      * The engine constructor.
-     * @param context the context for this view.
-     * @param attrs the object AttributeSet.
-     * @param camera the Camera.
-     * @param gesture a Gesture.
+     * @param context the context for this view
+     * @param attrs the object AttributeSet
+     * @param camera the Camera
+     * @param gesture a Gesture
      */
     public AbstractEngine(Context context, AttributeSet attrs, Camera camera, Gesture gesture){
         super(context,attrs);
@@ -82,18 +82,18 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Add a Renderer.
-     * @param renderer the Renderer to add.
-     * @return the Renderer id, -1 if the input Renderer is a duplicate.
+     * Adds a Renderer.
+     * @param renderer the Renderer to add
+     * @return the Renderer id, -1 if the input Renderer is a duplicate
      */
     public int addRenderer(com.outofbound.rhinoenginelib.renderer.Renderer renderer){
         return renderers.add(renderer);
     }
 
     /**
-     * Add a Task.
-     * @param task the Task to add.
-     * @return the Task id, -1 if the input Task is a duplicate.
+     * Adds a Task.
+     * @param task the Task to add
+     * @return the Task id, -1 if the input Task is a duplicate
      */
     public int addTask(Task task){
         task.onAdd();
@@ -101,9 +101,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Remove the Renderer with the specified id.
-     * @param id the id of Renderer to remove.
-     * @return this AbstractEngine.
+     * Removes the Renderer with the specified id.
+     * @param id the id of Renderer to remove
+     * @return this AbstractEngine
      */
     public AbstractEngine removeRenderer(int id){
         renderers.remove(id);
@@ -111,9 +111,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Remove the Task with the specified id.
-     * @param id the id of Task to remove.
-     * @return this AbstractEngine.
+     * Removes the Task with the specified id.
+     * @param id the id of Task to remove
+     * @return this AbstractEngine
      */
     public AbstractEngine removeTask(int id){
         Task task = tasks.remove(id);
@@ -124,27 +124,27 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Return the Renderer with input id.
-     * @param id the id.
-     * @return the Renderer if exists, null otherwise.
+     * Returns the Renderer with input id.
+     * @param id the id
+     * @return the Renderer if exists, null otherwise
      */
     public com.outofbound.rhinoenginelib.renderer.Renderer getRenderer(int id){
         return renderers.get(id);
     }
 
     /**
-     * Return Task with the input id.
-     * @param id the id.
-     * @return the Task if exists, null otherwise.
+     * Returns Task with the input id.
+     * @param id the id
+     * @return the Task if exists, null otherwise
      */
     public Task getTask(int id){
         return tasks.get(id);
     }
 
     /**
-     * Set a Gesture object.
-     * @param gesture the Gesture object.
-     * @return this engine.
+     * Sets a Gesture object.
+     * @param gesture the Gesture object
+     * @return this engine
      */
     public AbstractEngine setGesture(Gesture gesture){
         this.gesture = gesture;
@@ -152,15 +152,15 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Return the Gesture.
-     * @return the Gesture.
+     * Returns the Gesture.
+     * @return the Gesture
      */
     public Gesture getGesture(){
         return gesture;
     }
 
     /**
-     * Call super.onPause()
+     * Calls super.onPause().
      */
     @Override
     public void onPause() {
@@ -168,7 +168,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Call super.onResume()
+     * Calls super.onResume().
      */
     @Override
     public void onResume() {
@@ -176,8 +176,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Always true.
-     * @return true.
+     * Returns always true.
+     * @return true
      */
     @Override
     public boolean performClick(){
@@ -195,10 +195,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Handle on touch events.
-     * @param v the view touched.
-     * @param event the MotionEvent object.
-     * @return true if the event was handled, false otherwise.
+     * Handles on touch events.
+     * @param v the view touched
+     * @param event the MotionEvent object
+     * @return true if the event was handled, false otherwise
      */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
@@ -246,8 +246,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     /**
      * Scale event handler.
-     * @param detector the scale detector object.
-     * @return true.
+     * @param detector the scale detector object
+     * @return true
      */
     @Override
     public boolean onScale(ScaleGestureDetector detector) {
@@ -261,8 +261,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     /**
      * Scale begin handler.
-     * @param detector the scale detector object.
-     * @return true.
+     * @param detector the scale detector object
+     * @return true
      */
     @Override
     public boolean onScaleBegin(ScaleGestureDetector detector) {
@@ -272,7 +272,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     /**
      * Scale end handler.
-     * @param detector the scale detector object.
+     * @param detector the scale detector object
      */
     @Override
     public void onScaleEnd(ScaleGestureDetector detector) {
@@ -280,9 +280,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Prepare engine for rendering.
-     * @param gl the OpenGL 1.0 object.
-     * @param config the EGLConfig object.
+     * Prepares engine for rendering.
+     * @param gl the OpenGL 1.0 object
+     * @param config the EGLConfig object
      */
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
@@ -296,10 +296,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Change viewport when surface is changed.
-     * @param unused unused.
-     * @param width new surface width.
-     * @param height new surface height.
+     * Changes viewport when surface is changed.
+     * @param unused unused
+     * @param width new surface width
+     * @param height new surface height
      */
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
@@ -308,8 +308,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Draw the OpenGL frame.
-     * @param gl the OpenGL 1.0 object.
+     * Draws the OpenGL frame.
+     * @param gl the OpenGL 1.0 object
      */
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -349,11 +349,11 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Set the clear color for GLES20.glClearColor method.
-     * @param r red.
-     * @param g green.
-     * @param b blue.
-     * @param a alpha.
+     * Sets the clear color for GLES20.glClearColor method.
+     * @param r red
+     * @param g green
+     * @param b blue
+     * @param a alpha
      */
     public synchronized void setClearColor(float r, float g, float b, float a){
         this.clearColor[0] = r;
@@ -363,35 +363,35 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Return the Camera.
-     * @return the Camera.
+     * Returns the Camera.
+     * @return the Camera
      */
     public Camera getCamera(){
         return camera;
     }
 
     /**
-     * Get this AbstractEngine.
-     * @return the instance.
+     * Gets this AbstractEngine.
+     * @return the instance
      */
     public static AbstractEngine getInstance(){
         return instance;
     }
 
     /**
-     * Initialize the engine.
+     * Initializes the engine.
      */
     protected abstract void init();
 
     /**
-     * Configure blur effect.
+     * Configures blur effect.
      * @param resolution the quality level. Must be RendererOnTexture.RESOLUTION_256, RendererOnTexture.RESOLUTION_512 or RendererOnTexture.RESOLUTION_1024.
-     * @param scale the scale.
-     * @param amount the amount.
-     * @param strength the strength.
-     * @param near camera near.
-     * @param far camera far.
-     * @return this AbstractEngine.
+     * @param scale the scale
+     * @param amount the amount
+     * @param strength the strength
+     * @param near camera near
+     * @param far camera far
+     * @return this AbstractEngine
      */
     public AbstractEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
         blur = new Blur(new RendererOnTexture(resolution,camera),scale,amount,strength,near,far);
@@ -399,8 +399,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Enable blur effect.
-     * @return this AbstractEngine.
+     * Enables blur effect.
+     * @return this AbstractEngine
      */
     public AbstractEngine enableBlur(){
         blurEnabled = true;
@@ -408,8 +408,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Disable blur effect.
-     * @return this AbstractEngine.
+     * Disables blur effect.
+     * @return this AbstractEngine
      */
     public AbstractEngine disableBlur(){
         blurEnabled = false;
@@ -417,8 +417,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Return frame rate.
-     * @return frame rate.
+     * Returns frame rate.
+     * @return frame rate
      */
     public int getFPS(){
         if (deltaMs == 0){
