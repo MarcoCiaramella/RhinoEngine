@@ -7,7 +7,7 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
 /**
- * The Camera class provides the view-projection matrix.
+ * Camera class provides the view-projection matrix.
  */
 public abstract class Camera {
 
@@ -26,7 +26,7 @@ public abstract class Camera {
     protected int height;
 
     /**
-     * Create a Camera object.
+     * Creates a Camera object.
      * @param eye the camera position
      * @param center the center of view
      * @param up the up vector
@@ -48,7 +48,7 @@ public abstract class Camera {
     }
 
     /**
-     * Create the view-projection matrix.
+     * Creates the view-projection matrix.
      */
     protected void createVpMatrix(){
         if (meshToFollow != null) {
@@ -69,7 +69,7 @@ public abstract class Camera {
     }
 
     /**
-     * Enable camera to follow a Mesh.
+     * Enables camera to follow a Mesh.
      * @param meshToFollow mesh to follow
      * @return this camera
      */
@@ -80,7 +80,7 @@ public abstract class Camera {
     }
 
     /**
-     * Enable camera to follow a Vector3f.
+     * Enables camera to follow a Vector3f.
      * @param pointToFollow the point to follow
      * @return this camera
      */
@@ -91,7 +91,7 @@ public abstract class Camera {
     }
 
     /**
-     * Disable follow mode.
+     * Disables follow mode.
      * @return this camera
      */
     public Camera unfollow(){
@@ -106,7 +106,7 @@ public abstract class Camera {
     public abstract void loadVpMatrix();
 
     /**
-     * Return the eye vector.
+     * Returns the eye vector.
      * @return the eye vector
      */
     public Vector3f getEye(){
@@ -114,7 +114,7 @@ public abstract class Camera {
     }
 
     /**
-     * Return the up vector.
+     * Returns the up vector.
      * @return the up vector
      */
     public Vector3f getUp(){
@@ -122,7 +122,7 @@ public abstract class Camera {
     }
 
     /**
-     * Return the center vector.
+     * Returns the center vector.
      * @return the center vector
      */
     public Vector3f getCenter(){
@@ -130,7 +130,7 @@ public abstract class Camera {
     }
 
     /**
-     * Return the near clipping plane.
+     * Returns the near clipping plane.
      * @return the near clipping plane
      */
     public float getNear(){
@@ -138,7 +138,7 @@ public abstract class Camera {
     }
 
     /**
-     * Return the far clipping plane.
+     * Returns the far clipping plane.
      * @return the far clipping plane
      */
     public float getFar(){
@@ -146,7 +146,7 @@ public abstract class Camera {
     }
 
     /**
-     * Rotate the camera.
+     * Rotates the camera.
      * @param a angle of rotation
      * @param x x axis of rotation
      * @param y y axis of rotation
@@ -159,7 +159,7 @@ public abstract class Camera {
     }
 
     /**
-     * Translate the camera.
+     * Translates the camera.
      * @param shift the translation vector
      * @return this camera
      */
@@ -169,7 +169,7 @@ public abstract class Camera {
     }
 
     /**
-     * Return the view matrix.
+     * Returns the view matrix.
      * @return the view matrix
      */
     public float[] getViewMatrix(){
@@ -177,7 +177,7 @@ public abstract class Camera {
     }
 
     /**
-     * Return the view-projection matrix.
+     * Returns the view-projection matrix.
      * @return the view-projection matrix
      */
     public float[] getVpMatrix(){
@@ -185,7 +185,7 @@ public abstract class Camera {
     }
 
     /**
-     * Set the viewport width.
+     * Sets the viewport width.
      * @param width the viewport width
      * @return this camera
      */
@@ -195,7 +195,7 @@ public abstract class Camera {
     }
 
     /**
-     * Set the viewport height.
+     * Sets the viewport height.
      * @param height the viewport height
      * @return this camera
      */
