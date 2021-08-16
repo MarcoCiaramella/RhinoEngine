@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
+import com.outofbound.rhinoenginelib.object.TrailMesh;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
@@ -46,6 +47,9 @@ public class Engine extends AbstractEngine {
 
         getRenderer(ID.RENDERER_1).addMesh(new Pane());
         getRenderer(ID.RENDERER_1).addMesh(new MeshObj());
+        Cube cube = new Cube();
+        getRenderer(ID.RENDERER_1).addMesh(cube);
+        getRenderer(ID.RENDERER_1).addMesh(new Trail("trail", cube, new float[]{1,1,1,1}, 100, 100));
     }
 
     public void blurOn(){
@@ -58,7 +62,7 @@ public class Engine extends AbstractEngine {
 
     public void addCubes(){
         for (int i = 0; i < 100; i++) {
-            ID.CUBES.add(getRenderer(ID.RENDERER_1).addMesh(new Cube()));
+            ID.CUBES.add(getRenderer(ID.RENDERER_1).addMesh(new CubeWithGravity()));
         }
     }
 

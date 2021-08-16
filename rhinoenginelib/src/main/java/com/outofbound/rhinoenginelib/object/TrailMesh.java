@@ -7,15 +7,17 @@ public abstract class TrailMesh extends Mesh {
 
     private final Mesh source;
     private Timer timer;
-    private final float[] newLine;
+    private final float[] newLineVertices;
+    private final float[] newLineNormals;
     private final float[] newColors;
     private final float[] color;
     private final int length;
 
     public TrailMesh(String name, Mesh source, float[] color, int length, long ms) {
-        super(name, new float[]{},3,null,null,new float[]{});
+        super(name, new float[]{},3,new float[]{},null,new float[]{});
         timer = new Timer(ms);
-        newLine = new float[2*getSizeVertex()];
+        newLineVertices = new float[2*getSizeVertex()];
+        newLineNormals = new float[newLineVertices.length];
         newColors = new float[2*4];
         this.color = color;
         this.source = source;
@@ -31,11 +33,12 @@ public abstract class TrailMesh extends Mesh {
 
     private void addLine(){
         float[][] bbVertices = source.getBoundingBox().getVertices();
-        newLine(bbVertices, newLine);
-        addVertices(newLine);
+        newLine(bbVertices, newLineVertices, newLineNormals);
+        addVertices(newLineVertices);
+        addNormals(newLineNormals);
     }
 
-    protected abstract void newLine(float[][] bbVertices, float[] newLine);
+    protected abstract void newLine(float[][] bbVertices, float[] newLineVertices, float[] newLineNormals);
 
     private void addColors(){
         newColors[0] = color[0];

@@ -91,7 +91,7 @@ public abstract class Mesh {
     private int texture = 0;
     private Bitmap textureBitmap;
     private Material material;
-    private String name;
+    private final String name;
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -177,6 +177,7 @@ public abstract class Mesh {
         loadTexCoords();
         loadIndices();
         loadTexture();
+        createBoundingBox();
     }
 
     public void reloadVertices(){

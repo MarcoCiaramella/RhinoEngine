@@ -7,13 +7,21 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class BoundingBox {
 
+    // vertex front bottom left
     public static final int VFBL = 0;
+    // vertex front bottom right
     public static final int VFBR = 1;
+    // vertex fron top right
     public static final int VFTR = 2;
+    // vertex front top left
     public static final int VFTL = 3;
+    // vertex back bottom left
     public static final int VBBL = 4;
+    // vertex back bottom right
     public static final int VBBR = 5;
+    // vertex back top right
     public static final int VBTR = 6;
+    // vertex back top left
     public static final int VBTL = 7;
     private final Vector3f vfbl;
     private final Vector3f vfbr;
