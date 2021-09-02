@@ -259,29 +259,24 @@ public abstract class Mesh {
 
     public abstract void doTransformation(float[] mMatrix, long ms);
 
-    public Mesh rotateX(float[] mMatrix){
+    protected void rotateX(float[] mMatrix){
         Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
-        return this;
     }
 
-    public Mesh rotateY(float[] mMatrix){
+    protected void rotateY(float[] mMatrix){
         Matrix.rotateM(mMatrix, 0, rotation.y, 0, 1, 0);
-        return this;
     }
 
-    public Mesh rotateZ(float[] mMatrix){
+    protected void rotateZ(float[] mMatrix){
         Matrix.rotateM(mMatrix, 0, rotation.z, 0, 0, 1);
-        return this;
     }
 
-    public Mesh scale(float[] mMatrix){
+    protected void scale(float[] mMatrix){
         Matrix.scaleM(mMatrix, 0, scale, scale, scale);
-        return this;
     }
 
-    public Mesh translate(float[] mMatrix){
+    protected void translate(float[] mMatrix){
         Matrix.translateM(mMatrix, 0, position.x, position.y, position.z);
-        return this;
     }
 
     public boolean isDead(long ms){

@@ -61,7 +61,7 @@ public class Engine extends AbstractEngine {
     }
 
     public void addCubes(){
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 3; i++) {
             ID.CUBES.add(getRenderer(ID.RENDERER_1).addMesh(new CubeWithGravity()));
         }
     }
