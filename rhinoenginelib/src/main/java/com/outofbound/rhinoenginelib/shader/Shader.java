@@ -34,10 +34,20 @@ public abstract class Shader {
     }
 
     protected int getAttrib(String name){
-        return GLES20.glGetAttribLocation(program,name);
+        int location = GLES20.glGetAttribLocation(program,name);
+        checkLocation(location, name);
+        return location;
     }
 
     protected int getUniform(String name){
-        return GLES20.glGetUniformLocation(program,name);
+        int location = GLES20.glGetUniformLocation(program,name);
+        checkLocation(location, name);
+        return location;
+    }
+
+    private static void checkLocation(int location, String label) {
+        if (location < 0) {
+            throw new RuntimeException("Unable to locate '" + label + "' in program");
+        }
     }
 }
