@@ -14,14 +14,14 @@ public final class ShadowMapShader extends Shader {
 
     public ShadowMapShader() {
         super("vs_shadow_map.glsl","fs_shadow_map.glsl");
-        GLES20.glUseProgram(getProgram());
+        use();
         aPosition = getAttrib("aPosition");
         uMVPMatrix = getUniform("uMVPMatrix");
     }
 
     @Override
     public void bindData() {
-        GLES20.glUseProgram(getProgram());
+        use();
         GLES20.glEnableVertexAttribArray(aPosition);
         GLES20.glVertexAttribPointer(aPosition, mesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, mesh.getVertexBuffer());
         GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);

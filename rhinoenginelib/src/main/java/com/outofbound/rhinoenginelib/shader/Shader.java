@@ -29,8 +29,8 @@ public abstract class Shader {
         return shader;
     }
 
-    public int getProgram(){
-        return program;
+    public void use(){
+        GLES20.glUseProgram(program);
     }
 
     protected int getAttrib(String name){

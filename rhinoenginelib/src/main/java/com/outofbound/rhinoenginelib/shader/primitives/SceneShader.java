@@ -33,7 +33,7 @@ public final class SceneShader extends Shader {
 
     public SceneShader() {
         super("vs_scene.glsl", "fs_scene.glsl");
-        GLES20.glUseProgram(getProgram());
+        use();
         aPosition = getAttrib("aPosition");
         aNormal = getAttrib("aNormal");
         aColor = getAttrib("aColor");
@@ -108,7 +108,7 @@ public final class SceneShader extends Shader {
 
     @Override
     public void bindData() {
-        GLES20.glUseProgram(getProgram());
+        use();
         GLES20.glEnableVertexAttribArray(aPosition);
         GLES20.glEnableVertexAttribArray(aNormal);
         GLES20.glEnableVertexAttribArray(aColor);

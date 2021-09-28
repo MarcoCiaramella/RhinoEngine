@@ -32,7 +32,7 @@ public final class BlurShader extends Shader {
 
     public BlurShader() {
         super("vs_blur.glsl", "fs_blur.glsl");
-        GLES20.glUseProgram(getProgram());
+        use();
         aPosition = getAttrib("aPosition");
         aTexCoords = getAttrib("aTexCoords");
         uTextId = getUniform("uTextId");
@@ -46,7 +46,7 @@ public final class BlurShader extends Shader {
 
     @Override
     public void bindData() {
-        GLES20.glUseProgram(getProgram());
+        use();
         GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_FLOAT, false, 0, vertices);
         GLES20.glEnableVertexAttribArray(aPosition);
         GLES20.glVertexAttribPointer(aTexCoords, 2, GLES20.GL_FLOAT, false, 0, textureCoords);
