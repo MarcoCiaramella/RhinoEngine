@@ -20,7 +20,7 @@ Add the dependency
 
 ```
 dependencies {
-	        implementation 'com.github.MarcoCiaramella:RhinoEngine:1.2.1'
+	        implementation 'com.github.MarcoCiaramella:RhinoEngine:x.x.x'
 }
 ```
 
