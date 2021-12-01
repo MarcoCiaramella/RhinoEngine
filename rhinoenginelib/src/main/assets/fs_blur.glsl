@@ -13,7 +13,7 @@ vec4 calcBlur(sampler2D texture, vec2 uv) {
 
     // GAUSSIAN BLUR SETTINGS {{{
     float directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
-    float quality = 16.0; // BLUR QUALITY (Default 3.0 - More is better but slower)
+    float quality = 3.0; // BLUR QUALITY (Default 3.0 - More is better but slower)
     vec2 radius = vec2(uRadius/10.0,uRadius/10.0);
     // GAUSSIAN BLUR SETTINGS }}}
 
