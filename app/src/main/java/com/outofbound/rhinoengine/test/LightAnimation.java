@@ -10,7 +10,7 @@ public class LightAnimation extends Task {
     @Override
     public boolean runTask(long ms) {
         float angle = SPEED*ms;
-        AbstractEngine.getInstance().getRenderer(ID.RENDERER_1).getLights().getPointLight().getPosition().rotate(angle,0,1,0);
+        AbstractEngine.getInstance().getLights().getPointLight().getPosition().rotate(angle,0,1,0);
         return true;
     }
 }

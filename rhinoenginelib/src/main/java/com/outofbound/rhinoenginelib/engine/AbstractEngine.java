@@ -12,7 +12,10 @@ import android.view.View.OnTouchListener;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.gesture.Gesture;
+import com.outofbound.rhinoenginelib.light.Lights;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
+import com.outofbound.rhinoenginelib.renderer.AbstractRenderer;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.fx.Blur;
 import com.outofbound.rhinoenginelib.task.Task;
@@ -29,7 +32,6 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceView.Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
-    private final BigList<com.outofbound.rhinoenginelib.renderer.Renderer> renderers = new BigList<>();
     private final BigList<Task> tasks = new BigList<>();
     private Gesture gesture = null;
     private final float[] clearColor = {0,0,0,1};
@@ -40,8 +42,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     private boolean gestureProcessed = false;
     private static AbstractEngine instance;
     private Blur blur = null;
-    private SceneRenderer sceneRenderer;
     private boolean blurEnabled = false;
+    private SceneRenderer sceneRenderer;
 
 
 
@@ -69,25 +71,16 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     private void config(Camera camera, Gesture gesture){
+        instance = this;
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setOnTouchListener(this);
+        sceneRenderer = new SceneRenderer();
         this.camera = camera;
         this.gesture = gesture;
-        this.sceneRenderer = this::renderScene;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
-        instance = this;
-    }
-
-    /**
-     * Adds a Renderer.
-     * @param renderer the Renderer to add
-     * @return the Renderer id, -1 if the input Renderer is a duplicate
-     */
-    public int addRenderer(com.outofbound.rhinoenginelib.renderer.Renderer renderer){
-        return renderers.add(renderer);
     }
 
     /**
@@ -101,16 +94,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Removes the Renderer with the specified id.
-     * @param id the id of Renderer to remove
-     * @return this AbstractEngine
-     */
-    public AbstractEngine removeRenderer(int id){
-        renderers.remove(id);
-        return this;
-    }
-
-    /**
      * Removes the Task with the specified id.
      * @param id the id of Task to remove
      * @return this AbstractEngine
@@ -121,15 +104,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             task.onRemove();
         }
         return this;
-    }
-
-    /**
-     * Returns the Renderer with input id.
-     * @param id the id
-     * @return the Renderer if exists, null otherwise
-     */
-    public com.outofbound.rhinoenginelib.renderer.Renderer getRenderer(int id){
-        return renderers.get(id);
     }
 
     /**
@@ -324,10 +298,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         }
 
         if (blur != null && blurEnabled){
-            blur.render(sceneRenderer,getWidth(),getHeight());
+            blur.render(sceneRenderer, getWidth(), getHeight(), camera, deltaMs);
         }
         else {
-            sceneRenderer.doRendering(camera);
+            sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
 
         for (Task task : tasks){
@@ -339,13 +313,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
         ms = currentMs;
 
-    }
-
-    private void renderScene(Camera camera){
-        camera.loadVpMatrix();
-        for (com.outofbound.rhinoenginelib.renderer.Renderer renderer : renderers){
-            renderer.render(getWidth(), getHeight(), camera, deltaMs);
-        }
     }
 
     /**
@@ -420,6 +387,19 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             return 0;
         }
         return (int) (1f/(deltaMs/1000f));
+    }
+
+    public int addMesh(Mesh mesh){
+        return sceneRenderer.addMesh(mesh);
+    }
+
+    public AbstractEngine removeMesh(int id){
+        sceneRenderer.removeMesh(id);
+        return this;
+    }
+
+    public Lights getLights(){
+        return sceneRenderer.getLights();
     }
 
 }

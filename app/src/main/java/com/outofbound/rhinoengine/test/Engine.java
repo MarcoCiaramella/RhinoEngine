@@ -6,8 +6,8 @@ import android.util.AttributeSet;
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
-import com.outofbound.rhinoenginelib.object.TrailMesh;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
+import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
@@ -28,7 +28,6 @@ public class Engine extends AbstractEngine {
     @Override
     protected void init() {
         setClearColor(0,0,0,1);
-        ID.RENDERER_1 = addRenderer(new com.outofbound.rhinoenginelib.renderer.Renderer());
         addTask(new CameraRotation());
         addTask(new LightAnimation());
         configBlur(RendererOnTexture.RESOLUTION_1024);
@@ -39,17 +38,14 @@ public class Engine extends AbstractEngine {
                 0.2f
         );
         pointLight.configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
-        getRenderer(ID.RENDERER_1).getLights().setPointLight(pointLight);
-        getRenderer(ID.RENDERER_1)
-                .getLights()
-                .getDirLight()
-                .configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
+        getLights().setPointLight(pointLight);
+        getLights().getDirLight().configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
 
-        getRenderer(ID.RENDERER_1).addMesh(new Pane());
-        getRenderer(ID.RENDERER_1).addMesh(new MeshObj());
+        addMesh(new Pane());
+        addMesh(new MeshObj());
         Cube cube = new Cube();
-        getRenderer(ID.RENDERER_1).addMesh(cube);
-        getRenderer(ID.RENDERER_1).addMesh(new Trail("trail", cube, new float[]{1,1,1,1}, 100, 100));
+        addMesh(cube);
+        addMesh(new Trail("trail", cube, new float[]{1,1,1,1}, 100, 100));
     }
 
     public void blurOn(){
@@ -62,23 +58,23 @@ public class Engine extends AbstractEngine {
 
     public void addCubes(){
         for (int i = 0; i < 3; i++) {
-            ID.CUBES.add(getRenderer(ID.RENDERER_1).addMesh(new CubeWithGravity()));
+            ID.CUBES.add(addMesh(new CubeWithGravity()));
         }
     }
 
     public void removeCubes(){
         for (int id : ID.CUBES){
-            getRenderer(ID.RENDERER_1).removeMesh(id);
+            removeMesh(id);
         }
     }
 
     public void shadowsOn(){
-        getRenderer(ID.RENDERER_1).getLights().getDirLight().enableShadow();
-        getRenderer(ID.RENDERER_1).getLights().getPointLight().enableShadow();
+        getLights().getDirLight().enableShadow();
+        getLights().getPointLight().enableShadow();
     }
 
     public void shadowsOff(){
-        getRenderer(ID.RENDERER_1).getLights().getDirLight().disableShadow();
-        getRenderer(ID.RENDERER_1).getLights().getPointLight().disableShadow();
+        getLights().getDirLight().disableShadow();
+        getLights().getPointLight().disableShadow();
     }
 }

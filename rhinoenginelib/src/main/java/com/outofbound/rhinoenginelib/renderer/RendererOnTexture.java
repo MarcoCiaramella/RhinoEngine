@@ -43,16 +43,16 @@ public class RendererOnTexture {
         createFramebuffer(frameBuffer, texture, renderBuffer, fboWidth, fboHeight);
     }
 
-    private void renderOnFBO(SceneRenderer sceneRenderer){
+    private void renderOnFBO(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms){
         GLES20.glViewport(0, 0, fboWidth, fboHeight);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        sceneRenderer.doRendering(camera);
+        abstractRenderer.doRendering(screenWidth, screenHeight, camera, ms);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    public int render(SceneRenderer sceneRenderer) {
-        renderOnFBO(sceneRenderer);
+    public int render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
+        renderOnFBO(abstractRenderer, screenWidth, screenHeight, camera, ms);
         return texture;
     }
 

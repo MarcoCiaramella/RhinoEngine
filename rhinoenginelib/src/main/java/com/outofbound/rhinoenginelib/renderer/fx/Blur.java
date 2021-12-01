@@ -3,11 +3,9 @@ package com.outofbound.rhinoenginelib.renderer.fx;
 import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
-import com.outofbound.rhinoenginelib.camera.CameraOrthographic;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
-import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
+import com.outofbound.rhinoenginelib.renderer.AbstractRenderer;
 import com.outofbound.rhinoenginelib.shader.primitives.BlurShader;
-import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -50,10 +48,10 @@ public class Blur {
         blurShader = new BlurShader();
     }
 
-    public void render(SceneRenderer sceneRenderer, int screenWidth, int screenHeight) {
+    public void render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
         blurShader.setVertices(verticesBuffer);
         blurShader.setTextureCoords(textureCoordsBuffer);
-        blurShader.setSceneTexture(rendererOnTexture.render(sceneRenderer));
+        blurShader.setSceneTexture(rendererOnTexture.render(abstractRenderer, screenWidth, screenHeight, camera, ms));
         // TODO renderizzare il blur su una texture piccola per velocizzare
         blurShader.bindData();
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
