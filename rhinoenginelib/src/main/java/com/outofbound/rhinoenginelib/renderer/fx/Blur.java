@@ -16,11 +16,7 @@ import java.nio.FloatBuffer;
 
 public class Blur {
 
-    private final int frameBufferStep1;
-    private final int frameBufferStep2;
     private int textureInput;
-    private final int textureStep1;
-    private final int textureStep2;
     private final Camera camera;
 
     private static final float[] vertices = {
