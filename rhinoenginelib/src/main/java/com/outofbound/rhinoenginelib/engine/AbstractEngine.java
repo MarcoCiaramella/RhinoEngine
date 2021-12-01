@@ -394,7 +394,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @return this AbstractEngine
      */
     public AbstractEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
-        blur = new Blur(new RendererOnTexture(resolution,camera),scale,amount,strength,near,far);
+        blur = new Blur(new RendererOnTexture(resolution,camera));
         return this;
     }
 

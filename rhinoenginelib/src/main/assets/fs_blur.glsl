@@ -3,48 +3,36 @@
 precision mediump float;
 
 varying vec2 vTexCoords;
-uniform sampler2D uTextId;
-uniform float uBlurScale;
-uniform float uBlurAmount;
-uniform float uBlurStrength;
-uniform vec2 uScreenSize;
-uniform int uType;
-const vec2 screenCenter01 = vec2(0.5,0.5);
+uniform sampler2D uSceneTextureId;
+// radius [0.0,1.0]
+uniform float uRadius;
 
-float gaussianFunction(float x, float dev){
-    return ((1.0/sqrt(2.0*3.142857*dev))*exp(-(x*x)/(2.0*dev)));
-}
 
-float calcAttenuation(float distance){
-    return 1.0 / (1.0 + 0.2 * distance + 0.7 * (distance * distance));
+vec4 blur(sampler2D texture, vec2 uv) {
+    float pi = 6.28318530718; // Pi*2
+
+    // GAUSSIAN BLUR SETTINGS {{{
+    float directions = 16.0; // BLUR DIRECTIONS (Default 16.0 - More is better but slower)
+    float quality = 16.0; // BLUR QUALITY (Default 3.0 - More is better but slower)
+    vec2 radius = vec2(uRadius/10.0,uRadius/10.0);
+    // GAUSSIAN BLUR SETTINGS }}}
+
+
+    // Pixel colour
+    vec4 color = texture2D(texture, uv);
+
+    // Blur calculations
+    for(float d=0.0; d<pi; d+=pi/directions){
+        for(float i=1.0/quality; i<=1.0; i+=1.0/quality){
+            color += texture2D(texture, uv+vec2(cos(d),sin(d))*radius*i);
+        }
+    }
+
+    // Output to screen
+    color /= quality * directions - 15.0;
+    return color;
 }
 
 void main(){
-    float dev = uBlurAmount*0.5*0.5;
-    dev *= dev;
-    vec4 color = vec4(0.0,0.0,0.0,0.0);
-    vec2 fragCoord01 = gl_FragCoord.xy;
-    fragCoord01.x /= uScreenSize.x;
-    fragCoord01.y /= uScreenSize.y;
-    float strength = 1.0 - uBlurStrength;
-    strength *= calcAttenuation(length(fragCoord01 - screenCenter01));
-    float half1 = float(uBlurAmount)*0.5;
-    float texel = 1.0/128.0;
-    int count = int(uBlurAmount);
-    //int count = int(uBlurAmount * length(fragCoord01 - screenCenter01));
-    float blurScale = uBlurScale * length(fragCoord01 - screenCenter01);
-    if (uType == 0) {
-        for (int i = 0; i < count; i++){
-            float offset = float(i) - half1;
-            color += texture2D(uTextId, vTexCoords+vec2(offset*texel*blurScale,0.0))*gaussianFunction(offset*strength, dev);
-        }
-    }
-    else {
-        for (int i = 0; i < count; i++){
-            float offset = float(i) - half1;
-            color += texture2D(uTextId, vTexCoords+vec2(0.0,offset*texel*blurScale))*gaussianFunction(offset*strength, dev);
-        }
-    }
-    gl_FragColor = clamp(color, 0.0, 1.0);
-    gl_FragColor.w = 1.0;
+    gl_FragColor = blur(uSceneTextureId, vTexCoords);
 }
