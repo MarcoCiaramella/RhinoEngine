@@ -31,7 +31,7 @@ public class Engine extends AbstractEngine {
         ID.RENDERER_1 = addRenderer(new com.outofbound.rhinoenginelib.renderer.Renderer());
         addTask(new CameraRotation());
         addTask(new LightAnimation());
-        configBlur(RendererOnTexture.RESOLUTION_1024,0.5f,10f,0.1f,1,1000);
+        configBlur(RendererOnTexture.RESOLUTION_1024);
         PointLight pointLight = new PointLight(
                 new Vector3f(3,2,0),
                 1.0f,

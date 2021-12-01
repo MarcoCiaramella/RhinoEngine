@@ -386,14 +386,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     /**
      * Configures blur effect.
      * @param resolution the quality level. Must be RendererOnTexture.RESOLUTION_256, RendererOnTexture.RESOLUTION_512 or RendererOnTexture.RESOLUTION_1024.
-     * @param scale the scale
-     * @param amount the amount
-     * @param strength the strength
-     * @param near camera near
-     * @param far camera far
      * @return this AbstractEngine
      */
-    public AbstractEngine configBlur(int resolution, float scale, float amount, float strength, float near, float far){
+    public AbstractEngine configBlur(int resolution){
         blur = new Blur(new RendererOnTexture(resolution,camera));
         return this;
     }
