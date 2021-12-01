@@ -8,7 +8,7 @@ uniform sampler2D uSceneTextureId;
 uniform float uRadius;
 
 
-vec4 blur(sampler2D texture, vec2 uv) {
+vec4 calcBlur(sampler2D texture, vec2 uv) {
     float pi = 6.28318530718; // Pi*2
 
     // GAUSSIAN BLUR SETTINGS {{{
@@ -34,5 +34,7 @@ vec4 blur(sampler2D texture, vec2 uv) {
 }
 
 void main(){
-    gl_FragColor = blur(uSceneTextureId, vTexCoords);
+    vec4 scene = texture2D(uSceneTextureId, vTexCoords);
+    vec4 blur = calcBlur(uSceneTextureId, vTexCoords);
+    gl_FragColor = clamp((scene + blur) - (scene * blur), 0.0, 1.0);
 }

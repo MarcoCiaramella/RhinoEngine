@@ -23,10 +23,10 @@ public class Blur {
     };
 
     private static final float[] textureCoords = {
-            1, 1,
-            0, 1,
+            0, 0,
             1, 0,
-            0, 0
+            0, 1,
+            1, 1
     };
 
     private final FloatBuffer verticesBuffer;
