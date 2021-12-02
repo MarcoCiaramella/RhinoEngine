@@ -1,4 +1,4 @@
-package com.outofbound.rhinoenginelib.renderer.fx;
+package com.outofbound.rhinoenginelib.renderer;
 
 import android.opengl.GLES20;
 
