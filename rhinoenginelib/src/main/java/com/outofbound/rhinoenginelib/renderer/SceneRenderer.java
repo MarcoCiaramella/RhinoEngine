@@ -66,10 +66,10 @@ public final class SceneRenderer extends AbstractRenderer {
         sceneShader.setLights(lights);
         sceneShader.setViewPos(camera.getEye());
         if (lights.getDirLight().isOn() && lights.getDirLight().isShadowEnabled()){
-            lights.getDirLight().getShadowMap().render(shadowMapRenderer, screenWidth, screenHeight, camera, ms);
+            lights.getDirLight().getShadowMap().render(shadowMapRenderer, screenWidth, screenHeight, ms);
         }
         if (lights.getPointLight().isOn() && lights.getPointLight().isShadowEnabled()) {
-            lights.getPointLight().getShadowMap().render(shadowMapRenderer, screenWidth, screenHeight, camera, ms);
+            lights.getPointLight().getShadowMap().render(shadowMapRenderer, screenWidth, screenHeight, ms);
         }
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);

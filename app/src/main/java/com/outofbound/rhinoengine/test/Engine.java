@@ -36,9 +36,9 @@ public class Engine extends AbstractEngine {
                 0.22f,
                 0.2f
         );
-        pointLight.configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
+        pointLight.configShadow(1,1000,10);
         getLights().setPointLight(pointLight);
-        getLights().getDirLight().configShadow(RendererOnTexture.RESOLUTION_4096,1,1000,10);
+        getLights().getDirLight().configShadow(1,1000,10);
 
         addMesh(new Pane());
         addMesh(new MeshObj());

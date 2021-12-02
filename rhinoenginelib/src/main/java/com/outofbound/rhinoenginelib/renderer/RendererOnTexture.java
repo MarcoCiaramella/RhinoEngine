@@ -11,7 +11,6 @@ public class RendererOnTexture {
     private final int fboHeight;
     private int frameBuffer;
     private int texture;
-    private final Camera camera;
 
     public static final int RESOLUTION_256 = 0;
     public static final int RESOLUTION_512 = 1;
@@ -20,15 +19,15 @@ public class RendererOnTexture {
     public static final int RESOLUTION_4096 = 4;
 
     private static final int[] resolutions = {256,512,1024,2048,4096};
+    private static RendererOnTexture instance;
 
 
-    public RendererOnTexture(int resolution, Camera camera){
+    private RendererOnTexture(int resolution){
         if (resolution < 0 || resolution > 4){
             throw new IllegalArgumentException("resolution must be RendererOnTexture.RESOLUTION_x");
         }
         this.fboWidth = resolutions[resolution];
         this.fboHeight = resolutions[resolution];
-        this.camera = camera;
         setup();
     }
 
@@ -51,11 +50,6 @@ public class RendererOnTexture {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    public int render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
-        renderOnFBO(abstractRenderer, screenWidth, screenHeight, camera, ms);
-        return texture;
-    }
-
     private void createFramebuffer(int fbo, int tex, int rid, int fboWidth, int fboHeight){
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbo);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex);
@@ -73,12 +67,17 @@ public class RendererOnTexture {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    public int getFboWidth(){
-        return fboWidth;
+    private int getTexture() {
+        return texture;
     }
 
-    public int getFboHeight(){
-        return fboHeight;
+    public static void build(int resolution){
+        instance = new RendererOnTexture(resolution);
+    }
+
+    public static int render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
+        instance.renderOnFBO(abstractRenderer, screenWidth, screenHeight, camera, ms);
+        return instance.getTexture();
     }
 
 }

@@ -29,13 +29,11 @@ public class BlurRenderer extends AbstractRenderer {
 
     private final FloatBuffer verticesBuffer;
     private final FloatBuffer textureCoordsBuffer;
-    private final RendererOnTexture rendererOnTexture;
     private final BlurShader blurShader;
     private final AbstractRenderer abstractRenderer;
 
 
-    public BlurRenderer(AbstractRenderer abstractRenderer, RendererOnTexture rendererOnTexture) {
-        this.rendererOnTexture = rendererOnTexture;
+    public BlurRenderer(AbstractRenderer abstractRenderer) {
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
         verticesBuffer = bb_vertex.asFloatBuffer();
@@ -54,7 +52,7 @@ public class BlurRenderer extends AbstractRenderer {
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
         blurShader.setVertices(verticesBuffer);
         blurShader.setTextureCoords(textureCoordsBuffer);
-        blurShader.setSceneTexture(rendererOnTexture.render(abstractRenderer, screenWidth, screenHeight, camera, ms));
+        blurShader.setSceneTexture(RendererOnTexture.render(abstractRenderer, screenWidth, screenHeight, camera, ms));
         // TODO renderizzare il blur su una texture piccola per velocizzare
         blurShader.bindData();
         GLES20.glViewport(0, 0, screenWidth, screenHeight);

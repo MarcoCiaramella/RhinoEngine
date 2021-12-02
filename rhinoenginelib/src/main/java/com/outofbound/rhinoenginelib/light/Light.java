@@ -85,14 +85,13 @@ public abstract class Light {
 
     /**
      * Configures the shadow.
-     * @param resolution the quality level. Must be RendererOnTexture.RESOLUTION_256, RendererOnTexture.RESOLUTION_512 or RendererOnTexture.RESOLUTION_1024.
      * @param near the near clipping plane. The objects outside this plane will not have the shadow.
      * @param far the far clipping plane. The objects outside this plane will not have the shadow.
      * @param clippingCubeSize the size of the clipping cube. The objects outside this cube will not have the shadow.
      * @return this light
      */
-    public Light configShadow(int resolution, float near, float far, float clippingCubeSize){
-        shadowMap = new ShadowMap(resolution,position,near,far,clippingCubeSize);
+    public Light configShadow(float near, float far, float clippingCubeSize){
+        shadowMap = new ShadowMap(position,near,far,clippingCubeSize);
         return this;
     }
 }
