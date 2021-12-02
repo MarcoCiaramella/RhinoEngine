@@ -1,7 +1,6 @@
 package com.outofbound.rhinoenginelib.light;
 
 
-import com.outofbound.rhinoenginelib.renderer.ShadowMap;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 /**

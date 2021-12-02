@@ -1,5 +1,6 @@
 package com.outofbound.rhinoenginelib.renderer;
 
+import android.opengl.GLES20;
 import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
@@ -21,6 +22,9 @@ public class ShadowMapRenderer extends AbstractRenderer {
 
     @Override
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
+        GLES20.glCullFace(GLES20.GL_FRONT);
+        camera.loadVpMatrix();
         for (Mesh mesh : meshes) {
             if (!mesh.isDead(ms)) {
                 Matrix.setIdentityM(mMatrix, 0);
@@ -39,5 +43,6 @@ public class ShadowMapRenderer extends AbstractRenderer {
                 meshes.remove(mesh);
             }
         }
+        GLES20.glDisable(GLES20.GL_CULL_FACE);
     }
 }
