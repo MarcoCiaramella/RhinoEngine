@@ -24,7 +24,6 @@ public class ShadowMap {
         camera.loadVpMatrix();
         texture = RendererOnTexture.render(shadowMapRenderer, screenWidth, screenHeight, camera, ms);
         GLES20.glDisable(GLES20.GL_CULL_FACE);
-        GLES20.glViewport(0, 0, screenWidth, screenHeight);
     }
 
     public int getTexture(){

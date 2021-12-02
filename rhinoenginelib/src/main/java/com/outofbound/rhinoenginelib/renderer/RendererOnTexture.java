@@ -48,6 +48,7 @@ public class RendererOnTexture {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
         abstractRenderer.doRendering(screenWidth, screenHeight, camera, ms);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
+        GLES20.glViewport(0, 0, screenWidth, screenHeight);
     }
 
     private void createFramebuffer(int fbo, int tex, int rid, int fboWidth, int fboHeight){
