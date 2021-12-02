@@ -30,7 +30,6 @@ public class Engine extends AbstractEngine {
         setClearColor(0,0,0,1);
         addTask(new CameraRotation());
         addTask(new LightAnimation());
-        configBlur(RendererOnTexture.RESOLUTION_1024);
         PointLight pointLight = new PointLight(
                 new Vector3f(3,2,0),
                 1.0f,

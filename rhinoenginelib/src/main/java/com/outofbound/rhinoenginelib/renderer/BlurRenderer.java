@@ -1,4 +1,4 @@
-package com.outofbound.rhinoenginelib.renderer.fx;
+package com.outofbound.rhinoenginelib.renderer;
 
 import android.opengl.GLES20;
 
@@ -11,7 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-public class Blur {
+public class BlurRenderer extends AbstractRenderer {
 
     private static final float[] vertices = {
             -1f, -1f,
@@ -31,9 +31,10 @@ public class Blur {
     private final FloatBuffer textureCoordsBuffer;
     private final RendererOnTexture rendererOnTexture;
     private final BlurShader blurShader;
+    private final AbstractRenderer abstractRenderer;
 
 
-    public Blur(RendererOnTexture rendererOnTexture) {
+    public BlurRenderer(AbstractRenderer abstractRenderer, RendererOnTexture rendererOnTexture) {
         this.rendererOnTexture = rendererOnTexture;
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
@@ -46,9 +47,11 @@ public class Blur {
         textureCoordsBuffer.put(textureCoords);
         textureCoordsBuffer.position(0);
         blurShader = new BlurShader();
+        this.abstractRenderer = abstractRenderer;
     }
 
-    public void render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
+    @Override
+    public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
         blurShader.setVertices(verticesBuffer);
         blurShader.setTextureCoords(textureCoordsBuffer);
         blurShader.setSceneTexture(rendererOnTexture.render(abstractRenderer, screenWidth, screenHeight, camera, ms));
@@ -58,5 +61,4 @@ public class Blur {
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         blurShader.unbindData();
     }
-
 }

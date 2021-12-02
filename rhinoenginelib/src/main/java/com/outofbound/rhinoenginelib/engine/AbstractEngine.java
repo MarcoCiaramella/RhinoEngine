@@ -15,9 +15,8 @@ import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
-import com.outofbound.rhinoenginelib.renderer.AbstractRenderer;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
-import com.outofbound.rhinoenginelib.renderer.fx.Blur;
+import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
 import com.outofbound.rhinoenginelib.util.list.BigList;
 
@@ -33,7 +32,7 @@ import javax.microedition.khronos.opengles.GL10;
 public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceView.Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
     private final BigList<Task> tasks = new BigList<>();
-    private Gesture gesture = null;
+    private Gesture gesture;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
     private Camera camera;
@@ -41,7 +40,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     private ScaleGestureDetector scaleDetector;
     private boolean gestureProcessed = false;
     private static AbstractEngine instance;
-    private Blur blur = null;
+    private BlurRenderer blurRenderer;
     private boolean blurEnabled = false;
     private SceneRenderer sceneRenderer;
 
@@ -266,6 +265,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         GLES20.glFrontFace(GLES20.GL_CCW);
 
         sceneRenderer = new SceneRenderer();
+        blurRenderer = new BlurRenderer(sceneRenderer, new RendererOnTexture(RendererOnTexture.RESOLUTION_1024,camera));
         init();
     }
 
@@ -297,8 +297,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             deltaMs = currentMs - ms;
         }
 
-        if (blur != null && blurEnabled){
-            blur.render(sceneRenderer, getWidth(), getHeight(), camera, deltaMs);
+        if (blurEnabled){
+            blurRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
         else {
             sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
@@ -349,16 +349,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * Initializes the engine.
      */
     protected abstract void init();
-
-    /**
-     * Configures blur effect.
-     * @param resolution the quality level. Must be RendererOnTexture.RESOLUTION_256, RendererOnTexture.RESOLUTION_512 or RendererOnTexture.RESOLUTION_1024.
-     * @return this AbstractEngine
-     */
-    public AbstractEngine configBlur(int resolution){
-        blur = new Blur(new RendererOnTexture(resolution,camera));
-        return this;
-    }
 
     /**
      * Enables blur effect.
