@@ -77,7 +77,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setOnTouchListener(this);
-        sceneRenderer = new SceneRenderer();
         this.camera = camera;
         this.gesture = gesture;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
@@ -266,6 +265,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         GLES20.glClearDepthf(1.0f);
         GLES20.glFrontFace(GLES20.GL_CCW);
 
+        sceneRenderer = new SceneRenderer();
         init();
     }
 
