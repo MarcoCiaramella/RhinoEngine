@@ -9,9 +9,9 @@ public class Pane extends com.outofbound.rhinoenginelib.mesh.primitives.Pane {
     }
 
     @Override
-    public void doTransformation(float[] mMatrix, long ms) {
-        translate(mMatrix);
-        rotateY(mMatrix);
-        scale(mMatrix);
+    public void doTransformation(long ms) {
+        translate();
+        rotateY();
+        scale();
     }
 }

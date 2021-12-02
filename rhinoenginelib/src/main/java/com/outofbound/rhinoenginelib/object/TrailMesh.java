@@ -68,7 +68,7 @@ public abstract class TrailMesh extends Mesh {
     }
 
     @Override
-    public void doTransformation(float[] mMatrix, long ms) {
+    public void doTransformation(long ms) {
         if (timer.isOver(ms)){
             if (getNumLines() == length){
                 removeLine();
@@ -86,5 +86,4 @@ public abstract class TrailMesh extends Mesh {
             reloadColors();
         }
     }
-
 }

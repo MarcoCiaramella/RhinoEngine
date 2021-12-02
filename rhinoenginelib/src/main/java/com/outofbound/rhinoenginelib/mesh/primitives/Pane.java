@@ -39,6 +39,6 @@ public class Pane extends Mesh {
     }
 
     @Override
-    public void doTransformation(float[] mMatrix, long ms) {
+    public void doTransformation(long ms) {
     }
 }

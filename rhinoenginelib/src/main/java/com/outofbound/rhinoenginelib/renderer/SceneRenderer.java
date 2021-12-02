@@ -14,7 +14,6 @@ public final class SceneRenderer extends AbstractRenderer {
 
     private final SceneShader sceneShader;
     private final BigList<Mesh> meshes;
-    private final float[] mMatrix = new float[16];
     private final float[] mvpMatrix = new float[16];
     private Lights lights;
     private boolean blendingEnabled = false;
@@ -62,6 +61,14 @@ public final class SceneRenderer extends AbstractRenderer {
 
     @Override
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
+        for (Mesh mesh : meshes) {
+            if (!mesh.isDead(ms)) {
+                mesh.loadMMatrix(ms);
+            }
+            else {
+                meshes.remove(mesh);
+            }
+        }
         camera.loadVpMatrix();
         sceneShader.setLights(lights);
         sceneShader.setViewPos(camera.getEye());
@@ -76,23 +83,13 @@ public final class SceneRenderer extends AbstractRenderer {
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
         for (Mesh mesh : meshes) {
-            if (!mesh.isDead(ms)) {
-                Matrix.setIdentityM(mMatrix, 0);
-                mesh.doTransformation(mMatrix,ms);
-                Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mMatrix, 0);
-                if (mesh.getBoundingBox() != null) {
-                    mesh.getBoundingBox().copyMMatrix(mMatrix);
-                }
-                sceneShader.setMesh(mesh);
-                sceneShader.setMMatrix(mMatrix);
-                sceneShader.setMvpMatrix(mvpMatrix);
-                sceneShader.bindData();
-                draw(mesh);
-                sceneShader.unbindData();
-            }
-            else {
-                meshes.remove(mesh);
-            }
+            Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
+            sceneShader.setMesh(mesh);
+            sceneShader.setMMatrix(mesh.getMMatrix());
+            sceneShader.setMvpMatrix(mvpMatrix);
+            sceneShader.bindData();
+            draw(mesh);
+            sceneShader.unbindData();
         }
         if (blendingEnabled) {
             GLES20.glDisable(GLES20.GL_BLEND);

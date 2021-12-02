@@ -18,11 +18,11 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
     }
 
     @Override
-    public void doTransformation(float[] mMatrix, long ms) {
+    public void doTransformation(long ms) {
         //rotation.y -= 1f;
         position.y = gravity.calc(ms);
-        translate(mMatrix);
-        rotateY(mMatrix);
-        scale(mMatrix);
+        translate();
+        rotateY();
+        scale();
     }
 }

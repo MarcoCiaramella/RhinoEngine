@@ -92,6 +92,7 @@ public abstract class Mesh {
     private Bitmap textureBitmap;
     private Material material;
     private final String name;
+    private final float[] mMatrix = new float[16];
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -257,25 +258,25 @@ public abstract class Mesh {
         dead = true;
     }
 
-    public abstract void doTransformation(float[] mMatrix, long ms);
+    public abstract void doTransformation(long ms);
 
-    protected void rotateX(float[] mMatrix){
+    protected void rotateX(){
         Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
     }
 
-    protected void rotateY(float[] mMatrix){
+    protected void rotateY(){
         Matrix.rotateM(mMatrix, 0, rotation.y, 0, 1, 0);
     }
 
-    protected void rotateZ(float[] mMatrix){
+    protected void rotateZ(){
         Matrix.rotateM(mMatrix, 0, rotation.z, 0, 0, 1);
     }
 
-    protected void scale(float[] mMatrix){
+    protected void scale(){
         Matrix.scaleM(mMatrix, 0, scale, scale, scale);
     }
 
-    protected void translate(float[] mMatrix){
+    protected void translate(){
         Matrix.translateM(mMatrix, 0, position.x, position.y, position.z);
     }
 
@@ -421,10 +422,6 @@ public abstract class Mesh {
         return this;
     }
 
-    /**
-     * Return the bounding box.
-     * @return the bounding box.
-     */
     public BoundingBox getBoundingBox(){
         return boundingBox;
     }
@@ -490,5 +487,18 @@ public abstract class Mesh {
     public Mesh setScale(float scale){
         this.scale = scale;
         return this;
+    }
+
+    public Mesh loadMMatrix(long ms){
+        Matrix.setIdentityM(mMatrix, 0);
+        doTransformation(ms);
+        if (boundingBox != null) {
+            boundingBox.copyMMatrix(mMatrix);
+        }
+        return this;
+    }
+
+    public float[] getMMatrix(){
+        return mMatrix;
     }
 }

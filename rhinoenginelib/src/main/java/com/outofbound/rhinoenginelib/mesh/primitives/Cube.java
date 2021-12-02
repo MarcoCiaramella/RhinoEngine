@@ -89,6 +89,6 @@ public class Cube extends Mesh {
     }
 
     @Override
-    public void doTransformation(float[] mMatrix, long ms) {
+    public void doTransformation(long ms) {
     }
 }

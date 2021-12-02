@@ -10,10 +10,10 @@ public class Cube extends com.outofbound.rhinoenginelib.mesh.primitives.Cube {
     }
 
     @Override
-    public void doTransformation(float[] mMatrix, long ms) {
+    public void doTransformation(long ms) {
         position.z += 0.01f;
-        translate(mMatrix);
-        rotateY(mMatrix);
-        scale(mMatrix);
+        translate();
+        rotateY();
+        scale();
     }
 }
