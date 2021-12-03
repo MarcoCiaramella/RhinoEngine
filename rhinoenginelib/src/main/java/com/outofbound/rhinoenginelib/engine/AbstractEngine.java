@@ -14,7 +14,6 @@ import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
-import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
@@ -266,7 +265,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
         sceneRenderer = new SceneRenderer();
         blurRenderer = new BlurRenderer(sceneRenderer);
-        RendererOnTexture.build(RendererOnTexture.RESOLUTION_1024);
         init();
     }
 

@@ -10,13 +10,15 @@ public class ShadowMap {
 
     private int texture;
     private final CameraOrthographic camera;
+    private final RendererOnTexture rendererOnTexture;
 
     public ShadowMap(Vector3f lightPosition, float near, float far, float clippingCubeSize){
         camera = new CameraOrthographic(lightPosition, new Vector3f(0,0,0), new Vector3f(0,1,0), near, far, clippingCubeSize);
+        rendererOnTexture = new RendererOnTexture(RendererOnTexture.RESOLUTION_1024);
     }
 
     public void render(ShadowMapRenderer shadowMapRenderer, int screenWidth, int screenHeight, long ms){
-        texture = RendererOnTexture.render(shadowMapRenderer, screenWidth, screenHeight, camera, ms);
+        texture = rendererOnTexture.render(shadowMapRenderer, screenWidth, screenHeight, camera, ms);
     }
 
     public int getTexture(){

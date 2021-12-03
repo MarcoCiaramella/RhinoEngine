@@ -19,10 +19,9 @@ public class RendererOnTexture {
     public static final int RESOLUTION_4096 = 4;
 
     private static final int[] resolutions = {256,512,1024,2048,4096};
-    private static RendererOnTexture instance;
 
 
-    private RendererOnTexture(int resolution){
+    public RendererOnTexture(int resolution){
         if (resolution < 0 || resolution > 4){
             throw new IllegalArgumentException("resolution must be RendererOnTexture.RESOLUTION_x");
         }
@@ -51,34 +50,26 @@ public class RendererOnTexture {
         GLES20.glViewport(0, 0, screenWidth, screenHeight);
     }
 
-    private void createFramebuffer(int fbo, int tex, int rid, int fboWidth, int fboHeight){
-        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fbo);
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, tex);
+    private void createFramebuffer(int frameBuffer, int texture, int renderBuffer, int fboWidth, int fboHeight){
+        GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
         GLES20.glTexImage2D(GLES20.GL_TEXTURE_2D, 0, GLES20.GL_RGBA, fboWidth, fboHeight, 0, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, null);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR);
         GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR);
-        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, rid);
+        GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, renderBuffer);
         GLES20.glRenderbufferStorage(GLES20.GL_RENDERBUFFER, GLES20.GL_DEPTH_COMPONENT16, fboWidth, fboHeight);
-        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, tex, 0);
-        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, rid);
+        GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0, GLES20.GL_TEXTURE_2D, texture, 0);
+        GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT, GLES20.GL_RENDERBUFFER, renderBuffer);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
         GLES20.glBindRenderbuffer(GLES20.GL_RENDERBUFFER, 0);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    private int getTexture() {
+    public int render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
+        renderOnFBO(abstractRenderer, screenWidth, screenHeight, camera, ms);
         return texture;
-    }
-
-    public static void build(int resolution){
-        instance = new RendererOnTexture(resolution);
-    }
-
-    public static int render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
-        instance.renderOnFBO(abstractRenderer, screenWidth, screenHeight, camera, ms);
-        return instance.getTexture();
     }
 
 }
