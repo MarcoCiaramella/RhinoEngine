@@ -321,7 +321,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @param b blue
      * @param a alpha
      */
-    public synchronized void setClearColor(float r, float g, float b, float a){
+    public void setClearColor(float r, float g, float b, float a){
         this.clearColor[0] = r;
         this.clearColor[1] = g;
         this.clearColor[2] = b;
