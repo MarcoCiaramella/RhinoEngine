@@ -11,7 +11,7 @@ import com.outofbound.rhinoenginelib.util.list.BigList;
 public class ShadowMapRenderer extends AbstractRenderer {
 
     private final ShadowMapShader shadowMapShader;
-    private final float[] shadowMVPMatrix = new float[16];
+    private final float[] mvpMatrix = new float[16];
     private final BigList<Mesh> meshes;
 
     public ShadowMapRenderer(BigList<Mesh> meshes){
@@ -25,9 +25,9 @@ public class ShadowMapRenderer extends AbstractRenderer {
         GLES20.glCullFace(GLES20.GL_FRONT);
         camera.loadVpMatrix();
         for (Mesh mesh : meshes) {
-            Matrix.multiplyMM(shadowMVPMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
+            Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
             shadowMapShader.setMesh(mesh);
-            shadowMapShader.setMvpMatrix(shadowMVPMatrix);
+            shadowMapShader.setMvpMatrix(mvpMatrix);
             shadowMapShader.bindData();
             draw(mesh);
             shadowMapShader.unbindData();
