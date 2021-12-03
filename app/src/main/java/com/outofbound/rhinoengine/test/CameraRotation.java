@@ -7,6 +7,15 @@ public class CameraRotation extends Task {
 
     private static final float SPEED = 0.01f;
 
+    /**
+     * Instantiate a Task.
+     *
+     * @param name a name for this Task
+     */
+    public CameraRotation(String name) {
+        super(name);
+    }
+
     @Override
     public boolean runTask(long ms) {
         float angle = SPEED*ms;

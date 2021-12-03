@@ -7,13 +7,14 @@ import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.shader.primitives.SceneShader;
-import com.outofbound.rhinoenginelib.util.list.BigList;
+
+import java.util.HashMap;
 
 
 public final class SceneRenderer extends AbstractRenderer {
 
     private final SceneShader sceneShader;
-    private final BigList<Mesh> meshes;
+    private final HashMap<String,Mesh> meshes;
     private final float[] mvpMatrix = new float[16];
     private Lights lights;
     private boolean blendingEnabled = false;
@@ -21,23 +22,27 @@ public final class SceneRenderer extends AbstractRenderer {
 
     public SceneRenderer(){
         sceneShader = new SceneShader();
-        meshes = new BigList<>();
+        meshes = new HashMap<>();
         lights = new Lights();
         shadowMapRenderer = new ShadowMapRenderer(meshes);
     }
 
-    public int addMesh(Mesh mesh){
+    public void addMesh(Mesh mesh){
         mesh.onAdd();
-        return meshes.add(mesh);
+        meshes.put(mesh.getName(), mesh);
     }
 
-    public SceneRenderer removeMesh(int id){
-        meshes.remove(id);
+    public SceneRenderer removeMesh(String name){
+        meshes.remove(name);
         return this;
     }
 
-    public Mesh getMesh(int id){
-        return meshes.get(id);
+    public Mesh getMesh(String name){
+        Mesh mesh = meshes.get(name);
+        if (mesh != null){
+            return mesh;
+        }
+        throw new RuntimeException("Mesh named '"+name+"' not found.");
     }
 
     public SceneRenderer setLights(Lights lights){
@@ -61,12 +66,13 @@ public final class SceneRenderer extends AbstractRenderer {
 
     @Override
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
-        for (Mesh mesh : meshes) {
+        for (String name : meshes.keySet()) {
+            Mesh mesh = getMesh(name);
             if (!mesh.isDead(ms)) {
                 mesh.loadMMatrix(ms);
             }
             else {
-                meshes.remove(mesh);
+                removeMesh(name);
             }
         }
         camera.loadVpMatrix();
@@ -82,7 +88,8 @@ public final class SceneRenderer extends AbstractRenderer {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
-        for (Mesh mesh : meshes) {
+        for (String name : meshes.keySet()) {
+            Mesh mesh = getMesh(name);
             Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
             sceneShader.setMesh(mesh);
             sceneShader.setMMatrix(mesh.getMMatrix());

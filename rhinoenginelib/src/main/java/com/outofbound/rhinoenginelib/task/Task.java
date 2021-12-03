@@ -5,12 +5,15 @@ import androidx.annotation.CallSuper;
 
 public abstract class Task {
 
+    private String name;
     private boolean dead;
 
     /**
      * Instantiate a Task.
+     * @param name a name for this Task
      */
-    public Task(){
+    public Task(String name){
+        this.name = name;
         dead = false;
     }
 
@@ -50,6 +53,10 @@ public abstract class Task {
      */
     public boolean isDead(){
         return dead;
+    }
+
+    public String getName(){
+        return name;
     }
 
 }

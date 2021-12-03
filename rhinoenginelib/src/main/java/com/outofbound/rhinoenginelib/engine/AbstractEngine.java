@@ -17,9 +17,9 @@ import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
-import com.outofbound.rhinoenginelib.util.list.BigList;
 
 import java.util.Calendar;
+import java.util.HashMap;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -30,7 +30,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceView.Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
-    private final BigList<Task> tasks = new BigList<>();
+    private final HashMap<String,Task> tasks = new HashMap<>();
     private Gesture gesture;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
@@ -83,20 +83,19 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     /**
      * Adds a Task.
      * @param task the Task to add
-     * @return the Task id, -1 if the input Task is a duplicate
      */
-    public int addTask(Task task){
+    public void addTask(Task task){
         task.onAdd();
-        return tasks.add(task);
+        tasks.put(task.getName(), task);
     }
 
     /**
-     * Removes the Task with the specified id.
-     * @param id the id of Task to remove
+     * Removes the Task with the specified name.
+     * @param name the name of the Task
      * @return this AbstractEngine
      */
-    public AbstractEngine removeTask(int id){
-        Task task = tasks.remove(id);
+    public AbstractEngine removeTask(String name){
+        Task task = tasks.remove(name);
         if (task != null){
             task.onRemove();
         }
@@ -104,12 +103,16 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     /**
-     * Returns Task with the input id.
-     * @param id the id
-     * @return the Task if exists, null otherwise
+     * Returns Task with the specified name.
+     * @param name the name of the Task
+     * @return the Task found
      */
-    public Task getTask(int id){
-        return tasks.get(id);
+    public Task getTask(String name){
+        Task task = tasks.get(name);
+        if (task != null){
+            return task;
+        }
+        throw new RuntimeException("Task named '"+name+"' not found.");
     }
 
     /**
@@ -303,10 +306,11 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
 
-        for (Task task : tasks){
+        for (String name : tasks.keySet()){
+            Task task = getTask(name);
             boolean alive = task.runTask(deltaMs);
             if (!alive) {
-                tasks.remove(task);
+                removeTask(name);
             }
         }
 
@@ -378,12 +382,12 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         return (int) (1f/(deltaMs/1000f));
     }
 
-    public int addMesh(Mesh mesh){
-        return sceneRenderer.addMesh(mesh);
+    public void addMesh(Mesh mesh){
+        sceneRenderer.addMesh(mesh);
     }
 
-    public AbstractEngine removeMesh(int id){
-        sceneRenderer.removeMesh(id);
+    public AbstractEngine removeMesh(String name){
+        sceneRenderer.removeMesh(name);
         return this;
     }
 
