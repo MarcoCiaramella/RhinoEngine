@@ -16,6 +16,7 @@ public class Engine extends AbstractEngine {
     private static final Vector3f CAMERA_EYE = new Vector3f(3,2,3);
     private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
+    private static final int NUM_CUBES = 1000;
 
     public Engine(Context context){
         super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), null);
@@ -56,13 +57,13 @@ public class Engine extends AbstractEngine {
     }
 
     public void addCubes(){
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < NUM_CUBES; i++) {
             addMesh(new CubeWithGravity("Cube"+i));
         }
     }
 
     public void removeCubes(){
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < NUM_CUBES; i++) {
             removeMesh("Cube"+i);
         }
     }

@@ -17,9 +17,11 @@ import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
+import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -30,7 +32,6 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceView.Renderer, OnTouchListener, ScaleGestureDetector.OnScaleGestureListener {
 
-    private final HashMap<String,Task> tasks = new HashMap<>();
     private Gesture gesture;
     private final float[] clearColor = {0,0,0,1};
     private long ms = -1;
@@ -42,6 +43,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     private BlurRenderer blurRenderer;
     private boolean blurEnabled = false;
     private SceneRenderer sceneRenderer;
+    private final SyncMap<Task> taskMap = new SyncMap<>();
 
 
 
@@ -86,7 +88,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      */
     public void addTask(Task task){
         task.onAdd();
-        tasks.put(task.getName(), task);
+        taskMap.put(task.getName(), task);
     }
 
     /**
@@ -95,7 +97,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @return this AbstractEngine
      */
     public AbstractEngine removeTask(String name){
-        Task task = tasks.remove(name);
+        Task task = taskMap.remove(name);
         if (task != null){
             task.onRemove();
         }
@@ -108,11 +110,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @return the Task found
      */
     public Task getTask(String name){
-        Task task = tasks.get(name);
-        if (task != null){
-            return task;
-        }
-        throw new RuntimeException("Task named '"+name+"' not found.");
+        return taskMap.get(name);
     }
 
     /**
@@ -306,7 +304,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
 
-        for (String name : tasks.keySet()){
+        for (String name : taskMap.keySet()){
             Task task = getTask(name);
             boolean alive = task.runTask(deltaMs);
             if (!alive) {
