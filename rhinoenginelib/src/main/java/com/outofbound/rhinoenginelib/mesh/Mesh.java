@@ -9,6 +9,7 @@ import android.opengl.Matrix;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
+import com.ds.octreelib.Octree;
 import com.outofbound.meshloaderlib.obj.Obj;
 import com.outofbound.meshloaderlib.ply.Ply;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
@@ -84,7 +85,7 @@ public abstract class Mesh {
     private IntBuffer indicesBuffer;
     private long timeToLive = -1;
     private boolean dead = false;
-    private BoundingBox boundingBox = null;
+    private BoundingBox boundingBox;
     protected Vector3f position;
     protected Vector3f rotation;
     protected float scale;
@@ -93,6 +94,7 @@ public abstract class Mesh {
     private Material material;
     private final String name;
     private final float[] mMatrix = new float[16];
+    private Octree octree;
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -178,7 +180,6 @@ public abstract class Mesh {
         loadTexCoords();
         loadIndices();
         loadTexture();
-        createBoundingBox();
     }
 
     public void reloadVertices(){
@@ -405,10 +406,13 @@ public abstract class Mesh {
         return indices.length;
     }
 
-    public Mesh createBoundingBox(){
-        if (boundingBox == null && vertices.length > 0) {
-            boundingBox = new BoundingBox(vertices, sizeVertex);
+    public Mesh enableCollision(){
+        boundingBox = new BoundingBox(vertices, sizeVertex);
+        double[] ver = new double[vertices.length];
+        for (int i = 0; i < ver.length; i++){
+            ver[i] = vertices[i];
         }
+        octree = new Octree(getNumVertices(), ver, 0, null, indices.length/3, indices, 0, null, 0, 1);
         return this;
     }
 
