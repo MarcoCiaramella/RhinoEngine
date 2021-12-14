@@ -180,6 +180,7 @@ public abstract class Mesh {
         loadTexCoords();
         loadIndices();
         loadTexture();
+        createBoundingBox();
     }
 
     public void reloadVertices(){
@@ -406,8 +407,14 @@ public abstract class Mesh {
         return indices.length;
     }
 
+    private Mesh createBoundingBox(){
+        if (boundingBox == null && vertices.length > 0) {
+            boundingBox = new BoundingBox(vertices, sizeVertex);
+        }
+        return this;
+    }
+
     public Mesh enableCollision(){
-        boundingBox = new BoundingBox(vertices, sizeVertex);
         double[] ver = new double[vertices.length];
         for (int i = 0; i < ver.length; i++){
             ver[i] = vertices[i];
