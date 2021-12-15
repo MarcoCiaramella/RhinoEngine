@@ -6,7 +6,7 @@ import com.outofbound.rhinoenginelib.util.timer.Timer;
 public abstract class TrailMesh extends Mesh {
 
     private final Mesh source;
-    private Timer timer;
+    private final Timer timer;
     private final float[] newLineVertices;
     private final float[] newLineNormals;
     private final float[] newColors;
@@ -22,13 +22,6 @@ public abstract class TrailMesh extends Mesh {
         this.color = color;
         this.source = source;
         this.length = length;
-    }
-
-    @Override
-    public void onAdd(){
-        super.onAdd();
-        removeAllLines();
-        timer = new Timer(timer.getMs());
     }
 
     private void addLine(){
@@ -59,12 +52,6 @@ public abstract class TrailMesh extends Mesh {
     private void removeLine(){
         removeVertices(0,2);
         removeColors(0,2);
-    }
-
-    private void removeAllLines(){
-        int numVertices = getNumVertices();
-        removeVertices(0,numVertices);
-        removeColors(0,numVertices);
     }
 
     @Override

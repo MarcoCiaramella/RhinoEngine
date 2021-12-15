@@ -6,7 +6,6 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.opengl.Matrix;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 
 import com.ds.octreelib.Octree;
@@ -83,8 +82,6 @@ public abstract class Mesh {
     private FloatBuffer colorBuffer;
     private FloatBuffer texCoordsBuffer;
     private IntBuffer indicesBuffer;
-    private long timeToLive = -1;
-    private boolean dead = false;
     private BoundingBox boundingBox;
     protected Vector3f position;
     protected Vector3f rotation;
@@ -249,17 +246,6 @@ public abstract class Mesh {
         }
     }
 
-    @CallSuper
-    public void onAdd(){
-        dead = false;
-        timeToLive = -1;
-    }
-
-    @CallSuper
-    public void onRemove(){
-        dead = true;
-    }
-
     public abstract void doTransformation(long ms);
 
     protected void rotateX(){
@@ -280,22 +266,6 @@ public abstract class Mesh {
 
     protected void translate(){
         Matrix.translateM(mMatrix, 0, position.x, position.y, position.z);
-    }
-
-    public boolean isDead(long ms){
-        if (timeToLive != -1) {
-            if (timeToLive-ms <= 0){
-                dead = true;
-            }
-            else{
-                timeToLive -= ms;
-            }
-        }
-        return dead;
-    }
-
-    public void kill(){
-        dead = true;
     }
 
     public FloatBuffer getVertexBuffer(){
@@ -420,16 +390,6 @@ public abstract class Mesh {
             ver[i] = vertices[i];
         }
         octree = new Octree(getNumVertices(), ver, 0, null, indices.length/3, indices, 0, null, 0, 1);
-        return this;
-    }
-
-    /**
-     * Set time to live. Use value < 0 for a infinite time to live.
-     * @param timeToLive the time to live.
-     * @return this Mesh.
-     */
-    public Mesh setTimeToLive(long timeToLive){
-        this.timeToLive = timeToLive;
         return this;
     }
 

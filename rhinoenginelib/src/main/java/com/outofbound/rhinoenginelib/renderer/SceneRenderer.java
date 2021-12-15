@@ -27,7 +27,6 @@ public final class SceneRenderer extends AbstractRenderer {
     }
 
     public void addMesh(Mesh mesh){
-        mesh.onAdd();
         meshMap.put(mesh.getName(), mesh);
     }
 
@@ -61,13 +60,7 @@ public final class SceneRenderer extends AbstractRenderer {
     @Override
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
         for (String name : meshMap.keySet()) {
-            Mesh mesh = getMesh(name);
-            if (!mesh.isDead(ms)) {
-                mesh.loadMMatrix(ms);
-            }
-            else {
-                removeMesh(name);
-            }
+            getMesh(name).loadMMatrix(ms);
         }
         camera.loadVpMatrix();
         sceneShader.setLights(lights);
