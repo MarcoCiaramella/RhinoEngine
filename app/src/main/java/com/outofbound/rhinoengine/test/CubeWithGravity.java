@@ -7,6 +7,7 @@ import com.outofbound.rhinoenginelib.util.number.Numbers;
 public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitives.Cube {
 
     private final Gravity gravity;
+    private boolean collisionDetected = false;
 
     public CubeWithGravity(String name) {
         super(name, 2,2,2,Color.randomColor(0.2f,1.0f,1.0f));
@@ -19,12 +20,17 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
 
     @Override
     public void beforeRendering(long ms) {
-        if (!isColliding(Engine.getInstance().getMesh("Pane"))) {
+        if (!collisionDetected) {
             //rotation.y -= 1f;
             position.y = gravity.calc(ms);
             translate();
         }
         rotateY();
         scale();
+    }
+
+    @Override
+    public void afterRendering(long ms) {
+        collisionDetected = isColliding(Engine.getInstance().getMesh("Pane"));
     }
 }

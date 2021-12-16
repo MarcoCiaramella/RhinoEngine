@@ -474,7 +474,7 @@ public abstract class Mesh {
         return this;
     }
 
-    public Mesh loadMMatrix(){
+    public Mesh resetMMatrix(){
         Matrix.setIdentityM(mMatrix, 0);
         return this;
     }
