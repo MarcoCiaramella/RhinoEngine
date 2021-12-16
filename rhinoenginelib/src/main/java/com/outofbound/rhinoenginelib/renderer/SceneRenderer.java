@@ -59,9 +59,6 @@ public final class SceneRenderer extends AbstractRenderer {
 
     @Override
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
-        for (String name : meshMap.keySet()) {
-            getMesh(name).loadMMatrix(ms);
-        }
         camera.loadVpMatrix();
         sceneShader.setLights(lights);
         sceneShader.setViewPos(camera.getEye());
@@ -76,7 +73,7 @@ public final class SceneRenderer extends AbstractRenderer {
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
         for (String name : meshMap.keySet()) {
-            Mesh mesh = getMesh(name);
+            Mesh mesh = getMesh(name).loadMMatrix(ms);
             Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
             sceneShader.setMesh(mesh);
             sceneShader.setMMatrix(mesh.getMMatrix());

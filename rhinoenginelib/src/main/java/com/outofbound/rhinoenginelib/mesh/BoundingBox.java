@@ -47,7 +47,7 @@ public class BoundingBox {
     private final double[][] aabb;
 
 
-    public BoundingBox(float[] vertices, int sizeVertex){
+    public BoundingBox(float[] vertices, int sizeVertex, float[] mMatrix){
         float minX = minCoord(vertices,sizeVertex,0);
         float maxX = maxCoord(vertices,sizeVertex,0);
         float minY = minCoord(vertices,sizeVertex,1);
@@ -74,7 +74,7 @@ public class BoundingBox {
         min = new double[3];
         max = new double[3];
         arr = new float[24];
-        mMatrix = new float[16];
+        this.mMatrix = mMatrix;
         Matrix.setIdentityM(mMatrix,0);
         aabb = new double[][]{min,max};
     }
@@ -93,10 +93,6 @@ public class BoundingBox {
             max = Math.max(vertices[i+coord], max);
         }
         return max;
-    }
-
-    public synchronized void copyMMatrix(float[] mMatrix){
-        System.arraycopy(mMatrix, 0, this.mMatrix, 0, mMatrix.length);
     }
 
     private void transform(){

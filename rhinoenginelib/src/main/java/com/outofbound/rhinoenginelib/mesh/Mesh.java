@@ -177,7 +177,9 @@ public abstract class Mesh {
         loadTexCoords();
         loadIndices();
         loadTexture();
-        createBoundingBox();
+        if (vertices.length > 0) {
+            createBoundingBox();
+        }
     }
 
     public void reloadVertices(){
@@ -336,9 +338,7 @@ public abstract class Mesh {
 
     public void addVertices(float[] vertices){
         this.vertices = addFloats(this.vertices,vertices);
-        if (this.vertices.length > 0) {
-            boundingBox = new BoundingBox(vertices, sizeVertex);
-        }
+        createBoundingBox();
     }
 
     public void addNormals(float[] normals){
@@ -378,9 +378,7 @@ public abstract class Mesh {
     }
 
     private Mesh createBoundingBox(){
-        if (boundingBox == null && vertices.length > 0) {
-            boundingBox = new BoundingBox(vertices, sizeVertex);
-        }
+        boundingBox = new BoundingBox(vertices, sizeVertex, mMatrix);
         return this;
     }
 
@@ -477,9 +475,6 @@ public abstract class Mesh {
     public Mesh loadMMatrix(long ms){
         Matrix.setIdentityM(mMatrix, 0);
         doTransformation(ms);
-        if (boundingBox != null) {
-            boundingBox.copyMMatrix(mMatrix);
-        }
         return this;
     }
 
