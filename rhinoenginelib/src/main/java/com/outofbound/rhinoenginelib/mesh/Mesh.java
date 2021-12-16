@@ -393,6 +393,20 @@ public abstract class Mesh {
         return this;
     }
 
+    private boolean isCollisionEnabled(){
+        return octree != null;
+    }
+
+    public boolean isColliding(Mesh mesh){
+        if (mesh.isCollisionEnabled()){
+            double[] min = getBoundingBox().getAABB()[0];
+            double[] max = getBoundingBox().getAABB()[1];
+            int[] items = new int[1];
+            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, min ,max, 0) == 1;
+        }
+        return false;
+    }
+
     public BoundingBox getBoundingBox(){
         return boundingBox;
     }

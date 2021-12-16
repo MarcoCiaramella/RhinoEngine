@@ -19,9 +19,11 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
 
     @Override
     public void doTransformation(long ms) {
-        //rotation.y -= 1f;
-        position.y = gravity.calc(ms);
-        translate();
+        if (!isColliding(Engine.getInstance().getMesh("Pane"))) {
+            //rotation.y -= 1f;
+            position.y = gravity.calc(ms);
+            translate();
+        }
         rotateY();
         scale();
     }

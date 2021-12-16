@@ -389,6 +389,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         return this;
     }
 
+    public Mesh getMesh(String name){
+        return sceneRenderer.getMesh(name);
+    }
+
     public Lights getLights(){
         return sceneRenderer.getLights();
     }

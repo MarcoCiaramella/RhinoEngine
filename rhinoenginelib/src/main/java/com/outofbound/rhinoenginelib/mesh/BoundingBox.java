@@ -11,7 +11,7 @@ public class BoundingBox {
     public static final int VFBL = 0;
     // vertex front bottom right
     public static final int VFBR = 1;
-    // vertex fron top right
+    // vertex front top right
     public static final int VFTR = 2;
     // vertex front top left
     public static final int VFTL = 3;
@@ -40,11 +40,11 @@ public class BoundingBox {
     private final Vector3f vbtrRes;
     private final Vector3f vbtlRes;
     private final float[][] bbVertices;
-    private final Vector3f min;
-    private final Vector3f max;
+    private final double[] min;
+    private final double[] max;
     private final float[] arr;
     private final float[] mMatrix;
-    private final Vector3f[] aabb;
+    private final double[][] aabb;
 
 
     public BoundingBox(float[] vertices, int sizeVertex){
@@ -71,12 +71,12 @@ public class BoundingBox {
         vbtrRes = new Vector3f(0,0,0);
         vbtlRes = new Vector3f(0,0,0);
         bbVertices = new float[8][3];
-        min = new Vector3f(0,0,0);
-        max = new Vector3f(0,0,0);
+        min = new double[3];
+        max = new double[3];
         arr = new float[24];
         mMatrix = new float[16];
         Matrix.setIdentityM(mMatrix,0);
-        aabb = new Vector3f[]{min,max};
+        aabb = new double[][]{min,max};
     }
 
     private float minCoord(float[] vertices, int sizeVertex, int coord){
@@ -139,7 +139,7 @@ public class BoundingBox {
         return bbVertices;
     }
 
-    public synchronized Vector3f[] getAABB(){
+    public synchronized double[][] getAABB(){
         transform();
         calcMinMax();
         return aabb;
@@ -180,15 +180,15 @@ public class BoundingBox {
     }
 
     private void calcMin(){
-        min.x = minCoord(arr,3,0);
-        min.y = minCoord(arr,3,1);
-        min.z = minCoord(arr,3,2);
+        min[0] = minCoord(arr,3,0);
+        min[1] = minCoord(arr,3,1);
+        min[2] = minCoord(arr,3,2);
     }
 
     private void calcMax(){
-        max.x = maxCoord(arr,3,0);
-        max.y = maxCoord(arr,3,1);
-        max.z = maxCoord(arr,3,2);
+        max[0] = maxCoord(arr,3,0);
+        max[1] = maxCoord(arr,3,1);
+        max[2] = maxCoord(arr,3,2);
     }
 
 }
