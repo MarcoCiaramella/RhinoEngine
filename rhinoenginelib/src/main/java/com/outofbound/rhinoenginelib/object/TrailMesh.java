@@ -55,7 +55,7 @@ public abstract class TrailMesh extends Mesh {
     }
 
     @Override
-    public void doTransformation(long ms) {
+    public void beforeRendering(long ms) {
         if (timer.isOver(ms)){
             if (getNumLines() == length){
                 removeLine();
@@ -72,5 +72,9 @@ public abstract class TrailMesh extends Mesh {
             reloadVertices();
             reloadColors();
         }
+    }
+
+    @Override
+    public void afterRendering(long ms) {
     }
 }

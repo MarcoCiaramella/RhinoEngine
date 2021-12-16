@@ -9,7 +9,7 @@ public class Pane extends com.outofbound.rhinoenginelib.mesh.primitives.Pane {
     }
 
     @Override
-    public void doTransformation(long ms) {
+    public void beforeRendering(long ms) {
         translate();
         rotateY();
         scale();

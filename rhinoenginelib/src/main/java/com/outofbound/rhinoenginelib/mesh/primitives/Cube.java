@@ -89,6 +89,10 @@ public class Cube extends Mesh {
     }
 
     @Override
-    public void doTransformation(long ms) {
+    public void beforeRendering(long ms) {
+    }
+
+    @Override
+    public void afterRendering(long ms) {
     }
 }

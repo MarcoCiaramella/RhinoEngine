@@ -10,7 +10,7 @@ public class Cube extends com.outofbound.rhinoenginelib.mesh.primitives.Cube {
     }
 
     @Override
-    public void doTransformation(long ms) {
+    public void beforeRendering(long ms) {
         position.z += 0.01f;
         translate();
         rotateY();

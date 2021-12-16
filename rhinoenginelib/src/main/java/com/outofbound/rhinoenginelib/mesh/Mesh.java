@@ -248,7 +248,9 @@ public abstract class Mesh {
         }
     }
 
-    public abstract void doTransformation(long ms);
+    public abstract void beforeRendering(long ms);
+
+    public abstract void afterRendering(long ms);
 
     protected void rotateX(){
         Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
@@ -472,9 +474,8 @@ public abstract class Mesh {
         return this;
     }
 
-    public Mesh loadMMatrix(long ms){
+    public Mesh loadMMatrix(){
         Matrix.setIdentityM(mMatrix, 0);
-        doTransformation(ms);
         return this;
     }
 
