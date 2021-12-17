@@ -401,7 +401,7 @@ public abstract class Mesh {
         if (mesh.isCollisionEnabled()){
             aabb.calc();
             int[] items = new int[1];
-            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, aabb.getMin() , aabb.getMax(), 0) == 1;
+            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, aabb.getMin(), aabb.getMax(), 0) == 1;
         }
         return false;
     }
