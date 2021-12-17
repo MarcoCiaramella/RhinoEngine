@@ -23,8 +23,8 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
         if (!collisionDetected) {
             //rotation.y -= 1f;
             position.y = gravity.calc(ms);
-            translate();
         }
+        translate();
         rotateY();
         scale();
     }
