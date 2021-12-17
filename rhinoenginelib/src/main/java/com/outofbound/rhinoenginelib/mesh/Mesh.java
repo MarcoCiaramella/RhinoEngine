@@ -385,11 +385,21 @@ public abstract class Mesh {
     }
 
     public Mesh enableCollision(){
-        double[] ver = new double[vertices.length];
-        for (int i = 0; i < ver.length; i++){
-            ver[i] = vertices[i];
+        if (octree == null) {
+            double[] ver = new double[vertices.length];
+            for (int i = 0; i < ver.length; i++) {
+                ver[i] = vertices[i];
+            }
+            octree = new Octree(getNumVertices(), ver, 0, null, indices.length / 3, indices, 0, null, 0, 1);
         }
-        octree = new Octree(getNumVertices(), ver, 0, null, indices.length/3, indices, 0, null, 0, 1);
+        return this;
+    }
+
+    public Mesh disableCollision(){
+        if (octree != null) {
+            octree.free();
+            octree = null;
+        }
         return this;
     }
 

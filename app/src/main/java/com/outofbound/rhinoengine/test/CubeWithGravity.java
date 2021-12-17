@@ -31,6 +31,6 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
 
     @Override
     public void afterRendering(long ms) {
-        collisionDetected = isColliding(Engine.getInstance().getMesh("Pane"));
+        collisionDetected = isColliding(Engine.getInstance().getMesh("Plane"));
     }
 }

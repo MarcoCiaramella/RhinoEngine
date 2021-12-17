@@ -16,7 +16,7 @@ public class Engine extends AbstractEngine {
     private static final Vector3f CAMERA_EYE = new Vector3f(3,2,3);
     private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
-    private static final int NUM_CUBES = 100;
+    private static final int NUM_CUBES = 30;
     private static final MyGesture gesture = new MyGesture();
 
     public Engine(Context context){
@@ -41,7 +41,10 @@ public class Engine extends AbstractEngine {
         getLights().setPointLight(pointLight);
         getLights().getDirLight().configShadow(1,1000,10);
 
-        addMesh(new Pane().enableCollision());
+        Plane plane = new Plane("plane_heavy.ply");
+        plane.enableCollision();
+        //plane.disableCollision();
+        addMesh(plane);
         //addMesh(new MeshObj());
         Cube cube = new Cube();
         addMesh(cube);
