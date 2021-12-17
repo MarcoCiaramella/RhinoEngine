@@ -45,7 +45,7 @@ public class AABB {
     private final float[] mMatrix;
 
 
-    public AABB(float[] vertices, int sizeVertex, float[] mMatrix){
+    protected AABB(float[] vertices, int sizeVertex, float[] mMatrix){
         float minX = minCoord(vertices,sizeVertex,0);
         float maxX = maxCoord(vertices,sizeVertex,0);
         float minY = minCoord(vertices,sizeVertex,1);
@@ -148,16 +148,16 @@ public class AABB {
         max[2] = maxCoord(arr,3,2);
     }
 
-    public void calc(){
+    protected void calc(){
         transform();
         calcMinMax();
     }
 
-    public double[] getMin() {
+    protected double[] getMin() {
         return min;
     }
 
-    public double[] getMax() {
+    protected double[] getMax() {
         return max;
     }
 }
