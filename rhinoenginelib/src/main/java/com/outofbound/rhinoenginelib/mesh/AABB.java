@@ -5,7 +5,7 @@ import android.opengl.Matrix;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
-public class BoundingBox {
+public class AABB {
 
     // vertex front bottom left
     public static final int VFBL = 0;
@@ -39,15 +39,13 @@ public class BoundingBox {
     private final Vector3f vbbrRes;
     private final Vector3f vbtrRes;
     private final Vector3f vbtlRes;
-    private final float[][] bbVertices;
     private final double[] min;
     private final double[] max;
     private final float[] arr;
     private final float[] mMatrix;
-    private final double[][] aabb;
 
 
-    public BoundingBox(float[] vertices, int sizeVertex, float[] mMatrix){
+    public AABB(float[] vertices, int sizeVertex, float[] mMatrix){
         float minX = minCoord(vertices,sizeVertex,0);
         float maxX = maxCoord(vertices,sizeVertex,0);
         float minY = minCoord(vertices,sizeVertex,1);
@@ -70,13 +68,11 @@ public class BoundingBox {
         vbbrRes = new Vector3f(0,0,0);
         vbtrRes = new Vector3f(0,0,0);
         vbtlRes = new Vector3f(0,0,0);
-        bbVertices = new float[8][3];
         min = new double[3];
         max = new double[3];
         arr = new float[24];
         this.mMatrix = mMatrix;
         Matrix.setIdentityM(mMatrix,0);
-        aabb = new double[][]{min,max};
     }
 
     private float minCoord(float[] vertices, int sizeVertex, int coord){
@@ -104,41 +100,6 @@ public class BoundingBox {
         vbbr.multiplyMV(mMatrix,vbbrRes);
         vbtr.multiplyMV(mMatrix,vbtrRes);
         vbtl.multiplyMV(mMatrix,vbtlRes);
-    }
-
-    public synchronized float[][] getVertices(){
-        transform();
-        bbVertices[VFBL][0] = vfblRes.x;
-        bbVertices[VFBL][1] = vfblRes.y;
-        bbVertices[VFBL][2] = vfblRes.z;
-        bbVertices[VFBR][0] = vfbrRes.x;
-        bbVertices[VFBR][1] = vfbrRes.y;
-        bbVertices[VFBR][2] = vfbrRes.z;
-        bbVertices[VFTR][0] = vftrRes.x;
-        bbVertices[VFTR][1] = vftrRes.y;
-        bbVertices[VFTR][2] = vftrRes.z;
-        bbVertices[VFTL][0] = vftlRes.x;
-        bbVertices[VFTL][1] = vftlRes.y;
-        bbVertices[VFTL][2] = vftlRes.z;
-        bbVertices[VBBL][0] = vbblRes.x;
-        bbVertices[VBBL][1] = vbblRes.y;
-        bbVertices[VBBL][2] = vbblRes.z;
-        bbVertices[VBBR][0] = vbbrRes.x;
-        bbVertices[VBBR][1] = vbbrRes.y;
-        bbVertices[VBBR][2] = vbbrRes.z;
-        bbVertices[VBTR][0] = vbtrRes.x;
-        bbVertices[VBTR][1] = vbtrRes.y;
-        bbVertices[VBTR][2] = vbtrRes.z;
-        bbVertices[VBTL][0] = vbtlRes.x;
-        bbVertices[VBTL][1] = vbtlRes.y;
-        bbVertices[VBTL][2] = vbtlRes.z;
-        return bbVertices;
-    }
-
-    public synchronized double[][] getAABB(){
-        transform();
-        calcMinMax();
-        return aabb;
     }
 
     private void loadArr(){
@@ -187,4 +148,16 @@ public class BoundingBox {
         max[2] = maxCoord(arr,3,2);
     }
 
+    public void calc(){
+        transform();
+        calcMinMax();
+    }
+
+    public double[] getMin() {
+        return min;
+    }
+
+    public double[] getMax() {
+        return max;
+    }
 }

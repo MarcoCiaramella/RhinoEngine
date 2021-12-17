@@ -1,6 +1,6 @@
 package com.outofbound.rhinoengine.test;
 
-import com.outofbound.rhinoenginelib.mesh.BoundingBox;
+import com.outofbound.rhinoenginelib.mesh.AABB;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.object.TrailMesh;
 
@@ -14,12 +14,12 @@ public class Trail extends TrailMesh {
 
     @Override
     protected void newLine(float[][] bbVertices, float[] newLineVertices, float[] newLineNormals) {
-        newLineVertices[0] = bbVertices[BoundingBox.VFBL][0];
-        newLineVertices[1] = bbVertices[BoundingBox.VFBL][1];
-        newLineVertices[2] = bbVertices[BoundingBox.VFBL][2];
-        newLineVertices[3] = bbVertices[BoundingBox.VFBR][0];
-        newLineVertices[4] = bbVertices[BoundingBox.VFBR][1];
-        newLineVertices[5] = bbVertices[BoundingBox.VFBR][2];
+        newLineVertices[0] = bbVertices[AABB.VFBL][0];
+        newLineVertices[1] = bbVertices[AABB.VFBL][1];
+        newLineVertices[2] = bbVertices[AABB.VFBL][2];
+        newLineVertices[3] = bbVertices[AABB.VFBR][0];
+        newLineVertices[4] = bbVertices[AABB.VFBR][1];
+        newLineVertices[5] = bbVertices[AABB.VFBR][2];
 
         newLineNormals[0] = NEW_NORMAL[0];
         newLineNormals[1] = NEW_NORMAL[1];

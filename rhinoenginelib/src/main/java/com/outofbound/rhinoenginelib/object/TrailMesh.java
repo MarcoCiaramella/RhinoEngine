@@ -25,10 +25,11 @@ public abstract class TrailMesh extends Mesh {
     }
 
     private void addLine(){
-        float[][] bbVertices = source.getBoundingBox().getVertices();
+        // TODO
+        /*float[][] bbVertices = source.getBoundingBox().getVertices();
         newLine(bbVertices, newLineVertices, newLineNormals);
         addVertices(newLineVertices);
-        addNormals(newLineNormals);
+        addNormals(newLineNormals);*/
     }
 
     protected abstract void newLine(float[][] bbVertices, float[] newLineVertices, float[] newLineNormals);

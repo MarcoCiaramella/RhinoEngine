@@ -42,7 +42,7 @@ public class Engine extends AbstractEngine {
         getLights().getDirLight().configShadow(1,1000,10);
 
         addMesh(new Pane().enableCollision());
-        addMesh(new MeshObj());
+        //addMesh(new MeshObj());
         Cube cube = new Cube();
         addMesh(cube);
         addMesh(new Trail("trail", cube, new float[]{1,1,1,1}, 100, 100));

@@ -82,7 +82,7 @@ public abstract class Mesh {
     private FloatBuffer colorBuffer;
     private FloatBuffer texCoordsBuffer;
     private IntBuffer indicesBuffer;
-    private BoundingBox boundingBox;
+    private AABB AABB;
     protected Vector3f position;
     protected Vector3f rotation;
     protected float scale;
@@ -178,7 +178,7 @@ public abstract class Mesh {
         loadIndices();
         loadTexture();
         if (vertices.length > 0) {
-            createBoundingBox();
+            createAABB();
         }
     }
 
@@ -340,7 +340,7 @@ public abstract class Mesh {
 
     public void addVertices(float[] vertices){
         this.vertices = addFloats(this.vertices,vertices);
-        createBoundingBox();
+        createAABB();
     }
 
     public void addNormals(float[] normals){
@@ -379,8 +379,8 @@ public abstract class Mesh {
         return indices.length;
     }
 
-    private Mesh createBoundingBox(){
-        boundingBox = new BoundingBox(vertices, sizeVertex, mMatrix);
+    private Mesh createAABB(){
+        AABB = new AABB(vertices, sizeVertex, mMatrix);
         return this;
     }
 
@@ -399,16 +399,11 @@ public abstract class Mesh {
 
     public boolean isColliding(Mesh mesh){
         if (mesh.isCollisionEnabled()){
-            double[] min = getBoundingBox().getAABB()[0];
-            double[] max = getBoundingBox().getAABB()[1];
+            AABB.calc();
             int[] items = new int[1];
-            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, min ,max, 0) == 1;
+            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, AABB.getMin() ,AABB.getMax(), 0) == 1;
         }
         return false;
-    }
-
-    public BoundingBox getBoundingBox(){
-        return boundingBox;
     }
 
     public Vector3f getPosition(){
