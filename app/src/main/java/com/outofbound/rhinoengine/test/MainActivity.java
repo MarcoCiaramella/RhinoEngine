@@ -48,6 +48,14 @@ public class MainActivity extends RhinoEngineActivity {
                 getEngine().shadowsOff();
             }
         });
+
+        getDebug().post(new Runnable() {
+            @Override
+            public void run() {
+                getDebug().setText(Debug.text);
+                getDebug().postDelayed(this,100);
+            }
+        });
     }
 
     private Engine getEngine(){
@@ -68,5 +76,9 @@ public class MainActivity extends RhinoEngineActivity {
 
     private SwitchCompat getShadows(){
         return findViewById(R.id.shadows);
+    }
+
+    private TextView getDebug(){
+        return findViewById(R.id.debug);
     }
 }
