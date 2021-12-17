@@ -82,7 +82,7 @@ public abstract class Mesh {
     private FloatBuffer colorBuffer;
     private FloatBuffer texCoordsBuffer;
     private IntBuffer indicesBuffer;
-    private AABB AABB;
+    private AABB aabb;
     protected Vector3f position;
     protected Vector3f rotation;
     protected float scale;
@@ -380,7 +380,7 @@ public abstract class Mesh {
     }
 
     private Mesh createAABB(){
-        AABB = new AABB(vertices, sizeVertex, mMatrix);
+        aabb = new AABB(vertices, sizeVertex, mMatrix);
         return this;
     }
 
@@ -399,9 +399,9 @@ public abstract class Mesh {
 
     public boolean isColliding(Mesh mesh){
         if (mesh.isCollisionEnabled()){
-            AABB.calc();
+            aabb.calc();
             int[] items = new int[1];
-            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, AABB.getMin() ,AABB.getMax(), 0) == 1;
+            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, aabb.getMin() , aabb.getMax(), 0) == 1;
         }
         return false;
     }
