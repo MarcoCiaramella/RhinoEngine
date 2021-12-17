@@ -35,7 +35,7 @@ public class Pane extends Mesh {
     }
 
     public Pane(String name, float sizeX, float sizeZ, float[] color) {
-        this(name, scale(vertices,sizeX,1,sizeZ),color);
+        this(name, scale(vertices,sizeX,1,sizeZ), color);
     }
 
     @Override

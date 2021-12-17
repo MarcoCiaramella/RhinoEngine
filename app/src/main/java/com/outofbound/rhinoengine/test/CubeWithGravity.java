@@ -12,7 +12,7 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
     public CubeWithGravity(String name) {
         super(name, 2,2,2,Color.randomColor(0.2f,1.0f,1.0f));
         position.x = Numbers.randomFloat(-2,2);
-        position.y = Numbers.randomFloat(-2,2);
+        position.y = Numbers.randomFloat(2,6);
         position.z = Numbers.randomFloat(-2,2);
         scale = 0.1f;
         gravity = new Gravity(-1, position.y);
