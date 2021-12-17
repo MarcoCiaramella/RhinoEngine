@@ -14,7 +14,7 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
         position.x = Numbers.randomFloat(-2,2);
         position.y = Numbers.randomFloat(-2,2);
         position.z = Numbers.randomFloat(-2,2);
-        scale = 0.1f;
+        scale = 0.5f;
         gravity = new Gravity(-1, position.y);
     }
 

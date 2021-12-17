@@ -17,19 +17,19 @@ public class Engine extends AbstractEngine {
     private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
     private static final int NUM_CUBES = 1;
+    private static final MyGesture gesture = new MyGesture();
 
     public Engine(Context context){
-        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), null);
+        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), null);
+        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture);
     }
 
     @Override
     protected void init() {
         setClearColor(0,0,0,1);
-        addTask(new CameraRotation("CameraRotation"));
         addTask(new LightAnimation("LightAnimation"));
         PointLight pointLight = new PointLight(
                 new Vector3f(3,2,0),
