@@ -390,7 +390,7 @@ public abstract class Mesh {
             for (int i = 0; i < ver.length; i++) {
                 ver[i] = vertices[i];
             }
-            octree = new Octree(getNumVertices(), ver, 0, null, indices.length / 3, indices, 0, null, 0, 1);
+            octree = new Octree(getNumVertices(), ver, 3, 0, null, 0, indices.length / 3, indices, 3, 0, null, 0, 0, 1);
         }
         return this;
     }
