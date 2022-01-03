@@ -262,7 +262,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDepthFunc(GLES20.GL_LESS);
         GLES20.glClearDepthf(1.0f);
-        GLES20.glFrontFace(GLES20.GL_CCW);
 
         sceneRenderer = new SceneRenderer();
         blurRenderer = new BlurRenderer(sceneRenderer);
