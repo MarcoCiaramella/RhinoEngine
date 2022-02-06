@@ -1,5 +1,7 @@
 package com.outofbound.rhinoenginelib.activity;
 
+import static android.view.View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
@@ -27,7 +29,7 @@ public class RhinoEngineActivity extends AppCompatActivity {
         // a general rule, you should design your app to hide the status bar whenever you
         // hide the navigation bar.
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN;
+                | View.SYSTEM_UI_FLAG_FULLSCREEN | SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
