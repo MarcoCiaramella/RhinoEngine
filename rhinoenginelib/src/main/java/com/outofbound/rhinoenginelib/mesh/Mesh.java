@@ -380,7 +380,7 @@ public abstract class Mesh {
     }
 
     private Mesh createAABB(){
-        aabb = new AABB(vertices, sizeVertex, mMatrix);
+        aabb = new AABB(vertices, sizeVertex);
         return this;
     }
 
@@ -409,7 +409,7 @@ public abstract class Mesh {
 
     public boolean isColliding(Mesh mesh){
         if (mesh.isCollisionEnabled()){
-            aabb.calc();
+            aabb.calc(mMatrix);
             int[] items = new int[1];
             return mesh.octree.getWithinBoundingBox(Octree.TRI, items, aabb.getMin(), aabb.getMax(), 0) == 1;
         }

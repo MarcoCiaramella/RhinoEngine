@@ -42,10 +42,9 @@ public class AABB {
     private final double[] min;
     private final double[] max;
     private final float[] arr;
-    private final float[] mMatrix;
 
 
-    protected AABB(float[] vertices, int sizeVertex, float[] mMatrix){
+    protected AABB(float[] vertices, int sizeVertex){
         float minX = minCoord(vertices,sizeVertex,0);
         float maxX = maxCoord(vertices,sizeVertex,0);
         float minY = minCoord(vertices,sizeVertex,1);
@@ -71,8 +70,6 @@ public class AABB {
         min = new double[3];
         max = new double[3];
         arr = new float[24];
-        this.mMatrix = mMatrix;
-        Matrix.setIdentityM(mMatrix,0);
     }
 
     private float minCoord(float[] vertices, int sizeVertex, int coord){
@@ -91,7 +88,7 @@ public class AABB {
         return max;
     }
 
-    private void transform(){
+    private void transform(float[] mMatrix){
         vfbl.multiplyMV(mMatrix,vfblRes);
         vfbr.multiplyMV(mMatrix,vfbrRes);
         vftr.multiplyMV(mMatrix,vftrRes);
@@ -148,8 +145,8 @@ public class AABB {
         max[2] = maxCoord(arr,3,2);
     }
 
-    protected void calc(){
-        transform();
+    protected void calc(float[] mMatrix){
+        transform(mMatrix);
         calcMinMax();
     }
 
