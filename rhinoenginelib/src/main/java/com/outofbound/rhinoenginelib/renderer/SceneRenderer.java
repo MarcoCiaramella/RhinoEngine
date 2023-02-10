@@ -73,7 +73,9 @@ public final class SceneRenderer extends AbstractRenderer {
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
         for (String name : meshMap.keySet()) {
-            Mesh mesh = getMesh(name).resetMMatrix();
+            Mesh mesh = getMesh(name);
+            if (mesh == null) continue;
+            mesh.resetMMatrix();
             mesh.beforeRendering(ms);
             Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
             sceneShader.setMesh(mesh);

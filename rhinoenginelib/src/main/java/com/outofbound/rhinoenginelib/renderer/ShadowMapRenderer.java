@@ -26,6 +26,7 @@ public class ShadowMapRenderer extends AbstractRenderer {
         camera.loadVpMatrix();
         for (String name : meshMap.keySet()) {
             Mesh mesh = meshMap.get(name);
+            if (mesh == null) continue;
             Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
             shadowMapShader.setMesh(mesh);
             shadowMapShader.setMvpMatrix(mvpMatrix);

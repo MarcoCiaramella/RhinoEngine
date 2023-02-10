@@ -19,11 +19,7 @@ public class SyncMap<V> {
     }
 
     public synchronized V get(String name){
-        V v = hashMap.get(name);
-        if (v != null){
-            return v;
-        }
-        throw new RuntimeException("Entity named '"+name+"' not found.");
+        return hashMap.get(name);
     }
 
     public synchronized V remove(String name){

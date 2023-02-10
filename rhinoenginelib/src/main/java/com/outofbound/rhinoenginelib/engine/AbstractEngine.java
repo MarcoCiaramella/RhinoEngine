@@ -305,6 +305,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
         for (String name : taskMap.keySet()){
             Task task = getTask(name);
+            if (task == null) continue;
             boolean alive = task.runTask(deltaMs);
             if (!alive) {
                 removeTask(name);
