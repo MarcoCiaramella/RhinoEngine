@@ -314,7 +314,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
                 Mesh mesh = getMesh(name);
                 if (mesh.hasAABB()) {
                     for (Mesh mesh2 : Collider.query(mesh)) {
-                        mesh.onCollision(mesh2);
+                        if (mesh != mesh2 && mesh.getAABB().intersects(mesh2.getAABB())) {
+                            mesh.onCollision(mesh2);
+                        }
                     }
                 }
             }
