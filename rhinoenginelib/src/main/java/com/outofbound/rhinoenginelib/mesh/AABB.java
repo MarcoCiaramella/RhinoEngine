@@ -1,7 +1,6 @@
 package com.outofbound.rhinoenginelib.mesh;
 
-import android.opengl.Matrix;
-
+import com.lib.joctree.math.collision.BoundingBox;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
@@ -39,8 +38,7 @@ public class AABB {
     private final Vector3f vbbrRes;
     private final Vector3f vbtrRes;
     private final Vector3f vbtlRes;
-    private final double[] min;
-    private final double[] max;
+    private final BoundingBox bb;
     private final float[] arr;
 
 
@@ -67,8 +65,7 @@ public class AABB {
         vbbrRes = new Vector3f(0,0,0);
         vbtrRes = new Vector3f(0,0,0);
         vbtlRes = new Vector3f(0,0,0);
-        min = new double[3];
-        max = new double[3];
+        bb = new BoundingBox();
         arr = new float[24];
     }
 
@@ -134,27 +131,23 @@ public class AABB {
     }
 
     private void calcMin(){
-        min[0] = minCoord(arr,3,0);
-        min[1] = minCoord(arr,3,1);
-        min[2] = minCoord(arr,3,2);
+        bb.min.set(minCoord(arr,3,0),
+                minCoord(arr,3,1),
+                minCoord(arr,3,2));
     }
 
     private void calcMax(){
-        max[0] = maxCoord(arr,3,0);
-        max[1] = maxCoord(arr,3,1);
-        max[2] = maxCoord(arr,3,2);
+        bb.max.set(maxCoord(arr,3,0),
+                maxCoord(arr,3,1),
+                maxCoord(arr,3,2));
     }
 
-    protected void calc(float[] mMatrix){
+    public void calc(float[] mMatrix){
         transform(mMatrix);
         calcMinMax();
     }
 
-    protected double[] getMin() {
-        return min;
-    }
-
-    protected double[] getMax() {
-        return max;
+    public BoundingBox getBoundingBox() {
+        return bb;
     }
 }

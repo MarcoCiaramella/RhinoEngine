@@ -87,12 +87,4 @@ public class Cube extends Mesh {
     public Cube(String name, float sizeX, float sizeY, float sizeZ, float[] color) {
         this(name, scale(vertices,sizeX,sizeY,sizeZ), color);
     }
-
-    @Override
-    public void beforeRendering(long ms) {
-    }
-
-    @Override
-    public void afterRendering(long ms) {
-    }
 }

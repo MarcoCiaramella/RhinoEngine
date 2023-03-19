@@ -24,9 +24,9 @@ public class ShadowMapRenderer extends AbstractRenderer {
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
         camera.loadVpMatrix();
+        meshMap.removeNull();
         for (String name : meshMap.keySet()) {
             Mesh mesh = meshMap.get(name);
-            if (mesh == null) continue;
             Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
             shadowMapShader.setMesh(mesh);
             shadowMapShader.setMvpMatrix(mvpMatrix);

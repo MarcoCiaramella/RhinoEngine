@@ -14,14 +14,13 @@ import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
+import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Set;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -44,6 +43,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     private boolean blurEnabled = false;
     private SceneRenderer sceneRenderer;
     private final SyncMap<Task> taskMap = new SyncMap<>();
+    private boolean collisionEnabled = false;
 
 
 
@@ -303,10 +303,27 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
 
+        if (collisionEnabled) {
+            for (String name : sceneRenderer.getMeshes().keySet()) {
+                Mesh mesh = getMesh(name);
+                if (mesh.hasAABB()) {
+                    Collider.add(mesh.calcAABB());
+                }
+            }
+            for (String name : sceneRenderer.getMeshes().keySet()) {
+                Mesh mesh = getMesh(name);
+                if (mesh.hasAABB()) {
+                    for (Mesh mesh2 : Collider.query(mesh)) {
+                        mesh.onCollision(mesh2);
+                    }
+                }
+            }
+            Collider.clear();
+        }
+
+        taskMap.removeNull();
         for (String name : taskMap.keySet()){
-            Task task = getTask(name);
-            if (task == null) continue;
-            boolean alive = task.runTask(deltaMs);
+            boolean alive = getTask(name).runTask(deltaMs);
             if (!alive) {
                 removeTask(name);
             }
@@ -395,6 +412,14 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     public Lights getLights(){
         return sceneRenderer.getLights();
+    }
+
+    public void enableCollision() {
+        collisionEnabled = true;
+    }
+
+    public void disableCollision() {
+        collisionEnabled = false;
     }
 
 }

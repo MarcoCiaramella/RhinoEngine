@@ -74,8 +74,4 @@ public abstract class TrailMesh extends Mesh {
             reloadColors();
         }
     }
-
-    @Override
-    public void afterRendering(long ms) {
-    }
 }

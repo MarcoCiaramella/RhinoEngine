@@ -29,6 +29,7 @@ public class Engine extends AbstractEngine {
 
     @Override
     protected void init() {
+        enableCollision();
         setClearColor(0,0,0,1);
         addTask(new LightAnimation("LightAnimation"));
         PointLight pointLight = new PointLight(
@@ -42,8 +43,6 @@ public class Engine extends AbstractEngine {
         getLights().getDirLight().configShadow(1,1000,10);
 
         Plane plane = new Plane("plane_heavy.ply");
-        plane.enableCollision();
-        //plane.disableCollision();
         addMesh(plane);
         //addMesh(new MeshObj());
         Cube cube = new Cube();

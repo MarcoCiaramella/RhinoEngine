@@ -57,6 +57,10 @@ public final class SceneRenderer extends AbstractRenderer {
         return lights;
     }
 
+    public SyncMap<Mesh> getMeshes() {
+        return meshMap;
+    }
+
     @Override
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
         camera.loadVpMatrix();
@@ -72,9 +76,9 @@ public final class SceneRenderer extends AbstractRenderer {
             GLES20.glEnable(GLES20.GL_BLEND);
             GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
         }
+        meshMap.removeNull();
         for (String name : meshMap.keySet()) {
             Mesh mesh = getMesh(name);
-            if (mesh == null) continue;
             mesh.resetMMatrix();
             mesh.beforeRendering(ms);
             Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
@@ -84,7 +88,9 @@ public final class SceneRenderer extends AbstractRenderer {
             sceneShader.bindData();
             draw(mesh);
             sceneShader.unbindData();
-            mesh.afterRendering(ms);
+        }
+        for (String name : meshMap.keySet()) {
+            getMesh(name).afterRendering(ms);
         }
         if (blendingEnabled) {
             GLES20.glDisable(GLES20.GL_BLEND);

@@ -8,7 +8,6 @@ import android.opengl.Matrix;
 
 import androidx.annotation.NonNull;
 
-import com.ds.octreelib.Octree;
 import com.outofbound.meshloaderlib.obj.Obj;
 import com.outofbound.meshloaderlib.ply.Ply;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
@@ -23,7 +22,7 @@ import java.nio.IntBuffer;
 import java.util.Arrays;
 
 
-public abstract class Mesh {
+public class Mesh {
 
     public static class Material {
         private Vector3f ambientColor;
@@ -91,7 +90,6 @@ public abstract class Mesh {
     private Material material;
     private final String name;
     private final float[] mMatrix = new float[16];
-    private Octree octree;
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -248,9 +246,11 @@ public abstract class Mesh {
         }
     }
 
-    public abstract void beforeRendering(long ms);
+    public void beforeRendering(long ms) {}
 
-    public abstract void afterRendering(long ms);
+    public void afterRendering(long ms) {}
+
+    public void onCollision(Mesh mesh) {}
 
     protected void rotateX(){
         Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
@@ -384,38 +384,6 @@ public abstract class Mesh {
         return this;
     }
 
-    public Mesh enableCollision(){
-        if (octree == null) {
-            double[] ver = new double[vertices.length];
-            for (int i = 0; i < ver.length; i++) {
-                ver[i] = vertices[i];
-            }
-            octree = new Octree(getNumVertices(), ver, 3, 0, null, 0, indices.length / 3, indices, 3, 0, null, 0, 0, 1);
-        }
-        return this;
-    }
-
-    public Mesh disableCollision(){
-        if (octree != null) {
-            octree.free();
-            octree = null;
-        }
-        return this;
-    }
-
-    private boolean isCollisionEnabled(){
-        return octree != null;
-    }
-
-    public boolean isColliding(Mesh mesh){
-        if (mesh.isCollisionEnabled()){
-            aabb.calc(mMatrix);
-            int[] items = new int[1];
-            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, aabb.getMin(), aabb.getMax(), 0) == 1;
-        }
-        return false;
-    }
-
     public Vector3f getPosition(){
         return position;
     }
@@ -486,5 +454,18 @@ public abstract class Mesh {
 
     public float[] getMMatrix(){
         return mMatrix;
+    }
+
+    public Mesh calcAABB() {
+        aabb.calc(mMatrix);
+        return this;
+    }
+
+    public AABB getAABB() {
+        return aabb;
+    }
+
+    public boolean hasAABB() {
+        return aabb != null;
     }
 }
