@@ -22,7 +22,7 @@ public class Collider {
     private static final Octree<Mesh> octree = new Octree<>(MIN, MAX, MAX_DEPTH, MAX_ITEMS_PER_NODE, new Octree.Collider<Mesh>() {
         @Override
         public boolean intersects(BoundingBox nodeBounds, Mesh mesh) {
-            return nodeBounds.intersects(mesh.getAABB().getBoundingBox());
+            return nodeBounds.intersects(mesh.getAABB());
         }
 
         @Override
@@ -36,7 +36,7 @@ public class Collider {
     }
 
     public static Mesh[] query(Mesh mesh) {
-        octree.query(mesh.getAABB().getBoundingBox(), result);
+        octree.query(mesh.getAABB(), result);
         Mesh[] meshes = new Mesh[result.size];
         int i = 0;
         for (Mesh m : result) {

@@ -14,7 +14,8 @@ public class Trail extends TrailMesh {
 
     @Override
     protected void newLine(float[][] bbVertices, float[] newLineVertices, float[] newLineNormals) {
-        newLineVertices[0] = bbVertices[AABB.VFBL][0];
+        // TODO
+        /*newLineVertices[0] = bbVertices[AABB.VFBL][0];
         newLineVertices[1] = bbVertices[AABB.VFBL][1];
         newLineVertices[2] = bbVertices[AABB.VFBL][2];
         newLineVertices[3] = bbVertices[AABB.VFBR][0];
@@ -26,7 +27,7 @@ public class Trail extends TrailMesh {
         newLineNormals[2] = NEW_NORMAL[2];
         newLineNormals[3] = NEW_NORMAL[0];
         newLineNormals[4] = NEW_NORMAL[1];
-        newLineNormals[5] = NEW_NORMAL[2];
+        newLineNormals[5] = NEW_NORMAL[2];*/
 
     }
 }
