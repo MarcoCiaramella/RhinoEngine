@@ -6,6 +6,7 @@ import com.lib.joctree.math.collision.BoundingBox;
 import com.lib.joctree.math.collision.Ray;
 import com.lib.joctree.utils.Array;
 import com.lib.joctree.utils.ObjectSet;
+import com.outofbound.rhinoenginelib.mesh.AABB;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
@@ -22,7 +23,12 @@ public class Collider {
     private static final Octree<Mesh> octree = new Octree<>(MIN, MAX, MAX_DEPTH, MAX_ITEMS_PER_NODE, new Octree.Collider<Mesh>() {
         @Override
         public boolean intersects(BoundingBox nodeBounds, Mesh mesh) {
-            return nodeBounds.intersects(mesh.getAABB());
+            for (AABB aabb : mesh.getAABBGrid()) {
+                if (nodeBounds.intersects(aabb)) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         @Override
@@ -35,12 +41,13 @@ public class Collider {
         octree.add(mesh);
     }
 
-    public static Mesh[] query(Mesh mesh) {
-        octree.query(mesh.getAABB(), result);
-        Mesh[] meshes = new Mesh[result.size];
-        int i = 0;
-        for (Mesh m : result) {
-            meshes[i++] = m;
+    public static ArrayList<Mesh> query(Mesh mesh) {
+        ArrayList<Mesh> meshes = new ArrayList<>();
+        for (AABB aabb : mesh.getAABBGrid()) {
+            octree.query(aabb, result);
+            for (Mesh m : result) {
+                meshes.add(m);
+            }
         }
         return meshes;
     }

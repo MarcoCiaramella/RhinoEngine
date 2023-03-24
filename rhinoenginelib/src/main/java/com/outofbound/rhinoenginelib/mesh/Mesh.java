@@ -19,6 +19,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -81,7 +82,7 @@ public class Mesh {
     private FloatBuffer colorBuffer;
     private FloatBuffer texCoordsBuffer;
     private IntBuffer indicesBuffer;
-    private AABB aabb;
+    private ArrayList<AABB> aabbGrid;
     protected Vector3f position;
     protected Vector3f rotation;
     protected float scale;
@@ -176,7 +177,7 @@ public class Mesh {
         loadIndices();
         loadTexture();
         if (vertices.length > 0) {
-            createAABB();
+            newAABBGrid();
         }
     }
 
@@ -340,7 +341,7 @@ public class Mesh {
 
     public void addVertices(float[] vertices){
         this.vertices = addFloats(this.vertices,vertices);
-        createAABB();
+        newAABBGrid();
     }
 
     public void addNormals(float[] normals){
@@ -379,8 +380,8 @@ public class Mesh {
         return indices.length;
     }
 
-    private Mesh createAABB(){
-        aabb = new AABB(vertices, sizeVertex);
+    private Mesh newAABBGrid(){
+        aabbGrid = AABB.newAABBGrid(vertices, sizeVertex, 8, 8, 8);
         return this;
     }
 
@@ -457,15 +458,28 @@ public class Mesh {
     }
 
     public Mesh calcAABB() {
-        aabb.calc(mMatrix);
+        for (AABB aabb : aabbGrid) {
+            aabb.calc(mMatrix);
+        }
         return this;
     }
 
-    public AABB getAABB() {
-        return aabb;
+    public ArrayList<AABB> getAABBGrid() {
+        return aabbGrid;
     }
 
     public boolean hasAABB() {
-        return aabb != null;
+        return aabbGrid != null;
+    }
+
+    public boolean intersects(Mesh mesh) {
+        for (AABB aabb1 : aabbGrid) {
+            for (AABB aabb2 : mesh.getAABBGrid()) {
+                if (aabb1.intersects(aabb2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
