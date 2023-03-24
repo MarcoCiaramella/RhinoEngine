@@ -323,9 +323,13 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             Collider.clear();
         }
 
-        taskMap.removeNull();
         for (String name : taskMap.keySet()){
-            boolean alive = getTask(name).runTask(deltaMs);
+            Task task = getTask(name);
+            if (task == null) {
+                taskMap.remove(name);
+                continue;
+            }
+            boolean alive = task.runTask(deltaMs);
             if (!alive) {
                 removeTask(name);
             }

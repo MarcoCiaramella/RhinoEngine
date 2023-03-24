@@ -31,10 +31,4 @@ public class SyncMap<V> {
         keySet.addAll(hashMap.keySet());
         return keySet;
     }
-
-    public synchronized void removeNull() {
-        for (String name : keySet()) {
-            if (get(name) == null) remove(name);
-        }
-    }
 }
