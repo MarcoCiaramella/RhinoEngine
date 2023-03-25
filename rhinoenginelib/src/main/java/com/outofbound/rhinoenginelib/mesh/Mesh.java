@@ -91,6 +91,7 @@ public class Mesh {
     private Material material;
     private final String name;
     private final float[] mMatrix = new float[16];
+    private boolean collisionEnabled = false;
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -381,6 +382,7 @@ public class Mesh {
     }
 
     private Mesh newAABBGrid(){
+        // TODO le size inserirle come conf
         aabbGrid = AABB.newAABBGrid(vertices, sizeVertex, 8, 8, 8);
         return this;
     }
@@ -481,5 +483,19 @@ public class Mesh {
             }
         }
         return false;
+    }
+
+    public Mesh enableCollision() {
+        collisionEnabled = true;
+        return this;
+    }
+
+    public Mesh disableCollision() {
+        collisionEnabled = false;
+        return this;
+    }
+
+    public boolean isCollisionEnabled() {
+        return collisionEnabled;
     }
 }

@@ -43,7 +43,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     private boolean blurEnabled = false;
     private SceneRenderer sceneRenderer;
     private final SyncMap<Task> taskMap = new SyncMap<>();
-    private boolean collisionEnabled = false;
 
 
 
@@ -303,25 +302,16 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
 
-        if (collisionEnabled) {
-            for (String name : sceneRenderer.getMeshes().keySet()) {
-                Mesh mesh = getMesh(name);
-                if (mesh.hasAABB()) {
-                    Collider.add(mesh.calcAABB());
-                }
+        for (String name : sceneRenderer.getMeshes().keySet()) {
+            Mesh mesh = getMesh(name);
+            if (mesh.isCollisionEnabled() && mesh.hasAABB()) {
+                Collider.add(mesh.calcAABB());
             }
-            for (String name : sceneRenderer.getMeshes().keySet()) {
-                Mesh mesh = getMesh(name);
-                if (mesh != null && mesh.hasAABB()) {
-                    for (Mesh mesh2 : Collider.query(mesh)) {
-                        if (mesh != mesh2 && mesh.intersects(mesh2)) {
-                            mesh.onCollision(mesh2);
-                        }
-                    }
-                }
-            }
-            Collider.clear();
         }
+        for (String name : sceneRenderer.getMeshes().keySet()) {
+            processCollision(getMesh(name));
+        }
+        Collider.clear();
 
         for (String name : taskMap.keySet()){
             Task task = getTask(name);
@@ -337,6 +327,16 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
         ms = currentMs;
 
+    }
+
+    private void processCollision(Mesh mesh) {
+        if (mesh != null && mesh.hasAABB()) {
+            for (Mesh mesh2 : Collider.query(mesh)) {
+                if (mesh != mesh2 && mesh.intersects(mesh2)) {
+                    mesh.onCollision(mesh2);
+                }
+            }
+        }
     }
 
     /**
@@ -418,14 +418,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     public Lights getLights(){
         return sceneRenderer.getLights();
-    }
-
-    public void enableCollision() {
-        collisionEnabled = true;
-    }
-
-    public void disableCollision() {
-        collisionEnabled = false;
     }
 
 }

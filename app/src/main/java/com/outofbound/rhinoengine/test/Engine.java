@@ -29,7 +29,6 @@ public class Engine extends AbstractEngine {
 
     @Override
     protected void init() {
-        enableCollision();
         setClearColor(0,0,0,1);
         addTask(new LightAnimation("LightAnimation"));
         PointLight pointLight = new PointLight(
