@@ -92,6 +92,7 @@ public class Mesh {
     private final String name;
     private final float[] mMatrix = new float[16];
     private boolean collisionEnabled = false;
+    private int aabbSizeX, aabbSizeY, aabbSizeZ;
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -177,9 +178,6 @@ public class Mesh {
         loadTexCoords();
         loadIndices();
         loadTexture();
-        if (vertices.length > 0) {
-            newAABBGrid();
-        }
     }
 
     public void reloadVertices(){
@@ -341,8 +339,10 @@ public class Mesh {
     }
 
     public void addVertices(float[] vertices){
-        this.vertices = addFloats(this.vertices,vertices);
-        newAABBGrid();
+        this.vertices = addFloats(this.vertices, vertices);
+        if (collisionEnabled) {
+            newAABBGrid();
+        }
     }
 
     public void addNormals(float[] normals){
@@ -382,8 +382,7 @@ public class Mesh {
     }
 
     private Mesh newAABBGrid(){
-        // TODO le size inserirle come conf
-        aabbGrid = AABB.newAABBGrid(vertices, sizeVertex, 8, 8, 8);
+        aabbGrid = AABB.newAABBGrid(vertices, sizeVertex, this.aabbSizeX, this.aabbSizeY, this.aabbSizeZ);
         return this;
     }
 
@@ -474,9 +473,17 @@ public class Mesh {
         return aabbGrid != null;
     }
 
-    public Mesh enableCollision() {
+    public Mesh enableCollision(int aabbSizeX, int aabbSizeY, int aabbSizeZ) {
+        this.aabbSizeX = aabbSizeX;
+        this.aabbSizeY = aabbSizeY;
+        this.aabbSizeZ = aabbSizeZ;
+        if (vertices.length > 0) newAABBGrid();
         collisionEnabled = true;
         return this;
+    }
+
+    public Mesh enableCollision() {
+        return enableCollision(1, 1, 1);
     }
 
     public Mesh disableCollision() {
