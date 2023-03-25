@@ -21,6 +21,7 @@ import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.microedition.khronos.egl.EGLConfig;
@@ -335,7 +336,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
     private void processCollision(Mesh mesh) {
         for (AABB aabb : mesh.getAABBGrid()) {
-            for (AABB aabb2 : Collider.query(aabb)) {
+            ArrayList<AABB>  result = Collider.query(aabb);
+            if (result == null) return;
+            for (AABB aabb2 : result) {
                 if (aabb != aabb2 && aabb.getBoundingBox().intersects(aabb2.getBoundingBox())) {
                     mesh.onCollision(aabb2);
                 }
