@@ -252,7 +252,7 @@ public class Mesh {
 
     public void afterRendering(long ms) {}
 
-    public void onCollision(Mesh mesh) {}
+    public void onCollision(AABB aabb) {}
 
     protected void rotateX(){
         Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
@@ -472,17 +472,6 @@ public class Mesh {
 
     public boolean hasAABB() {
         return aabbGrid != null;
-    }
-
-    public boolean intersects(Mesh mesh) {
-        for (AABB aabb1 : aabbGrid) {
-            for (AABB aabb2 : mesh.getAABBGrid()) {
-                if (aabb1.intersects(aabb2)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     public Mesh enableCollision() {

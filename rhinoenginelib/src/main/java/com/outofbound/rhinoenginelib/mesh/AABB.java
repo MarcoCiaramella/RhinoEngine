@@ -9,12 +9,13 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 import java.util.ArrayList;
 
 
-public class AABB extends BoundingBox {
+public class AABB {
 
+    private final BoundingBox boundingBox;
     private final Matrix4 m4 = new Matrix4();
 
     private AABB(float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
-        set(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
+        boundingBox = new BoundingBox(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
     }
 
     private static float minCoord(float[] vertices, int sizeVertex, int coord){
@@ -34,7 +35,7 @@ public class AABB extends BoundingBox {
     }
 
     public void calc(float[] mMatrix){
-        mul(m4.set(mMatrix));
+        boundingBox.mul(m4.set(mMatrix));
     }
 
     private static AABB newAABB(float[] vertices, int sizeVertex, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
@@ -78,5 +79,9 @@ public class AABB extends BoundingBox {
             }
         }
         return grid;
+    }
+
+    public BoundingBox getBoundingBox() {
+        return boundingBox;
     }
 }

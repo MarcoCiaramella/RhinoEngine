@@ -13,6 +13,7 @@ import android.view.View.OnTouchListener;
 import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
+import com.outofbound.rhinoenginelib.mesh.AABB;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
@@ -304,12 +305,15 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
         for (String name : sceneRenderer.getMeshes().keySet()) {
             Mesh mesh = getMesh(name);
-            if (mesh.isCollisionEnabled() && mesh.hasAABB()) {
-                Collider.add(mesh.calcAABB());
+            if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
+                Collider.add(mesh.calcAABB().getAABBGrid());
             }
         }
         for (String name : sceneRenderer.getMeshes().keySet()) {
-            processCollision(getMesh(name));
+            Mesh mesh = getMesh(name);
+            if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
+                processCollision(mesh);
+            }
         }
         Collider.clear();
 
@@ -330,10 +334,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     private void processCollision(Mesh mesh) {
-        if (mesh != null && mesh.hasAABB()) {
-            for (Mesh mesh2 : Collider.query(mesh)) {
-                if (mesh != mesh2 && mesh.intersects(mesh2)) {
-                    mesh.onCollision(mesh2);
+        for (AABB aabb : mesh.getAABBGrid()) {
+            for (AABB aabb2 : Collider.query(aabb)) {
+                if (aabb != aabb2 && aabb.getBoundingBox().intersects(aabb2.getBoundingBox())) {
+                    mesh.onCollision(aabb2);
                 }
             }
         }

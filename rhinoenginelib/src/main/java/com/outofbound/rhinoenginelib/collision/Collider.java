@@ -7,8 +7,6 @@ import com.lib.joctree.math.collision.Ray;
 import com.lib.joctree.utils.Array;
 import com.lib.joctree.utils.ObjectSet;
 import com.outofbound.rhinoenginelib.mesh.AABB;
-import com.outofbound.rhinoenginelib.mesh.Mesh;
-import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
 import java.util.ArrayList;
 
@@ -18,43 +16,38 @@ public class Collider {
     private static final int MAX_ITEMS_PER_NODE = 200;
     private static final Vector3 MIN = new Vector3(-1000, -1000, -1000);
     private static final Vector3 MAX = new Vector3(1000, 1000, 1000);
-    private static final ObjectSet<Mesh> result = new ObjectSet<>();
-    private static final ObjectSet<Mesh> all = new ObjectSet<>();
-    private static final Octree<Mesh> octree = new Octree<>(MIN, MAX, MAX_DEPTH, MAX_ITEMS_PER_NODE, new Octree.Collider<Mesh>() {
+    private static final ObjectSet<AABB> result = new ObjectSet<>();
+    private static final ObjectSet<AABB> all = new ObjectSet<>();
+    private static final Octree<AABB> octree = new Octree<>(MIN, MAX, MAX_DEPTH, MAX_ITEMS_PER_NODE, new Octree.Collider<AABB>() {
         @Override
-        public boolean intersects(BoundingBox nodeBounds, Mesh mesh) {
-            for (AABB aabb : mesh.getAABBGrid()) {
-                if (nodeBounds.intersects(aabb)) {
-                    return true;
-                }
-            }
-            return false;
+        public boolean intersects(BoundingBox nodeBounds, AABB aabb) {
+            return nodeBounds.intersects(aabb.getBoundingBox());
         }
 
         @Override
-        public float intersects(Ray ray, Mesh mesh) {
+        public float intersects(Ray ray, AABB aabb) {
             return Float.MAX_VALUE;
         }
     });
 
-    public static void add(Mesh mesh) {
-        octree.add(mesh);
+    public static void add(ArrayList<AABB> aabbs) {
+        for (AABB aabb : aabbs) {
+            octree.add(aabb);
+        }
     }
 
-    public static ArrayList<Mesh> query(Mesh mesh) {
-        ArrayList<Mesh> meshes = new ArrayList<>();
-        for (AABB aabb : mesh.getAABBGrid()) {
-            octree.query(aabb, result);
-            for (Mesh m : result) {
-                meshes.add(m);
-            }
+    public static ArrayList<AABB> query(AABB aabb) {
+        ArrayList<AABB> aabbs = new ArrayList<>();
+        octree.query(aabb.getBoundingBox(), result);
+        for (AABB a : result) {
+            aabbs.add(a);
         }
-        return meshes;
+        return aabbs;
     }
 
     public static void clear() {
-        for (Mesh mesh : octree.getAll(all)) {
-            octree.remove(mesh);
+        for (AABB aabb : octree.getAll(all)) {
+            octree.remove(aabb);
         }
     }
 }
