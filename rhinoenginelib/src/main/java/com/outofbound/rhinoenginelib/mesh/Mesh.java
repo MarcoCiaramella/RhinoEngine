@@ -93,6 +93,7 @@ public class Mesh {
     private final float[] mMatrix = new float[16];
     private boolean collisionEnabled = false;
     private int aabbSizeX, aabbSizeY, aabbSizeZ;
+    private boolean updateAABBRequired = true;
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
@@ -254,22 +255,27 @@ public class Mesh {
 
     protected void rotateX(){
         Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
+        updateAABBRequired = true;
     }
 
     protected void rotateY(){
         Matrix.rotateM(mMatrix, 0, rotation.y, 0, 1, 0);
+        updateAABBRequired = true;
     }
 
     protected void rotateZ(){
         Matrix.rotateM(mMatrix, 0, rotation.z, 0, 0, 1);
+        updateAABBRequired = true;
     }
 
     protected void scale(){
         Matrix.scaleM(mMatrix, 0, scale, scale, scale);
+        updateAABBRequired = true;
     }
 
     protected void translate(){
         Matrix.translateM(mMatrix, 0, position.x, position.y, position.z);
+        updateAABBRequired = true;
     }
 
     public FloatBuffer getVertexBuffer(){
@@ -458,11 +464,15 @@ public class Mesh {
         return mMatrix;
     }
 
-    public Mesh calcAABB() {
-        for (AABB aabb : aabbGrid) {
-            aabb.calc(mMatrix);
+    public boolean updateAABB() {
+        if (updateAABBRequired) {
+            for (AABB aabb : aabbGrid) {
+                aabb.mul(mMatrix);
+            }
+            updateAABBRequired = false;
+            return true;
         }
-        return this;
+        return false;
     }
 
     public ArrayList<AABB> getAABBGrid() {

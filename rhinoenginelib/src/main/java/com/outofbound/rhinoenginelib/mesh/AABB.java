@@ -3,8 +3,6 @@ package com.outofbound.rhinoenginelib.mesh;
 import com.lib.joctree.math.Matrix4;
 import com.lib.joctree.math.Vector3;
 import com.lib.joctree.math.collision.BoundingBox;
-import com.lib.joctree.utils.Array;
-import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.util.ArrayList;
 
@@ -34,7 +32,7 @@ public class AABB {
         return max;
     }
 
-    public void calc(float[] mMatrix){
+    public void mul(float[] mMatrix){
         boundingBox.mul(m4.set(mMatrix));
     }
 
