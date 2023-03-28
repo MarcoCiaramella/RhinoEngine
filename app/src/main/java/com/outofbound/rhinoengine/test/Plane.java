@@ -9,6 +9,6 @@ class Plane extends Mesh {
 
     public Plane(@NonNull String mesh) {
         super("Plane", mesh);
-        enableCollision(8, 8, 8);
+        enableCollision(16, 16, 16);
     }
 }
