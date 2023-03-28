@@ -30,9 +30,9 @@ public class Collider {
         }
     });
 
-    public static void add(ArrayList<AABB> aabbs) {
+    public static void update(ArrayList<AABB> aabbs) {
         for (AABB aabb : aabbs) {
-            octree.add(aabb);
+            octree.update(aabb);
         }
     }
 
@@ -46,11 +46,5 @@ public class Collider {
             return aabbs;
         }
         return null;
-    }
-
-    public static void clear() {
-        for (AABB aabb : octree.getAll(all)) {
-            octree.remove(aabb);
-        }
     }
 }
