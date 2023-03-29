@@ -36,6 +36,12 @@ public class Collider {
         }
     }
 
+    public static void add(ArrayList<AABB> aabbs) {
+        for (AABB aabb : aabbs) {
+            octree.add(aabb);
+        }
+    }
+
     public static ArrayList<AABB> query(AABB aabb) {
         octree.query(aabb.getBoundingBox(), result);
         if (result.size > 0) {
@@ -46,5 +52,11 @@ public class Collider {
             return aabbs;
         }
         return null;
+    }
+
+    public static void remove(ArrayList<AABB> aabbs) {
+        for (AABB aabb : aabbs) {
+            octree.remove(aabb);
+        }
     }
 }
