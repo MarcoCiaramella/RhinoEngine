@@ -11,8 +11,8 @@ import com.outofbound.rhinoenginelib.mesh.Mesh;
 
 public class Collider {
 
-    private static final int MAX_DEPTH = 8;
-    private static final int MAX_ITEMS_PER_NODE = 8;
+    private static final int MAX_DEPTH = 12;
+    private static final int MAX_ITEMS_PER_NODE = 1;
     private static final Vector3 MIN = new Vector3(-1000, -1000, -1000);
     private static final Vector3 MAX = new Vector3(1000, 1000, 1000);
     private static final ObjectSet<AABB> result = new ObjectSet<>();
