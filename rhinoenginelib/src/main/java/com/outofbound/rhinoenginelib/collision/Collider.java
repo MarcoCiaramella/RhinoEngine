@@ -16,7 +16,6 @@ public class Collider {
     private static final Vector3 MIN = new Vector3(-1000, -1000, -1000);
     private static final Vector3 MAX = new Vector3(1000, 1000, 1000);
     private static final ObjectSet<AABB> result = new ObjectSet<>();
-    private static final ObjectSet<AABB> all = new ObjectSet<>();
     private static final Octree<AABB> octree = new Octree<>(MIN, MAX, MAX_DEPTH, MAX_ITEMS_PER_NODE, new Octree.Collider<AABB>() {
         @Override
         public boolean intersects(BoundingBox nodeBounds, AABB aabb) {

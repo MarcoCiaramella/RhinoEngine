@@ -13,7 +13,6 @@ import android.view.View.OnTouchListener;
 import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
-import com.outofbound.rhinoenginelib.mesh.AABB;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
@@ -21,7 +20,6 @@ import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.microedition.khronos.egl.EGLConfig;
