@@ -388,7 +388,7 @@ public class Mesh {
     }
 
     private Mesh newAABBGrid(){
-        aabbGrid = AABB.newAABBGrid(this, vertices, sizeVertex, this.aabbSizeX, this.aabbSizeY, this.aabbSizeZ);
+        aabbGrid = AABB.newAABBGrid(this, vertices, sizeVertex);
         return this;
     }
 
@@ -503,5 +503,17 @@ public class Mesh {
 
     public boolean isCollisionEnabled() {
         return collisionEnabled;
+    }
+
+    public int getAABBSizeX() {
+        return this.aabbSizeX;
+    }
+
+    public int getAABBSizeY() {
+        return this.aabbSizeY;
+    }
+
+    public int getAABBSizeZ() {
+        return this.aabbSizeZ;
     }
 }

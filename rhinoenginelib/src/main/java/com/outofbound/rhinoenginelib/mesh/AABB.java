@@ -55,24 +55,24 @@ public class AABB {
         return null;
     }
 
-    public static ArrayList<AABB> newAABBGrid(Mesh parent, float[] vertices, int sizeVertex, int sizeX, int sizeY, int sizeZ) {
+    public static ArrayList<AABB> newAABBGrid(Mesh parent, float[] vertices, int sizeVertex) {
         float minX = minCoord(vertices,sizeVertex,0);
         float maxX = maxCoord(vertices,sizeVertex,0);
         float minY = minCoord(vertices,sizeVertex,1);
         float maxY = maxCoord(vertices,sizeVertex,1);
         float minZ = minCoord(vertices,sizeVertex,2);
         float maxZ = maxCoord(vertices,sizeVertex,2);
-        float stepX = (maxX - minX) / sizeX;
-        float stepY = (maxY - minY) / sizeY;
-        float stepZ = (maxZ - minZ) / sizeZ;
+        float stepX = (maxX - minX) / parent.getAABBSizeX();
+        float stepY = (maxY - minY) / parent.getAABBSizeY();
+        float stepZ = (maxZ - minZ) / parent.getAABBSizeZ();
         ArrayList<AABB> grid = new ArrayList<>();
-        for (int x = 0; x < sizeX; x++) {
+        for (int x = 0; x < parent.getAABBSizeX(); x++) {
             float currentMinX = minX + (stepX * x);
             float currentMaxX = currentMinX + stepX;
-            for (int y = 0; y < sizeY; y++) {
+            for (int y = 0; y < parent.getAABBSizeY(); y++) {
                 float currentMinY = minY + (stepY * y);
                 float currentMaxY = currentMinY + stepY;
-                for (int z = 0; z < sizeZ; z++) {
+                for (int z = 0; z < parent.getAABBSizeZ(); z++) {
                     float currentMinZ = minZ + (stepZ * z);
                     float currentMaxZ = currentMinZ + stepZ;
                     AABB aabb = newAABB(parent, vertices, sizeVertex, currentMinX, currentMaxX, currentMinY, currentMaxY, currentMinZ, currentMaxZ);
