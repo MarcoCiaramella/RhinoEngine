@@ -338,7 +338,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             ArrayList<AABB> result = Collider.query(aabb);
             if (result == null) continue;
             for (AABB aabb2 : result) {
-                if (aabb != aabb2 && aabb.getBoundingBox().intersects(aabb2.getBoundingBox())) {
+                if (aabb.getParent() != aabb2.getParent() && aabb.getBoundingBox().intersects(aabb2.getBoundingBox())) {
                     mesh.onCollision(aabb2);
                 }
             }

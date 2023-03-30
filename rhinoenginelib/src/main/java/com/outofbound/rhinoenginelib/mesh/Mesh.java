@@ -388,7 +388,7 @@ public class Mesh {
     }
 
     private Mesh newAABBGrid(){
-        aabbGrid = AABB.newAABBGrid(vertices, sizeVertex, this.aabbSizeX, this.aabbSizeY, this.aabbSizeZ);
+        aabbGrid = AABB.newAABBGrid(this, vertices, sizeVertex, this.aabbSizeX, this.aabbSizeY, this.aabbSizeZ);
         return this;
     }
 

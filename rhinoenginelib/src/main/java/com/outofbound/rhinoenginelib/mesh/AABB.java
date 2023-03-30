@@ -11,9 +11,15 @@ public class AABB {
 
     private final BoundingBox boundingBox;
     private final Matrix4 m4 = new Matrix4();
+    private final Mesh parent;
 
-    private AABB(float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
+    private AABB(Mesh parent, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
         boundingBox = new BoundingBox(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
+        this.parent = parent;
+    }
+
+    public Mesh getParent() {
+        return parent;
     }
 
     private static float minCoord(float[] vertices, int sizeVertex, int coord){
@@ -36,20 +42,20 @@ public class AABB {
         boundingBox.mul(m4.set(mMatrix));
     }
 
-    private static AABB newAABB(float[] vertices, int sizeVertex, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
+    private static AABB newAABB(Mesh parent, float[] vertices, int sizeVertex, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
         // check if at least one vertex is in the bounds
         for (int i = 0; i < vertices.length; i += sizeVertex) {
             float x = vertices[i];
             float y = vertices[i+1];
             float z = vertices[i+2];
             if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
-                return new AABB(minX, maxX, minY, maxY, minZ, maxZ);
+                return new AABB(parent, minX, maxX, minY, maxY, minZ, maxZ);
             }
         }
         return null;
     }
 
-    public static ArrayList<AABB> newAABBGrid(float[] vertices, int sizeVertex, int sizeX, int sizeY, int sizeZ) {
+    public static ArrayList<AABB> newAABBGrid(Mesh parent, float[] vertices, int sizeVertex, int sizeX, int sizeY, int sizeZ) {
         float minX = minCoord(vertices,sizeVertex,0);
         float maxX = maxCoord(vertices,sizeVertex,0);
         float minY = minCoord(vertices,sizeVertex,1);
@@ -69,7 +75,7 @@ public class AABB {
                 for (int z = 0; z < sizeZ; z++) {
                     float currentMinZ = minZ + (stepZ * z);
                     float currentMaxZ = currentMinZ + stepZ;
-                    AABB aabb = newAABB(vertices, sizeVertex, currentMinX, currentMaxX, currentMinY, currentMaxY, currentMinZ, currentMaxZ);
+                    AABB aabb = newAABB(parent, vertices, sizeVertex, currentMinX, currentMaxX, currentMinY, currentMaxY, currentMinZ, currentMaxZ);
                     if (aabb != null) {
                         grid.add(aabb);
                     }
