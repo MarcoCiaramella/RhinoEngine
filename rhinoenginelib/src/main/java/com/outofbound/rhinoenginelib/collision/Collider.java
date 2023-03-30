@@ -4,11 +4,10 @@ import com.lib.joctree.math.Octree;
 import com.lib.joctree.math.Vector3;
 import com.lib.joctree.math.collision.BoundingBox;
 import com.lib.joctree.math.collision.Ray;
-import com.lib.joctree.utils.Array;
 import com.lib.joctree.utils.ObjectSet;
 import com.outofbound.rhinoenginelib.mesh.AABB;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 
-import java.util.ArrayList;
 
 public class Collider {
 
@@ -30,21 +29,20 @@ public class Collider {
         }
     });
 
-    public static void update(ArrayList<AABB> aabbs) {
-        for (AABB aabb : aabbs) {
+    public static void update(Mesh mesh) {
+        for (AABB aabb : mesh.getAABBGrid()) {
             octree.update(aabb);
         }
     }
 
-    public static ArrayList<AABB> query(AABB aabb) {
-        octree.query(aabb.getBoundingBox(), result);
-        if (result.size > 0) {
-            ArrayList<AABB> aabbs = new ArrayList<>();
-            for (AABB a : result) {
-                aabbs.add(a);
+    public static void processCollision(Mesh mesh) {
+        for (AABB aabb : mesh.getAABBGrid()) {
+            octree.query(aabb.getBoundingBox(), result);
+            for (AABB aabb2 : result) {
+                if (aabb.getParent() != aabb2.getParent() && aabb.getBoundingBox().intersects(aabb2.getBoundingBox())) {
+                    mesh.onCollision(aabb2);
+                }
             }
-            return aabbs;
         }
-        return null;
     }
 }

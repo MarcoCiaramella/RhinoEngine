@@ -307,13 +307,13 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         for (String name : sceneRenderer.getMeshes().keySet()) {
             Mesh mesh = getMesh(name);
             if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
-                if (mesh.updateAABB()) Collider.update(mesh.getAABBGrid());
+                if (mesh.updateAABB()) Collider.update(mesh);
             }
         }
         for (String name : sceneRenderer.getMeshes().keySet()) {
             Mesh mesh = getMesh(name);
             if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
-                processCollision(mesh);
+                Collider.processCollision(mesh);
             }
         }
 
@@ -331,18 +331,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
 
         ms = currentMs;
 
-    }
-
-    private void processCollision(Mesh mesh) {
-        for (AABB aabb : mesh.getAABBGrid()) {
-            ArrayList<AABB> result = Collider.query(aabb);
-            if (result == null) continue;
-            for (AABB aabb2 : result) {
-                if (aabb.getParent() != aabb2.getParent() && aabb.getBoundingBox().intersects(aabb2.getBoundingBox())) {
-                    mesh.onCollision(aabb2);
-                }
-            }
-        }
     }
 
     /**
