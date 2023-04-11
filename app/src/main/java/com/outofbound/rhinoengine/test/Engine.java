@@ -6,8 +6,6 @@ import android.util.AttributeSet;
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
-import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
-import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
@@ -41,8 +39,8 @@ public class Engine extends AbstractEngine {
         getLights().setPointLight(pointLight);
         getLights().getDirLight().configShadow(1,1000,10);
 
-        Plane plane = new Plane("plane_heavy.ply");
-        addMesh(plane);
+        Terrain terrain = new Terrain("plane_heavy.ply");
+        addMesh(terrain);
         //addMesh(new MeshObj());
         Cube cube = new Cube();
         addMesh(cube);

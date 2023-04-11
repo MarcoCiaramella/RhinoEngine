@@ -4,11 +4,11 @@ import androidx.annotation.NonNull;
 
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 
-class Plane extends Mesh {
+class Terrain extends Mesh {
 
 
-    public Plane(@NonNull String mesh) {
-        super("Plane", mesh);
+    public Terrain(@NonNull String mesh) {
+        super("Terrain", mesh);
         enableCollision(16, 16, 16);
     }
 }
