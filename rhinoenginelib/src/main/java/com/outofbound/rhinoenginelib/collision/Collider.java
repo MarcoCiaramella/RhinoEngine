@@ -11,22 +11,26 @@ import com.outofbound.rhinoenginelib.mesh.Mesh;
 
 public class Collider {
 
-    private static final int MAX_DEPTH = 12;
-    private static final int MAX_ITEMS_PER_NODE = 1;
+    private static final int MAX_DEPTH = 5;
+    private static final int MAX_ITEMS_PER_NODE = 16;
     private static final Vector3 MIN = new Vector3(-1000, -1000, -1000);
     private static final Vector3 MAX = new Vector3(1000, 1000, 1000);
     private static final ObjectSet<AABB> result = new ObjectSet<>();
-    private static final Octree<AABB> octree = new Octree<>(MIN, MAX, MAX_DEPTH, MAX_ITEMS_PER_NODE, new Octree.Collider<AABB>() {
-        @Override
-        public boolean intersects(BoundingBox nodeBounds, AABB aabb) {
-            return nodeBounds.intersects(aabb.getBoundingBox());
-        }
+    private static Octree<AABB> octree;
 
-        @Override
-        public float intersects(Ray ray, AABB aabb) {
-            return Float.MAX_VALUE;
-        }
-    });
+    public static void build() {
+        octree = new Octree<>(MIN, MAX, MAX_DEPTH, MAX_ITEMS_PER_NODE, new Octree.Collider<AABB>() {
+            @Override
+            public boolean intersects(BoundingBox nodeBounds, AABB aabb) {
+                return nodeBounds.intersects(aabb.getBoundingBox());
+            }
+
+            @Override
+            public float intersects(Ray ray, AABB aabb) {
+                return Float.MAX_VALUE;
+            }
+        });
+    }
 
     public static void update(Mesh mesh) {
         for (AABB aabb : mesh.getAABBGrid()) {

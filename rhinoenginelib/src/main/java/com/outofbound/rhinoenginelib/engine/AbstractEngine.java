@@ -79,6 +79,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         this.camera = camera;
         this.gesture = gesture;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
+        Collider.build();
     }
 
     /**
