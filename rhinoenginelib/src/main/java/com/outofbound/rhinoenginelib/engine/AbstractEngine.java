@@ -79,7 +79,6 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         this.camera = camera;
         this.gesture = gesture;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
-        Collider.build();
     }
 
     /**
@@ -302,6 +301,8 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         else {
             sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
+
+        Collider.build();
 
         for (String name : sceneRenderer.getMeshes().keySet()) {
             Mesh mesh = getMesh(name);
