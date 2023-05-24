@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
+import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
@@ -45,6 +46,8 @@ public class Engine extends AbstractEngine {
         Cube cube = new Cube();
         addMesh(cube);
         addMesh(new Trail("trail", cube, new float[]{1,1,1,1}, 100, 100));
+
+        Collider.build(new Vector3f(-1, -1, -1), new Vector3f(1, 1, 1), 5, 16);
     }
 
     public void blurOn(){
