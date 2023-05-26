@@ -8,19 +8,20 @@ import android.opengl.Matrix;
 
 import androidx.annotation.NonNull;
 
-import com.outofbound.meshloaderlib.obj.Obj;
-import com.outofbound.meshloaderlib.ply.Ply;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
-import com.outofbound.rhinoenginelib.util.color.Color;
-import com.outofbound.rhinoenginelib.util.color.Gradient;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import de.javagl.obj.Obj;
+import de.javagl.obj.ObjReader;
+import de.javagl.obj.ObjUtils;
 
 
 public class Mesh {
@@ -71,11 +72,6 @@ public class Mesh {
         }
     }
 
-    private float[] vertices;
-    private float[] normals;
-    private int[] indices;
-    private float[] colors;
-    private float[] texCoords;
     private final int sizeVertex;
     private FloatBuffer vertexBuffer;
     private FloatBuffer normalBuffer;
@@ -98,72 +94,37 @@ public class Mesh {
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
         this.name = name;
-        this.vertices = vertices;
         this.sizeVertex = sizeVertex;
-        this.normals = normals;
-        this.indices = indices;
-        this.colors = colors;
+        loadVertices(vertices);
+        loadNormals(normals);
+        loadColors(colors);
+        loadIndices(indices);
         init();
     }
 
-    public Mesh(@NonNull String name, @NonNull String mesh){
+    public Mesh(@NonNull String name, @NonNull String asset){
         this.name = name;
         this.sizeVertex = 3;
-        loadFromFile(mesh);
+        loadAsset(asset);
+        loadTexture();
         init();
     }
 
-    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull float[] color){
-        this.name = name;
-        this.sizeVertex = 3;
-        loadFromFile(mesh);
-        this.colors = Color.getVertexColor(color,vertices.length);
-        init();
-    }
-
-    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull Gradient[] gradients){
-        this.name = name;
-        this.sizeVertex = 3;
-        loadFromFile(mesh);
-        this.colors = Color.gradientColoring(this.vertices,this.indices,gradients);
-        init();
-    }
-
-    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull Bitmap textureBitmap){
-        this.name = name;
-        if (!mesh.endsWith(".ply")){
-            throw new RuntimeException("Mesh must be in .ply format.");
+    private void loadAsset(String fileName){
+        if (fileName.endsWith(".obj")) {
+            try {
+                Obj obj = ObjUtils.convertToRenderable(ObjReader.read(AbstractEngine.getInstance().getContext().getAssets().open(fileName)));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        this.sizeVertex = 3;
-        loadFromFile(mesh);
-        this.textureBitmap = textureBitmap;
-        init();
-    }
+        else {
+            throw new RuntimeException("File extension unknown");
+        }
 
-    private void loadFromFile(String fileName){
-        if (fileName.endsWith(".ply")){
-            Ply ply = new Ply(AbstractEngine.getInstance().getContext(), fileName);
-            ply.load();
-            this.vertices = ply.getVertices();
-            this.normals = ply.getNormals();
-            this.colors = ply.getColors();
-            this.texCoords = ply.getUvs();
-            this.indices = ply.getIndices();
-        }
-        else if (fileName.endsWith(".obj")){
-            Obj obj = new Obj(AbstractEngine.getInstance().getContext(), fileName);
-            obj.load();
-            this.vertices = obj.getVertices();
-            this.texCoords = obj.getTextureCoords();
-            this.normals = obj.getNormals();
-            this.indices = obj.getIndices();
-            this.textureBitmap = obj.getMaterial().getMapKd();
-            this.material = new Material(new Vector3f(obj.getMaterial().getKa()), new Vector3f(obj.getMaterial().getKd()), new Vector3f(obj.getMaterial().getKs()),obj.getMaterial().getNs());
-        }
     }
 
     private void init(){
-        load();
         position = new Vector3f(0,0,0);
         rotation = new Vector3f(0,0,0);
         scale = 1;
@@ -172,32 +133,7 @@ public class Mesh {
         }
     }
 
-    private void load(){
-        loadVertices();
-        loadNormals();
-        loadColors();
-        loadTexCoords();
-        loadIndices();
-        loadTexture();
-    }
-
-    public void reloadVertices(){
-        loadVertices();
-    }
-
-    public void reloadNormals(){
-        loadNormals();
-    }
-
-    public void reloadColors(){
-        loadColors();
-    }
-
-    public void reloadIndices(){
-        loadIndices();
-    }
-
-    private void loadVertices(){
+    private void loadVertices(float[] vertices){
         ByteBuffer bbVertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bbVertex.order(ByteOrder.nativeOrder());
         vertexBuffer = bbVertex.asFloatBuffer();
@@ -205,7 +141,7 @@ public class Mesh {
         vertexBuffer.position(0);
     }
 
-    private void loadNormals(){
+    private void loadNormals(float[] normals){
         ByteBuffer bbNormal = ByteBuffer.allocateDirect(normals.length * 4);
         bbNormal.order(ByteOrder.nativeOrder());
         normalBuffer = bbNormal.asFloatBuffer();
@@ -213,7 +149,7 @@ public class Mesh {
         normalBuffer.position(0);
     }
 
-    private void loadColors(){
+    private void loadColors(float[] colors){
         if (colors == null) {
             colors = new float[getNumVertices() * 4];
             Arrays.fill(colors,0);
@@ -225,19 +161,7 @@ public class Mesh {
         colorBuffer.position(0);
     }
 
-    private void loadTexCoords(){
-        if (texCoords == null) {
-            texCoords = new float[getNumVertices() * 2];
-            Arrays.fill(texCoords,0);
-        }
-        ByteBuffer bbTexCoords = ByteBuffer.allocateDirect(texCoords.length * 4);
-        bbTexCoords.order(ByteOrder.nativeOrder());
-        texCoordsBuffer = bbTexCoords.asFloatBuffer();
-        texCoordsBuffer.put(texCoords);
-        texCoordsBuffer.position(0);
-    }
-
-    private void loadIndices(){
+    private void loadIndices(int[] indices){
         if (indices != null) {
             ByteBuffer bbIndices = ByteBuffer.allocateDirect(indices.length * 4);
             bbIndices.order(ByteOrder.nativeOrder());
@@ -302,93 +226,16 @@ public class Mesh {
         return sizeVertex;
     }
 
-    public float[] getVertices(){
-        return vertices;
-    }
-
-    public float[] getNormals(){
-        return normals;
-    }
-
-    public float[] getColors(){
-        return colors;
-    }
-
-    public int[] getIndices(){
-        return indices;
-    }
-
-    private float[] addFloats(float[] floats1, float[] floats2){
-        float[] result = Arrays.copyOf(floats1,floats1.length+floats2.length);
-        System.arraycopy(floats2,0,result,floats1.length,floats2.length);
-        return result;
-    }
-
-    private int[] addInts(int[] ints1, int[] ints2){
-        int[] result = Arrays.copyOf(ints1,ints1.length+ints2.length);
-        System.arraycopy(ints2,0,result,ints1.length,ints2.length);
-        return result;
-    }
-
-    private float[] removeFloats(float[] floats, int pos, int length){
-        float[] result = new float[floats.length-length];
-        System.arraycopy(floats,0,result,0,pos);
-        System.arraycopy(floats,pos+length,result,pos,floats.length-(pos+length));
-        return result;
-    }
-
-    private int[] removeInts(int[] ints, int pos, int length){
-        int[] result = new int[ints.length-length];
-        System.arraycopy(ints,0,result,0,pos);
-        System.arraycopy(ints,pos+length,result,pos,ints.length-(pos+length));
-        return result;
-    }
-
-    public void addVertices(float[] vertices){
-        this.vertices = addFloats(this.vertices, vertices);
-        if (collisionEnabled) {
-            newAABBGrid();
-        }
-    }
-
-    public void addNormals(float[] normals){
-        this.normals = addFloats(this.normals,normals);
-    }
-
-    public void addColors(float[] colors){
-        this.colors = addFloats(this.colors,colors);
-    }
-
-    public void addIndices(int[] indices){
-        this.indices = addInts(this.indices,indices);
-    }
-
-    public void removeVertices(int pos, int length){
-        vertices = removeFloats(vertices,pos*sizeVertex,length*sizeVertex);
-    }
-
-    public void removeNormals(int pos, int length){
-        normals = removeFloats(normals,pos*sizeVertex,length*sizeVertex);
-    }
-
-    public void removeColors(int pos, int length){
-        colors = removeFloats(colors,pos*4,length*4);
-    }
-
-    public void removeIndices(int pos, int length){
-        indices = removeInts(indices,pos,length);
-    }
-
     public int getNumVertices(){
-        return vertices.length/sizeVertex;
+        return vertexBuffer.capacity() / sizeVertex;
     }
 
     public int getNumIndices(){
-        return indices.length;
+        return indicesBuffer.capacity();
     }
 
     private Mesh newAABBGrid(){
-        aabbGrid = AABB.newAABBGrid(this, vertices, sizeVertex);
+        aabbGrid = AABB.newAABBGrid(this);
         return this;
     }
 
@@ -487,7 +334,7 @@ public class Mesh {
         this.aabbSizeX = aabbSizeX;
         this.aabbSizeY = aabbSizeY;
         this.aabbSizeZ = aabbSizeZ;
-        if (vertices.length > 0) newAABBGrid();
+        if (getNumVertices() > 0) newAABBGrid();
         collisionEnabled = true;
         return this;
     }

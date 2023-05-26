@@ -7,6 +7,7 @@ import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
@@ -40,12 +41,12 @@ public class Engine extends AbstractEngine {
         getLights().setPointLight(pointLight);
         getLights().getDirLight().configShadow(1,1000,10);
 
-        Terrain terrain = new Terrain("plane_heavy.ply");
-        addMesh(terrain);
+        //Terrain terrain = new Terrain("plane_heavy.ply");
+        //addMesh(terrain);
         //addMesh(new MeshObj());
+        //addMesh(new Mesh("car", "car1.obj"));
         Cube cube = new Cube();
         addMesh(cube);
-        addMesh(new Trail("trail", cube, new float[]{1,1,1,1}, 100, 100));
 
         Collider.build(new Vector3f(-1, -1, -1), new Vector3f(1, 1, 1), 5, 16);
     }

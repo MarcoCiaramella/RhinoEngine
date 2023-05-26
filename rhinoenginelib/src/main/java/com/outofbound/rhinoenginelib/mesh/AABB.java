@@ -4,6 +4,7 @@ import com.lib.joctree.math.Matrix4;
 import com.lib.joctree.math.Vector3;
 import com.lib.joctree.math.collision.BoundingBox;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 
@@ -22,18 +23,18 @@ public class AABB {
         return parent;
     }
 
-    private static float minCoord(float[] vertices, int sizeVertex, int coord){
-        float min = vertices[coord];
-        for (int i = 0; i < vertices.length; i += sizeVertex){
-            min = Math.min(vertices[i+coord], min);
+    private static float minCoord(Mesh parent, int coord){
+        float min = parent.getVertexBuffer().get(coord);
+        for (int i = 0; i < parent.getVertexBuffer().capacity(); i += parent.getSizeVertex()){
+            min = Math.min(parent.getVertexBuffer().get(i+coord), min);
         }
         return min;
     }
 
-    private static float maxCoord(float[] vertices, int sizeVertex, int coord){
-        float max = vertices[coord];
-        for (int i = 0; i < vertices.length; i += sizeVertex){
-            max = Math.max(vertices[i+coord], max);
+    private static float maxCoord(Mesh parent, int coord){
+        float max = parent.getVertexBuffer().get(coord);
+        for (int i = 0; i < parent.getVertexBuffer().capacity(); i += parent.getSizeVertex()){
+            max = Math.max(parent.getVertexBuffer().get(i+coord), max);
         }
         return max;
     }
@@ -42,12 +43,12 @@ public class AABB {
         boundingBox.mul(m4.set(mMatrix));
     }
 
-    private static AABB newAABB(Mesh parent, float[] vertices, int sizeVertex, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
+    private static AABB newAABB(Mesh parent, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
         // check if at least one vertex is in the bounds
-        for (int i = 0; i < vertices.length; i += sizeVertex) {
-            float x = vertices[i];
-            float y = vertices[i+1];
-            float z = vertices[i+2];
+        for (int i = 0; i < parent.getVertexBuffer().capacity(); i += parent.getSizeVertex()) {
+            float x = parent.getVertexBuffer().get(i);
+            float y = parent.getVertexBuffer().get(i+1);
+            float z = parent.getVertexBuffer().get(i+2);
             if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
                 return new AABB(parent, minX, maxX, minY, maxY, minZ, maxZ);
             }
@@ -55,13 +56,13 @@ public class AABB {
         return null;
     }
 
-    public static ArrayList<AABB> newAABBGrid(Mesh parent, float[] vertices, int sizeVertex) {
-        float minX = minCoord(vertices,sizeVertex,0);
-        float maxX = maxCoord(vertices,sizeVertex,0);
-        float minY = minCoord(vertices,sizeVertex,1);
-        float maxY = maxCoord(vertices,sizeVertex,1);
-        float minZ = minCoord(vertices,sizeVertex,2);
-        float maxZ = maxCoord(vertices,sizeVertex,2);
+    public static ArrayList<AABB> newAABBGrid(Mesh parent) {
+        float minX = minCoord(parent,0);
+        float maxX = maxCoord(parent,0);
+        float minY = minCoord(parent,1);
+        float maxY = maxCoord(parent,1);
+        float minZ = minCoord(parent,2);
+        float maxZ = maxCoord(parent,2);
         float stepX = (maxX - minX) / parent.getAABBSizeX();
         float stepY = (maxY - minY) / parent.getAABBSizeY();
         float stepZ = (maxZ - minZ) / parent.getAABBSizeZ();
@@ -75,7 +76,7 @@ public class AABB {
                 for (int z = 0; z < parent.getAABBSizeZ(); z++) {
                     float currentMinZ = minZ + (stepZ * z);
                     float currentMaxZ = currentMinZ + stepZ;
-                    AABB aabb = newAABB(parent, vertices, sizeVertex, currentMinX, currentMaxX, currentMinY, currentMaxY, currentMinZ, currentMaxZ);
+                    AABB aabb = newAABB(parent, currentMinX, currentMaxX, currentMinY, currentMaxY, currentMinZ, currentMaxZ);
                     if (aabb != null) {
                         grid.add(aabb);
                     }
