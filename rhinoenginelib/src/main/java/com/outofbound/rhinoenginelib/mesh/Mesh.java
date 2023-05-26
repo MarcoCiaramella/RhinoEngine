@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import de.javagl.obj.Obj;
+import de.javagl.obj.ObjData;
 import de.javagl.obj.ObjReader;
 import de.javagl.obj.ObjUtils;
 
@@ -99,7 +100,6 @@ public class Mesh {
         loadNormals(normals);
         loadColors(colors);
         loadIndices(indices);
-        loadTexCoords(null);
         init();
     }
 
@@ -115,6 +115,10 @@ public class Mesh {
         if (fileName.endsWith(".obj")) {
             try {
                 Obj obj = ObjUtils.convertToRenderable(ObjReader.read(AbstractEngine.getInstance().getContext().getAssets().open(fileName)));
+                indicesBuffer = ObjData.getFaceVertexIndices(obj);
+                vertexBuffer = ObjData.getVertices(obj);
+                texCoordsBuffer = ObjData.getTexCoords(obj, 2);
+                normalBuffer = ObjData.getNormals(obj);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -151,15 +155,13 @@ public class Mesh {
     }
 
     private void loadColors(float[] colors){
-        if (colors == null) {
-            colors = new float[getNumVertices() * 4];
-            Arrays.fill(colors,0);
+        if (colors != null) {
+            ByteBuffer bbColor = ByteBuffer.allocateDirect(colors.length * 4);
+            bbColor.order(ByteOrder.nativeOrder());
+            colorBuffer = bbColor.asFloatBuffer();
+            colorBuffer.put(colors);
+            colorBuffer.position(0);
         }
-        ByteBuffer bbColor = ByteBuffer.allocateDirect(colors.length * 4);
-        bbColor.order(ByteOrder.nativeOrder());
-        colorBuffer = bbColor.asFloatBuffer();
-        colorBuffer.put(colors);
-        colorBuffer.position(0);
     }
 
     private void loadIndices(int[] indices){
@@ -170,18 +172,6 @@ public class Mesh {
             indicesBuffer.put(indices);
             indicesBuffer.position(0);
         }
-    }
-
-    private void loadTexCoords(){
-        if (texCoords == null) {
-            texCoords = new float[getNumVertices() * 2];
-            Arrays.fill(texCoords,0);
-        }
-        ByteBuffer bbTexCoords = ByteBuffer.allocateDirect(texCoords.length * 4);
-        bbTexCoords.order(ByteOrder.nativeOrder());
-        texCoordsBuffer = bbTexCoords.asFloatBuffer();
-        texCoordsBuffer.put(texCoords);
-        texCoordsBuffer.position(0);
     }
 
     public void beforeRendering(long ms) {}

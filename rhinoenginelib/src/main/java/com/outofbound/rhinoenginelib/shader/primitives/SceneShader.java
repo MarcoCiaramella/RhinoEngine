@@ -115,8 +115,12 @@ public final class SceneShader extends Shader {
         GLES20.glEnableVertexAttribArray(aTexCoords);
         GLES20.glVertexAttribPointer(aPosition, mesh.getSizeVertex(), GLES20.GL_FLOAT, false, 0, mesh.getVertexBuffer());
         GLES20.glVertexAttribPointer(aNormal, 3, GLES20.GL_FLOAT, false, 0, mesh.getNormalBuffer());
-        GLES20.glVertexAttribPointer(aColor, 4, GLES20.GL_FLOAT, false, 0, mesh.getColorBuffer());
-        GLES20.glVertexAttribPointer(aTexCoords, 2, GLES20.GL_FLOAT, false, 0, mesh.getTexCoordsBuffer());
+        if (mesh.getColorBuffer() != null) {
+            GLES20.glVertexAttribPointer(aColor, 4, GLES20.GL_FLOAT, false, 0, mesh.getColorBuffer());
+        }
+        if (mesh.getTexCoordsBuffer() != null) {
+            GLES20.glVertexAttribPointer(aTexCoords, 2, GLES20.GL_FLOAT, false, 0, mesh.getTexCoordsBuffer());
+        }
         GLES20.glUniformMatrix4fv(uMMatrix, 1, false, mMatrix, 0);
         GLES20.glUniformMatrix4fv(uMVPMatrix, 1, false, mvpMatrix, 0);
         GLES20.glUniform3f(uViewPos, viewPos.x, viewPos.y, viewPos.z);
