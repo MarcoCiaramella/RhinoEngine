@@ -99,6 +99,7 @@ public class Mesh {
         loadNormals(normals);
         loadColors(colors);
         loadIndices(indices);
+        loadTexCoords(null);
         init();
     }
 
@@ -169,6 +170,18 @@ public class Mesh {
             indicesBuffer.put(indices);
             indicesBuffer.position(0);
         }
+    }
+
+    private void loadTexCoords(){
+        if (texCoords == null) {
+            texCoords = new float[getNumVertices() * 2];
+            Arrays.fill(texCoords,0);
+        }
+        ByteBuffer bbTexCoords = ByteBuffer.allocateDirect(texCoords.length * 4);
+        bbTexCoords.order(ByteOrder.nativeOrder());
+        texCoordsBuffer = bbTexCoords.asFloatBuffer();
+        texCoordsBuffer.put(texCoords);
+        texCoordsBuffer.position(0);
     }
 
     public void beforeRendering(long ms) {}
