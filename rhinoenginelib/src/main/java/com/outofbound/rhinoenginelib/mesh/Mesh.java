@@ -17,7 +17,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import de.javagl.obj.Obj;
 import de.javagl.obj.ObjData;
@@ -27,98 +26,46 @@ import de.javagl.obj.ObjUtils;
 
 public class Mesh {
 
-    public static class Material {
-        private Vector3f ambientColor;
-        private Vector3f diffuseColor;
-        private Vector3f specularColor;
-        private float specularExponent;
-
-        public Material(Vector3f ambientColor, Vector3f diffuseColor, Vector3f specularColor, float specularExponent){
-            this.ambientColor = ambientColor;
-            this.diffuseColor = diffuseColor;
-            this.specularColor = specularColor;
-            this.specularExponent = specularExponent;
-        }
-
-        public void setAmbientColor(Vector3f ambientColor) {
-            this.ambientColor = ambientColor;
-        }
-
-        public void setDiffuseColor(Vector3f diffuseColor) {
-            this.diffuseColor = diffuseColor;
-        }
-
-        public void setSpecularColor(Vector3f specularColor) {
-            this.specularColor = specularColor;
-        }
-
-        public void setSpecularExponent(float specularExponent) {
-            this.specularExponent = specularExponent;
-        }
-
-        public Vector3f getAmbientColor() {
-            return ambientColor;
-        }
-
-        public Vector3f getDiffuseColor() {
-            return diffuseColor;
-        }
-
-        public Vector3f getSpecularColor() {
-            return specularColor;
-        }
-
-        public float getSpecularExponent() {
-            return specularExponent;
-        }
-    }
-
     private final int sizeVertex;
-    private FloatBuffer vertexBuffer;
-    private FloatBuffer normalBuffer;
-    private FloatBuffer colorBuffer;
-    private FloatBuffer texCoordsBuffer;
-    private IntBuffer indicesBuffer;
     private ArrayList<AABB> aabbGrid;
     protected Vector3f position;
     protected Vector3f rotation;
     protected float scale;
-    private int texture = 0;
-    private Bitmap textureBitmap;
-    private Material material;
     private final String name;
     private final float[] mMatrix = new float[16];
     private boolean collisionEnabled = false;
     private int aabbSizeX, aabbSizeY, aabbSizeZ;
     private boolean updateAABBRequired = true;
+    private final ArrayList<ShaderData> shaderData = new ArrayList<>();
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
         this.name = name;
         this.sizeVertex = sizeVertex;
+        init();
         loadVertices(vertices);
         loadNormals(normals);
         loadColors(colors);
         loadIndices(indices);
-        init();
+
     }
 
     public Mesh(@NonNull String name, @NonNull String asset){
         this.name = name;
         this.sizeVertex = 3;
+        init();
         loadAsset(asset);
         loadTexture();
-        init();
     }
 
     private void loadAsset(String fileName){
         if (fileName.endsWith(".obj")) {
             try {
                 Obj obj = ObjUtils.convertToRenderable(ObjReader.read(AbstractEngine.getInstance().getContext().getAssets().open(fileName)));
-                indicesBuffer = ObjData.getFaceVertexIndices(obj);
-                vertexBuffer = ObjData.getVertices(obj);
-                texCoordsBuffer = ObjData.getTexCoords(obj, 2);
-                normalBuffer = ObjData.getNormals(obj);
+                shaderData.indicesBuffer = ObjData.getFaceVertexIndices(obj);
+                shaderData.vertexBuffer = ObjData.getVertices(obj);
+                shaderData.texCoordsBuffer = ObjData.getTexCoords(obj, 2);
+                shaderData.normalBuffer = ObjData.getNormals(obj);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -136,31 +83,32 @@ public class Mesh {
         if (material == null) {
             material = new Material(new Vector3f(0.2f, 0.2f, 0.2f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(1, 1, 1),200);
         }
+        buffers = new Buffers();
     }
 
     private void loadVertices(float[] vertices){
         ByteBuffer bbVertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bbVertex.order(ByteOrder.nativeOrder());
-        vertexBuffer = bbVertex.asFloatBuffer();
-        vertexBuffer.put(vertices);
-        vertexBuffer.position(0);
+        shaderData.vertexBuffer = bbVertex.asFloatBuffer();
+        shaderData.vertexBuffer.put(vertices);
+        shaderData.vertexBuffer.position(0);
     }
 
     private void loadNormals(float[] normals){
         ByteBuffer bbNormal = ByteBuffer.allocateDirect(normals.length * 4);
         bbNormal.order(ByteOrder.nativeOrder());
-        normalBuffer = bbNormal.asFloatBuffer();
-        normalBuffer.put(normals);
-        normalBuffer.position(0);
+        shaderData.normalBuffer = bbNormal.asFloatBuffer();
+        shaderData.normalBuffer.put(normals);
+        shaderData.normalBuffer.position(0);
     }
 
     private void loadColors(float[] colors){
         if (colors != null) {
             ByteBuffer bbColor = ByteBuffer.allocateDirect(colors.length * 4);
             bbColor.order(ByteOrder.nativeOrder());
-            colorBuffer = bbColor.asFloatBuffer();
-            colorBuffer.put(colors);
-            colorBuffer.position(0);
+            shaderData.colorBuffer = bbColor.asFloatBuffer();
+            shaderData.colorBuffer.put(colors);
+            shaderData.colorBuffer.position(0);
         }
     }
 
@@ -168,9 +116,9 @@ public class Mesh {
         if (indices != null) {
             ByteBuffer bbIndices = ByteBuffer.allocateDirect(indices.length * 4);
             bbIndices.order(ByteOrder.nativeOrder());
-            indicesBuffer = bbIndices.asIntBuffer();
-            indicesBuffer.put(indices);
-            indicesBuffer.position(0);
+            shaderData.indicesBuffer = bbIndices.asIntBuffer();
+            shaderData.indicesBuffer.put(indices);
+            shaderData.indicesBuffer.position(0);
         }
     }
 
@@ -206,23 +154,23 @@ public class Mesh {
     }
 
     public FloatBuffer getVertexBuffer(){
-        return vertexBuffer;
+        return shaderData.vertexBuffer;
     }
 
     public FloatBuffer getNormalBuffer(){
-        return normalBuffer;
+        return shaderData.normalBuffer;
     }
 
     public FloatBuffer getColorBuffer(){
-        return colorBuffer;
+        return shaderData.colorBuffer;
     }
 
     public FloatBuffer getTexCoordsBuffer() {
-        return texCoordsBuffer;
+        return shaderData.texCoordsBuffer;
     }
 
     public IntBuffer getIndicesBuffer(){
-        return indicesBuffer;
+        return shaderData.indicesBuffer;
     }
 
     public int getSizeVertex(){
@@ -230,11 +178,11 @@ public class Mesh {
     }
 
     public int getNumVertices(){
-        return vertexBuffer.capacity() / sizeVertex;
+        return shaderData.vertexBuffer.capacity() / sizeVertex;
     }
 
     public int getNumIndices(){
-        return indicesBuffer.capacity();
+        return shaderData.indicesBuffer.capacity();
     }
 
     private Mesh newAABBGrid(){
@@ -264,36 +212,23 @@ public class Mesh {
         return res;
     }
 
-    public int getTexture(){
-        return texture;
-    }
-
     private void loadTexture(){
-        if (textureBitmap == null) {
+        if (shaderData.textureBitmap == null) {
             return;
         }
         int[] texture = new int[1];
         GLES20.glGenTextures(1, texture, 0);
-        this.texture = texture[0];
-        if (this.texture != 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.texture);
+        shaderData.texture = texture[0];
+        if (shaderData.texture != 0) {
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shaderData.texture);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
             GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureBitmap, 0);
-            textureBitmap.recycle();
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, shaderData.textureBitmap, 0);
+            shaderData.textureBitmap.recycle();
         }
-        if (this.texture == 0) {
+        if (shaderData.texture == 0) {
             throw new RuntimeException("Error loading texture.");
         }
-    }
-
-    public Mesh setMaterial(Material material){
-        this.material = material;
-        return this;
-    }
-
-    public Material getMaterial(){
-        return material;
     }
 
     public String getName(){
@@ -365,5 +300,23 @@ public class Mesh {
 
     public int getAABBSizeZ() {
         return this.aabbSizeZ;
+    }
+
+    public ShaderData getShaderData() {
+        return shaderData;
+    }
+
+    private static class ShaderData {
+        private FloatBuffer vertexBuffer;
+        private FloatBuffer normalBuffer;
+        private FloatBuffer colorBuffer;
+        private FloatBuffer texCoordsBuffer;
+        private IntBuffer indicesBuffer;
+        private Vector3f ambientColor;
+        private Vector3f diffuseColor;
+        private Vector3f specularColor;
+        private float specularExponent;
+        private int texture = 0;
+        private Bitmap textureBitmap;
     }
 }
