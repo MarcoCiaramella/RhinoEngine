@@ -24,17 +24,21 @@ public class AABB {
     }
 
     private static float minCoord(Mesh parent, int coord){
-        float min = parent.getVertexBuffer().get(coord);
-        for (int i = 0; i < parent.getVertexBuffer().capacity(); i += parent.getSizeVertex()){
-            min = Math.min(parent.getVertexBuffer().get(i+coord), min);
+        float min = parent.getShaderData().get(0).vertexBuffer.get(coord);
+        for (Mesh.ShaderData shaderData : parent.getShaderData()) {
+            for (int i = 0; i < shaderData.vertexBuffer.capacity(); i += 3) {
+                min = Math.min(shaderData.vertexBuffer.get(i + coord), min);
+            }
         }
         return min;
     }
 
     private static float maxCoord(Mesh parent, int coord){
-        float max = parent.getVertexBuffer().get(coord);
-        for (int i = 0; i < parent.getVertexBuffer().capacity(); i += parent.getSizeVertex()){
-            max = Math.max(parent.getVertexBuffer().get(i+coord), max);
+        float max = parent.getShaderData().get(0).vertexBuffer.get(coord);
+        for (Mesh.ShaderData shaderData : parent.getShaderData()) {
+            for (int i = 0; i < shaderData.vertexBuffer.capacity(); i += 3) {
+                max = Math.max(shaderData.vertexBuffer.get(i + coord), max);
+            }
         }
         return max;
     }
@@ -45,12 +49,14 @@ public class AABB {
 
     private static AABB newAABB(Mesh parent, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
         // check if at least one vertex is in the bounds
-        for (int i = 0; i < parent.getVertexBuffer().capacity(); i += parent.getSizeVertex()) {
-            float x = parent.getVertexBuffer().get(i);
-            float y = parent.getVertexBuffer().get(i+1);
-            float z = parent.getVertexBuffer().get(i+2);
-            if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
-                return new AABB(parent, minX, maxX, minY, maxY, minZ, maxZ);
+        for (Mesh.ShaderData shaderData : parent.getShaderData()) {
+            for (int i = 0; i < shaderData.vertexBuffer.capacity(); i += 3) {
+                float x = shaderData.vertexBuffer.get(i);
+                float y = shaderData.vertexBuffer.get(i + 1);
+                float z = shaderData.vertexBuffer.get(i + 2);
+                if (x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ) {
+                    return new AABB(parent, minX, maxX, minY, maxY, minZ, maxZ);
+                }
             }
         }
         return null;

@@ -82,15 +82,17 @@ public final class SceneRenderer extends AbstractRenderer {
                 meshMap.remove(name);
                 continue;
             }
-            mesh.resetMMatrix();
-            mesh.beforeRendering(ms);
-            Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
-            sceneShader.setMesh(mesh);
-            sceneShader.setMMatrix(mesh.getMMatrix());
-            sceneShader.setMvpMatrix(mvpMatrix);
-            sceneShader.bindData();
-            draw(mesh);
-            sceneShader.unbindData();
+            for (Mesh.ShaderData shaderData : mesh.getShaderData()) {
+                mesh.resetMMatrix();
+                mesh.beforeRendering(ms);
+                Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
+                sceneShader.setData(shaderData);
+                sceneShader.setMMatrix(mesh.getMMatrix());
+                sceneShader.setMvpMatrix(mvpMatrix);
+                sceneShader.bindData();
+                draw(shaderData);
+                sceneShader.unbindData();
+            }
         }
         for (String name : meshMap.keySet()) {
             Mesh mesh = getMesh(name);

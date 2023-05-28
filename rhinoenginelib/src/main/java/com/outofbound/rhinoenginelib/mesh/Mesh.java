@@ -283,19 +283,17 @@ public class Mesh {
         return shaderData;
     }
 
-    private static class ShaderData {
-        private FloatBuffer vertexBuffer;
-        private FloatBuffer normalBuffer;
-        private FloatBuffer colorBuffer;
-        private FloatBuffer texCoordsBuffer;
-        private IntBuffer indicesBuffer;
-        private Vector3f ambientColor = new Vector3f(0.2f, 0.2f, 0.2f);
-        private Vector3f diffuseColor = new Vector3f(0.5f, 0.5f, 0.5f);
-        private Vector3f specularColor = new Vector3f(1, 1, 1);
-        private float specularExponent = 200;
-        private int texture = 0;
-        private Bitmap textureBitmap;
-        private int numVertices = 0;
-        private int numIndices = 0;
+    public static class ShaderData {
+        public FloatBuffer vertexBuffer;
+        public FloatBuffer normalBuffer;
+        public FloatBuffer colorBuffer;
+        public FloatBuffer texCoordsBuffer;
+        public IntBuffer indicesBuffer;
+        public Vector3f ambientColor = new Vector3f(0.2f, 0.2f, 0.2f);
+        public Vector3f diffuseColor = new Vector3f(0.5f, 0.5f, 0.5f);
+        public Vector3f specularColor = new Vector3f(1, 1, 1);
+        public float specularExponent = 200;
+        public int texture = 0;
+        public Bitmap textureBitmap;
     }
 }

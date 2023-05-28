@@ -77,7 +77,7 @@ public class Cube extends Mesh {
     };
 
     private Cube(String name, float[] vertices, float[] color){
-        super(name, vertices, 3, normals, indices, Color.getVertexColor(color,vertices.length));
+        super(name, vertices, normals, indices, Color.getVertexColor(color,vertices.length));
     }
 
     public Cube(String name, float[] color) {

@@ -30,12 +30,14 @@ public class ShadowMapRenderer extends AbstractRenderer {
                 meshMap.remove(name);
                 continue;
             }
-            Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
-            shadowMapShader.setMesh(mesh);
-            shadowMapShader.setMvpMatrix(mvpMatrix);
-            shadowMapShader.bindData();
-            draw(mesh);
-            shadowMapShader.unbindData();
+            for (Mesh.ShaderData shaderData : mesh.getShaderData()) {
+                Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
+                shadowMapShader.setData(shaderData);
+                shadowMapShader.setMvpMatrix(mvpMatrix);
+                shadowMapShader.bindData();
+                draw(shaderData);
+                shadowMapShader.unbindData();
+            }
         }
         GLES20.glDisable(GLES20.GL_CULL_FACE);
     }
