@@ -71,21 +71,32 @@ public class Mesh {
                 }
                 Map<String, Obj> materialGroups = ObjSplitting.splitByMaterialGroups(obj);
                 for (Mtl mtl : allMtls) {
-                    ShaderData sd = new ShaderData();
-                    shaderData.add(sd);
-                    sd.indicesBuffer = ObjData.getFaceVertexIndices(materialGroups.get(mtl.getName()));
-                    sd.vertexBuffer = ObjData.getVertices(materialGroups.get(mtl.getName()));
-                    sd.texCoordsBuffer = ObjData.getTexCoords(materialGroups.get(mtl.getName()), 2);
-                    sd.normalBuffer = ObjData.getNormals(materialGroups.get(mtl.getName()));
-                    FloatTuple ka = mtl.getKa();
-                    sd.ambientColor = new Vector3f(ka.getX(), ka.getY(), ka.getZ());
-                    FloatTuple kd = mtl.getKd();
-                    sd.diffuseColor = new Vector3f(kd.getX(), kd.getY(), kd.getZ());
-                    FloatTuple ks = mtl.getKs();
-                    sd.specularColor = new Vector3f(ks.getX(), ks.getY(), ks.getZ());
-                    sd.specularExponent = mtl.getNs();
-                    sd.textureBitmap = BitmapUtil.getBitmapFromAsset(AbstractEngine.getInstance().getContext(), mtl.getMapKd());
-                    loadTexture(sd);
+                    Obj obj1 = materialGroups.get(mtl.getName());
+                    if (obj1 != null) {
+                        ShaderData sd = new ShaderData();
+                        shaderData.add(sd);
+                        sd.indicesBuffer = ObjData.getFaceVertexIndices(obj1);
+                        sd.vertexBuffer = ObjData.getVertices(obj1);
+                        sd.texCoordsBuffer = ObjData.getTexCoords(obj1, 2);
+                        sd.normalBuffer = ObjData.getNormals(obj1);
+                        FloatTuple ka = mtl.getKa();
+                        if (ka != null) {
+                            sd.ambientColor = new Vector3f(ka.getX(), ka.getY(), ka.getZ());
+                        }
+                        FloatTuple kd = mtl.getKd();
+                        if (kd != null) {
+                            sd.diffuseColor = new Vector3f(kd.getX(), kd.getY(), kd.getZ());
+                        }
+                        FloatTuple ks = mtl.getKs();
+                        if (ks != null) {
+                            sd.specularColor = new Vector3f(ks.getX(), ks.getY(), ks.getZ());
+                        }
+                        if (mtl.getNs() != null) {
+                            sd.specularExponent = mtl.getNs();
+                        }
+                        sd.textureBitmap = BitmapUtil.getBitmapFromAsset(AbstractEngine.getInstance().getContext(), mtl.getMapKd() + ".png");
+                        loadTexture(sd);
+                    }
                 }
 
             } catch (IOException e) {

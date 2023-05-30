@@ -44,7 +44,7 @@ public class Engine extends AbstractEngine {
         //Terrain terrain = new Terrain("plane_heavy.ply");
         //addMesh(terrain);
         //addMesh(new MeshObj());
-        addMesh(new Mesh("monkey", "monkey.obj"));
+        addMesh(new Mesh("car", "car1.obj"));
         Cube cube = new Cube();
         addMesh(cube);
 
