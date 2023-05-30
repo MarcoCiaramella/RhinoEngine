@@ -1,9 +1,6 @@
-package com.outofbound.rhinoenginelib.shader.primitives;
+package com.outofbound.rhinoenginelib.shader;
 
 import android.opengl.GLES20;
-
-import com.outofbound.rhinoenginelib.mesh.Mesh;
-import com.outofbound.rhinoenginelib.shader.Shader;
 
 public final class ShadowMapShader extends Shader {
 

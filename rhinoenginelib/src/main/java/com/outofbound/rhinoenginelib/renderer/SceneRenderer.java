@@ -6,21 +6,23 @@ import android.opengl.Matrix;
 import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
-import com.outofbound.rhinoenginelib.shader.primitives.SceneShader;
+import com.outofbound.rhinoenginelib.shader.MeshColorShader;
+import com.outofbound.rhinoenginelib.shader.MeshShader;
+import com.outofbound.rhinoenginelib.shader.MeshTextureShader;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
 
 public final class SceneRenderer extends AbstractRenderer {
 
-    private final SceneShader sceneShader;
+    private final MeshTextureShader meshTextureShader = new MeshTextureShader();
+    private final MeshColorShader meshColorShader = new MeshColorShader();
     private final float[] mvpMatrix = new float[16];
     private Lights lights;
     private boolean blendingEnabled = false;
     private final ShadowMapRenderer shadowMapRenderer;
     private final SyncMap<Mesh> meshMap;
 
-    public SceneRenderer(){
-        sceneShader = new SceneShader();
+    public SceneRenderer() {
         meshMap = new SyncMap<>();
         lights = new Lights();
         shadowMapRenderer = new ShadowMapRenderer(meshMap);
@@ -64,8 +66,6 @@ public final class SceneRenderer extends AbstractRenderer {
     @Override
     public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
         camera.loadVpMatrix();
-        sceneShader.setLights(lights);
-        sceneShader.setViewPos(camera.getEye());
         if (lights.getDirLight().isOn() && lights.getDirLight().isShadowEnabled()){
             lights.getDirLight().getShadowMap().render(shadowMapRenderer, screenWidth, screenHeight, ms);
         }
@@ -83,15 +83,18 @@ public final class SceneRenderer extends AbstractRenderer {
                 continue;
             }
             for (Mesh.ShaderData shaderData : mesh.getShaderData()) {
+                MeshShader meshShader = shaderData.texture == 0 ? meshColorShader : meshTextureShader;
+                meshShader.setLights(lights);
+                meshShader.setViewPos(camera.getEye());
                 mesh.resetMMatrix();
                 mesh.beforeRendering(ms);
                 Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
-                sceneShader.setData(shaderData);
-                sceneShader.setMMatrix(mesh.getMMatrix());
-                sceneShader.setMvpMatrix(mvpMatrix);
-                sceneShader.bindData();
+                meshShader.setData(shaderData);
+                meshShader.setMMatrix(mesh.getMMatrix());
+                meshShader.setMvpMatrix(mvpMatrix);
+                meshShader.bindData();
                 draw(shaderData);
-                sceneShader.unbindData();
+                meshShader.unbindData();
             }
         }
         for (String name : meshMap.keySet()) {

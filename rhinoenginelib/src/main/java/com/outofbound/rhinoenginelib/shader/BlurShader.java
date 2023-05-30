@@ -1,8 +1,6 @@
-package com.outofbound.rhinoenginelib.shader.primitives;
+package com.outofbound.rhinoenginelib.shader;
 
 import android.opengl.GLES20;
-
-import com.outofbound.rhinoenginelib.shader.Shader;
 
 import java.nio.FloatBuffer;
 

@@ -196,16 +196,14 @@ public class Mesh {
         int[] texture = new int[1];
         GLES20.glGenTextures(1, texture, 0);
         shaderData.texture = texture[0];
-        if (shaderData.texture != 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shaderData.texture);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, shaderData.textureBitmap, 0);
-            shaderData.textureBitmap.recycle();
-        }
         if (shaderData.texture == 0) {
             throw new RuntimeException("Error loading texture.");
         }
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shaderData.texture);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, shaderData.textureBitmap, 0);
+        shaderData.textureBitmap.recycle();
     }
 
     public String getName(){

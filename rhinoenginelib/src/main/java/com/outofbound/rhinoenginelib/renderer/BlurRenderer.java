@@ -3,9 +3,7 @@ package com.outofbound.rhinoenginelib.renderer;
 import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
-import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
-import com.outofbound.rhinoenginelib.renderer.AbstractRenderer;
-import com.outofbound.rhinoenginelib.shader.primitives.BlurShader;
+import com.outofbound.rhinoenginelib.shader.BlurShader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

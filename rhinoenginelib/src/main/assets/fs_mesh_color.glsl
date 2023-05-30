@@ -33,20 +33,14 @@ struct PointLight {
 uniform DirLight uDirLight;
 uniform PointLight uPointLight;
 uniform vec3 uViewPos;
-uniform sampler2D uTexture;
-uniform int uIsTextured;
 varying vec4 vColor;
 varying vec4 vPosition;
 varying vec3 vNormal;
-varying vec2 vTexCoords;
 const vec4 bitShifts = vec4(1.0 / (256.0*256.0*256.0), 1.0 / (256.0*256.0), 1.0 / 256.0, 1.0);
 
 
 
 vec4 getColor(){
-    if (uIsTextured != 0){
-        return texture2D(uTexture,vTexCoords);
-    }
     return vColor;
 }
 

@@ -5,7 +5,7 @@ import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
-import com.outofbound.rhinoenginelib.shader.primitives.ShadowMapShader;
+import com.outofbound.rhinoenginelib.shader.ShadowMapShader;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
 public class ShadowMapRenderer extends AbstractRenderer {
