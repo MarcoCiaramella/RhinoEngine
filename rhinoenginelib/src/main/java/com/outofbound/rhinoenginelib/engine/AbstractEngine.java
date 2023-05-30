@@ -14,14 +14,13 @@ import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
+import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Set;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -303,9 +302,25 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
         }
 
+        for (String name : sceneRenderer.getMeshes().keySet()) {
+            Mesh mesh = getMesh(name);
+            if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
+                if (mesh.updateAABB()) Collider.update(mesh);
+            }
+        }
+        for (String name : sceneRenderer.getMeshes().keySet()) {
+            Mesh mesh = getMesh(name);
+            if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
+                Collider.processCollision(mesh);
+            }
+        }
+
         for (String name : taskMap.keySet()){
             Task task = getTask(name);
-            if (task == null) continue;
+            if (task == null) {
+                taskMap.remove(name);
+                continue;
+            }
             boolean alive = task.runTask(deltaMs);
             if (!alive) {
                 removeTask(name);

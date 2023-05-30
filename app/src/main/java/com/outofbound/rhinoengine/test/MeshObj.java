@@ -8,12 +8,4 @@ public class MeshObj extends Mesh {
     public MeshObj(){
         super("monkey", "monkey.obj");
     }
-
-    @Override
-    public void beforeRendering(long ms) {
-    }
-
-    @Override
-    public void afterRendering(long ms) {
-    }
 }

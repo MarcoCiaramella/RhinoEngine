@@ -1,24 +1,14 @@
 plugins {
     id 'com.android.library'
-    id 'maven-publish'
 }
-
-repositories {
-    mavenCentral()
-    google()
-    maven { url "https://jitpack.io" }
-}
-
-group = 'com.github.MarcoCiaramella'
-version = '1.3.13'
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    namespace 'com.outofbound.rhinoenginelib'
+    compileSdk 33
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 31
+        minSdk 21
+        targetSdk 33
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -38,24 +28,12 @@ android {
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.4.0'
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'com.google.android.material:material:1.8.0'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    implementation 'com.github.MarcoCiaramella:MeshLoader:1.0.3'
-    implementation 'com.github.MarcoCiaramella:Octree:1.0.6'
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            release(MavenPublication) {
-                from components.release
-                groupId = 'com.github.MarcoCiaramella'
-                artifactId = 'RhinoEngine'
-                version = '1.3.13'
-            }
-        }
-    }
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    implementation 'com.github.MarcoCiaramella:JOctree:1.0.0'
+    // https://github.com/javagl/Obj
+    implementation 'de.javagl:obj:0.4.0'
 }

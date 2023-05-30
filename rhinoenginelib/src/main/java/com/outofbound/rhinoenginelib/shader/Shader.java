@@ -4,12 +4,14 @@ import android.content.Context;
 import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.util.file.TextFile;
 
 
 public abstract class Shader {
 
     private final int program;
+    protected Mesh.ShaderData data;
 
     public Shader(String vs, String fs){
         program = GLES20.glCreateProgram();
@@ -58,5 +60,10 @@ public abstract class Shader {
         if (location < 0) {
             throw new RuntimeException("Unable to locate '" + label + "' in program");
         }
+    }
+
+    public Shader setData(Mesh.ShaderData shaderData){
+        this.data = shaderData;
+        return this;
     }
 }

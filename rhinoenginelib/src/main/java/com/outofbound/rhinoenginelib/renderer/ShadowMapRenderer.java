@@ -5,7 +5,7 @@ import android.opengl.Matrix;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
-import com.outofbound.rhinoenginelib.shader.primitives.ShadowMapShader;
+import com.outofbound.rhinoenginelib.shader.ShadowMapShader;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
 
 public class ShadowMapRenderer extends AbstractRenderer {
@@ -26,13 +26,18 @@ public class ShadowMapRenderer extends AbstractRenderer {
         camera.loadVpMatrix();
         for (String name : meshMap.keySet()) {
             Mesh mesh = meshMap.get(name);
-            if (mesh == null) continue;
-            Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
-            shadowMapShader.setMesh(mesh);
-            shadowMapShader.setMvpMatrix(mvpMatrix);
-            shadowMapShader.bindData();
-            draw(mesh);
-            shadowMapShader.unbindData();
+            if (mesh == null) {
+                meshMap.remove(name);
+                continue;
+            }
+            for (Mesh.ShaderData shaderData : mesh.getShaderData()) {
+                Matrix.multiplyMM(mvpMatrix, 0, camera.getVpMatrix(), 0, mesh.getMMatrix(), 0);
+                shadowMapShader.setData(shaderData);
+                shadowMapShader.setMvpMatrix(mvpMatrix);
+                shadowMapShader.bindData();
+                draw(shaderData);
+                shadowMapShader.unbindData();
+            }
         }
         GLES20.glDisable(GLES20.GL_CULL_FACE);
     }

@@ -4,10 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
+import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
-import com.outofbound.rhinoenginelib.renderer.RendererOnTexture;
-import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
@@ -16,7 +16,7 @@ public class Engine extends AbstractEngine {
     private static final Vector3f CAMERA_EYE = new Vector3f(3,2,3);
     private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
-    private static final int NUM_CUBES = 1;
+    private static final int NUM_CUBES = 10;
     private static final MyGesture gesture = new MyGesture();
 
     public Engine(Context context){
@@ -41,14 +41,14 @@ public class Engine extends AbstractEngine {
         getLights().setPointLight(pointLight);
         getLights().getDirLight().configShadow(1,1000,10);
 
-        Plane plane = new Plane("plane_heavy.ply");
-        plane.enableCollision();
-        //plane.disableCollision();
-        addMesh(plane);
+        //Terrain terrain = new Terrain("plane_heavy.ply");
+        //addMesh(terrain);
         //addMesh(new MeshObj());
+        addMesh(new Mesh("car", "car1.obj"));
         Cube cube = new Cube();
         addMesh(cube);
-        addMesh(new Trail("trail", cube, new float[]{1,1,1,1}, 100, 100));
+
+        Collider.build(new Vector3f(-1, -1, -1), new Vector3f(1, 1, 1), 5, 16);
     }
 
     public void blurOn(){

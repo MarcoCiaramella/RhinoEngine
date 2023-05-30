@@ -8,412 +8,177 @@ import android.opengl.Matrix;
 
 import androidx.annotation.NonNull;
 
-import com.ds.octreelib.Octree;
-import com.outofbound.meshloaderlib.obj.Obj;
-import com.outofbound.meshloaderlib.ply.Ply;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
-import com.outofbound.rhinoenginelib.util.color.Color;
-import com.outofbound.rhinoenginelib.util.color.Gradient;
+import com.outofbound.rhinoenginelib.util.bitmap.BitmapUtil;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import de.javagl.obj.FloatTuple;
+import de.javagl.obj.Mtl;
+import de.javagl.obj.MtlReader;
+import de.javagl.obj.Obj;
+import de.javagl.obj.ObjData;
+import de.javagl.obj.ObjReader;
+import de.javagl.obj.ObjSplitting;
+import de.javagl.obj.ObjUtils;
 
 
-public abstract class Mesh {
+public class Mesh {
 
-    public static class Material {
-        private Vector3f ambientColor;
-        private Vector3f diffuseColor;
-        private Vector3f specularColor;
-        private float specularExponent;
-
-        public Material(Vector3f ambientColor, Vector3f diffuseColor, Vector3f specularColor, float specularExponent){
-            this.ambientColor = ambientColor;
-            this.diffuseColor = diffuseColor;
-            this.specularColor = specularColor;
-            this.specularExponent = specularExponent;
-        }
-
-        public void setAmbientColor(Vector3f ambientColor) {
-            this.ambientColor = ambientColor;
-        }
-
-        public void setDiffuseColor(Vector3f diffuseColor) {
-            this.diffuseColor = diffuseColor;
-        }
-
-        public void setSpecularColor(Vector3f specularColor) {
-            this.specularColor = specularColor;
-        }
-
-        public void setSpecularExponent(float specularExponent) {
-            this.specularExponent = specularExponent;
-        }
-
-        public Vector3f getAmbientColor() {
-            return ambientColor;
-        }
-
-        public Vector3f getDiffuseColor() {
-            return diffuseColor;
-        }
-
-        public Vector3f getSpecularColor() {
-            return specularColor;
-        }
-
-        public float getSpecularExponent() {
-            return specularExponent;
-        }
-    }
-
-    private float[] vertices;
-    private float[] normals;
-    private int[] indices;
-    private float[] colors;
-    private float[] texCoords;
-    private final int sizeVertex;
-    private FloatBuffer vertexBuffer;
-    private FloatBuffer normalBuffer;
-    private FloatBuffer colorBuffer;
-    private FloatBuffer texCoordsBuffer;
-    private IntBuffer indicesBuffer;
-    private AABB aabb;
-    protected Vector3f position;
-    protected Vector3f rotation;
-    protected float scale;
-    private int texture = 0;
-    private Bitmap textureBitmap;
-    private Material material;
+    private ArrayList<AABB> aabbGrid;
+    protected Vector3f position = new Vector3f(0,0,0);
+    protected Vector3f rotation = new Vector3f(0,0,0);
+    protected float scale = 1;
     private final String name;
     private final float[] mMatrix = new float[16];
-    private Octree octree;
+    private boolean collisionEnabled = false;
+    private int aabbSizeX, aabbSizeY, aabbSizeZ;
+    private boolean updateAABBRequired = true;
+    private final ArrayList<ShaderData> shaderData = new ArrayList<>();
 
 
-    public Mesh(@NonNull String name, @NonNull float[] vertices, int sizeVertex, @NonNull float[] normals, int[] indices, float[] colors){
+    public Mesh(@NonNull String name, @NonNull float[] vertices, @NonNull float[] normals, int[] indices, float[] colors){
         this.name = name;
-        this.vertices = vertices;
-        this.sizeVertex = sizeVertex;
-        this.normals = normals;
-        this.indices = indices;
-        this.colors = colors;
-        init();
+        shaderData.add(new ShaderData());
+        loadVertices(shaderData.get(0), vertices);
+        loadNormals(shaderData.get(0), normals);
+        loadColors(shaderData.get(0), colors);
+        loadIndices(shaderData.get(0), indices);
+
     }
 
-    public Mesh(@NonNull String name, @NonNull String mesh){
+    public Mesh(@NonNull String name, @NonNull String asset){
         this.name = name;
-        this.sizeVertex = 3;
-        loadFromFile(mesh);
-        init();
+        loadAsset(asset);
     }
 
-    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull float[] color){
-        this.name = name;
-        this.sizeVertex = 3;
-        loadFromFile(mesh);
-        this.colors = Color.getVertexColor(color,vertices.length);
-        init();
-    }
+    private void loadAsset(String fileName){
+        if (fileName.endsWith(".obj")) {
+            try {
+                Obj obj = ObjUtils.convertToRenderable(ObjReader.read(AbstractEngine.getInstance().getContext().getAssets().open(fileName)));
 
-    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull Gradient[] gradients){
-        this.name = name;
-        this.sizeVertex = 3;
-        loadFromFile(mesh);
-        this.colors = Color.gradientColoring(this.vertices,this.indices,gradients);
-        init();
-    }
+                List<Mtl> allMtls = new ArrayList<>();
+                for (String mtlFileName : obj.getMtlFileNames()) {
+                    allMtls.addAll(MtlReader.read(AbstractEngine.getInstance().getContext().getAssets().open(mtlFileName)));
+                }
+                Map<String, Obj> materialGroups = ObjSplitting.splitByMaterialGroups(obj);
+                for (Mtl mtl : allMtls) {
+                    Obj obj1 = materialGroups.get(mtl.getName());
+                    if (obj1 != null) {
+                        ShaderData sd = new ShaderData();
+                        shaderData.add(sd);
+                        sd.indicesBuffer = ObjData.getFaceVertexIndices(obj1);
+                        sd.vertexBuffer = ObjData.getVertices(obj1);
+                        sd.texCoordsBuffer = ObjData.getTexCoords(obj1, 2);
+                        sd.normalBuffer = ObjData.getNormals(obj1);
+                        FloatTuple ka = mtl.getKa();
+                        if (ka != null) {
+                            sd.ambientColor = new Vector3f(ka.getX(), ka.getY(), ka.getZ());
+                        }
+                        FloatTuple kd = mtl.getKd();
+                        if (kd != null) {
+                            sd.diffuseColor = new Vector3f(kd.getX(), kd.getY(), kd.getZ());
+                        }
+                        FloatTuple ks = mtl.getKs();
+                        if (ks != null) {
+                            sd.specularColor = new Vector3f(ks.getX(), ks.getY(), ks.getZ());
+                        }
+                        if (mtl.getNs() != null) {
+                            sd.specularExponent = mtl.getNs();
+                        }
+                        sd.textureBitmap = BitmapUtil.getBitmapFromAsset(AbstractEngine.getInstance().getContext(), mtl.getMapKd() + ".png");
+                        loadTexture(sd);
+                    }
+                }
 
-    public Mesh(@NonNull String name, @NonNull String mesh, @NonNull Bitmap textureBitmap){
-        this.name = name;
-        if (!mesh.endsWith(".ply")){
-            throw new RuntimeException("Mesh must be in .ply format.");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        this.sizeVertex = 3;
-        loadFromFile(mesh);
-        this.textureBitmap = textureBitmap;
-        init();
-    }
-
-    private void loadFromFile(String fileName){
-        if (fileName.endsWith(".ply")){
-            Ply ply = new Ply(AbstractEngine.getInstance().getContext(), fileName);
-            ply.load();
-            this.vertices = ply.getVertices();
-            this.normals = ply.getNormals();
-            this.colors = ply.getColors();
-            this.texCoords = ply.getUvs();
-            this.indices = ply.getIndices();
+        else {
+            throw new RuntimeException("File extension unknown");
         }
-        else if (fileName.endsWith(".obj")){
-            Obj obj = new Obj(AbstractEngine.getInstance().getContext(), fileName);
-            obj.load();
-            this.vertices = obj.getVertices();
-            this.texCoords = obj.getTextureCoords();
-            this.normals = obj.getNormals();
-            this.indices = obj.getIndices();
-            this.textureBitmap = obj.getMaterial().getMapKd();
-            this.material = new Material(new Vector3f(obj.getMaterial().getKa()), new Vector3f(obj.getMaterial().getKd()), new Vector3f(obj.getMaterial().getKs()),obj.getMaterial().getNs());
-        }
+
     }
 
-    private void init(){
-        load();
-        position = new Vector3f(0,0,0);
-        rotation = new Vector3f(0,0,0);
-        scale = 1;
-        if (material == null) {
-            material = new Material(new Vector3f(0.2f, 0.2f, 0.2f), new Vector3f(0.5f, 0.5f, 0.5f), new Vector3f(1, 1, 1),200);
-        }
-    }
-
-    private void load(){
-        loadVertices();
-        loadNormals();
-        loadColors();
-        loadTexCoords();
-        loadIndices();
-        loadTexture();
-        if (vertices.length > 0) {
-            createAABB();
-        }
-    }
-
-    public void reloadVertices(){
-        loadVertices();
-    }
-
-    public void reloadNormals(){
-        loadNormals();
-    }
-
-    public void reloadColors(){
-        loadColors();
-    }
-
-    public void reloadIndices(){
-        loadIndices();
-    }
-
-    private void loadVertices(){
+    private void loadVertices(ShaderData shaderData, float[] vertices){
         ByteBuffer bbVertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bbVertex.order(ByteOrder.nativeOrder());
-        vertexBuffer = bbVertex.asFloatBuffer();
-        vertexBuffer.put(vertices);
-        vertexBuffer.position(0);
+        shaderData.vertexBuffer = bbVertex.asFloatBuffer();
+        shaderData.vertexBuffer.put(vertices);
+        shaderData.vertexBuffer.position(0);
     }
 
-    private void loadNormals(){
+    private void loadNormals(ShaderData shaderData, float[] normals){
         ByteBuffer bbNormal = ByteBuffer.allocateDirect(normals.length * 4);
         bbNormal.order(ByteOrder.nativeOrder());
-        normalBuffer = bbNormal.asFloatBuffer();
-        normalBuffer.put(normals);
-        normalBuffer.position(0);
+        shaderData.normalBuffer = bbNormal.asFloatBuffer();
+        shaderData.normalBuffer.put(normals);
+        shaderData.normalBuffer.position(0);
     }
 
-    private void loadColors(){
-        if (colors == null) {
-            colors = new float[getNumVertices() * 4];
-            Arrays.fill(colors,0);
+    private void loadColors(ShaderData shaderData, float[] colors){
+        if (colors != null) {
+            ByteBuffer bbColor = ByteBuffer.allocateDirect(colors.length * 4);
+            bbColor.order(ByteOrder.nativeOrder());
+            shaderData.colorBuffer = bbColor.asFloatBuffer();
+            shaderData.colorBuffer.put(colors);
+            shaderData.colorBuffer.position(0);
         }
-        ByteBuffer bbColor = ByteBuffer.allocateDirect(colors.length * 4);
-        bbColor.order(ByteOrder.nativeOrder());
-        colorBuffer = bbColor.asFloatBuffer();
-        colorBuffer.put(colors);
-        colorBuffer.position(0);
     }
 
-    private void loadTexCoords(){
-        if (texCoords == null) {
-            texCoords = new float[getNumVertices() * 2];
-            Arrays.fill(texCoords,0);
-        }
-        ByteBuffer bbTexCoords = ByteBuffer.allocateDirect(texCoords.length * 4);
-        bbTexCoords.order(ByteOrder.nativeOrder());
-        texCoordsBuffer = bbTexCoords.asFloatBuffer();
-        texCoordsBuffer.put(texCoords);
-        texCoordsBuffer.position(0);
-    }
-
-    private void loadIndices(){
+    private void loadIndices(ShaderData shaderData, int[] indices){
         if (indices != null) {
             ByteBuffer bbIndices = ByteBuffer.allocateDirect(indices.length * 4);
             bbIndices.order(ByteOrder.nativeOrder());
-            indicesBuffer = bbIndices.asIntBuffer();
-            indicesBuffer.put(indices);
-            indicesBuffer.position(0);
+            shaderData.indicesBuffer = bbIndices.asIntBuffer();
+            shaderData.indicesBuffer.put(indices);
+            shaderData.indicesBuffer.position(0);
         }
     }
 
-    public abstract void beforeRendering(long ms);
+    public void beforeRendering(long ms) {}
 
-    public abstract void afterRendering(long ms);
+    public void afterRendering(long ms) {}
+
+    public void onCollision(AABB aabb) {}
 
     protected void rotateX(){
         Matrix.rotateM(mMatrix, 0, rotation.x, 1, 0, 0);
+        updateAABBRequired = true;
     }
 
     protected void rotateY(){
         Matrix.rotateM(mMatrix, 0, rotation.y, 0, 1, 0);
+        updateAABBRequired = true;
     }
 
     protected void rotateZ(){
         Matrix.rotateM(mMatrix, 0, rotation.z, 0, 0, 1);
+        updateAABBRequired = true;
     }
 
     protected void scale(){
         Matrix.scaleM(mMatrix, 0, scale, scale, scale);
+        updateAABBRequired = true;
     }
 
     protected void translate(){
         Matrix.translateM(mMatrix, 0, position.x, position.y, position.z);
+        updateAABBRequired = true;
     }
 
-    public FloatBuffer getVertexBuffer(){
-        return vertexBuffer;
-    }
-
-    public FloatBuffer getNormalBuffer(){
-        return normalBuffer;
-    }
-
-    public FloatBuffer getColorBuffer(){
-        return colorBuffer;
-    }
-
-    public FloatBuffer getTexCoordsBuffer() {
-        return texCoordsBuffer;
-    }
-
-    public IntBuffer getIndicesBuffer(){
-        return indicesBuffer;
-    }
-
-    public int getSizeVertex(){
-        return sizeVertex;
-    }
-
-    public float[] getVertices(){
-        return vertices;
-    }
-
-    public float[] getNormals(){
-        return normals;
-    }
-
-    public float[] getColors(){
-        return colors;
-    }
-
-    public int[] getIndices(){
-        return indices;
-    }
-
-    private float[] addFloats(float[] floats1, float[] floats2){
-        float[] result = Arrays.copyOf(floats1,floats1.length+floats2.length);
-        System.arraycopy(floats2,0,result,floats1.length,floats2.length);
-        return result;
-    }
-
-    private int[] addInts(int[] ints1, int[] ints2){
-        int[] result = Arrays.copyOf(ints1,ints1.length+ints2.length);
-        System.arraycopy(ints2,0,result,ints1.length,ints2.length);
-        return result;
-    }
-
-    private float[] removeFloats(float[] floats, int pos, int length){
-        float[] result = new float[floats.length-length];
-        System.arraycopy(floats,0,result,0,pos);
-        System.arraycopy(floats,pos+length,result,pos,floats.length-(pos+length));
-        return result;
-    }
-
-    private int[] removeInts(int[] ints, int pos, int length){
-        int[] result = new int[ints.length-length];
-        System.arraycopy(ints,0,result,0,pos);
-        System.arraycopy(ints,pos+length,result,pos,ints.length-(pos+length));
-        return result;
-    }
-
-    public void addVertices(float[] vertices){
-        this.vertices = addFloats(this.vertices,vertices);
-        createAABB();
-    }
-
-    public void addNormals(float[] normals){
-        this.normals = addFloats(this.normals,normals);
-    }
-
-    public void addColors(float[] colors){
-        this.colors = addFloats(this.colors,colors);
-    }
-
-    public void addIndices(int[] indices){
-        this.indices = addInts(this.indices,indices);
-    }
-
-    public void removeVertices(int pos, int length){
-        vertices = removeFloats(vertices,pos*sizeVertex,length*sizeVertex);
-    }
-
-    public void removeNormals(int pos, int length){
-        normals = removeFloats(normals,pos*sizeVertex,length*sizeVertex);
-    }
-
-    public void removeColors(int pos, int length){
-        colors = removeFloats(colors,pos*4,length*4);
-    }
-
-    public void removeIndices(int pos, int length){
-        indices = removeInts(indices,pos,length);
-    }
-
-    public int getNumVertices(){
-        return vertices.length/sizeVertex;
-    }
-
-    public int getNumIndices(){
-        return indices.length;
-    }
-
-    private Mesh createAABB(){
-        aabb = new AABB(vertices, sizeVertex);
+    private Mesh newAABBGrid(){
+        aabbGrid = AABB.newAABBGrid(this);
         return this;
-    }
-
-    public Mesh enableCollision(){
-        if (octree == null) {
-            double[] ver = new double[vertices.length];
-            for (int i = 0; i < ver.length; i++) {
-                ver[i] = vertices[i];
-            }
-            octree = new Octree(getNumVertices(), ver, 3, 0, null, 0, indices.length / 3, indices, 3, 0, null, 0, 0, 1);
-        }
-        return this;
-    }
-
-    public Mesh disableCollision(){
-        if (octree != null) {
-            octree.free();
-            octree = null;
-        }
-        return this;
-    }
-
-    private boolean isCollisionEnabled(){
-        return octree != null;
-    }
-
-    public boolean isColliding(Mesh mesh){
-        if (mesh.isCollisionEnabled()){
-            aabb.calc(mMatrix);
-            int[] items = new int[1];
-            return mesh.octree.getWithinBoundingBox(Octree.TRI, items, aabb.getMin(), aabb.getMax(), 0) == 1;
-        }
-        return false;
     }
 
     public Vector3f getPosition(){
@@ -438,36 +203,18 @@ public abstract class Mesh {
         return res;
     }
 
-    public int getTexture(){
-        return texture;
-    }
-
-    private void loadTexture(){
-        if (textureBitmap == null) {
-            return;
-        }
+    private void loadTexture(ShaderData shaderData){
         int[] texture = new int[1];
         GLES20.glGenTextures(1, texture, 0);
-        this.texture = texture[0];
-        if (this.texture != 0) {
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, this.texture);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureBitmap, 0);
-            textureBitmap.recycle();
-        }
-        if (this.texture == 0) {
+        shaderData.texture = texture[0];
+        if (shaderData.texture == 0) {
             throw new RuntimeException("Error loading texture.");
         }
-    }
-
-    public Mesh setMaterial(Material material){
-        this.material = material;
-        return this;
-    }
-
-    public Material getMaterial(){
-        return material;
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, shaderData.texture);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, shaderData.textureBitmap, 0);
+        shaderData.textureBitmap.recycle();
     }
 
     public String getName(){
@@ -486,5 +233,76 @@ public abstract class Mesh {
 
     public float[] getMMatrix(){
         return mMatrix;
+    }
+
+    public boolean updateAABB() {
+        if (updateAABBRequired) {
+            for (AABB aabb : aabbGrid) {
+                aabb.mul(mMatrix);
+            }
+            updateAABBRequired = false;
+            return true;
+        }
+        return false;
+    }
+
+    public ArrayList<AABB> getAABBGrid() {
+        return aabbGrid;
+    }
+
+    public boolean hasAABB() {
+        return aabbGrid != null;
+    }
+
+    public Mesh enableCollision(int aabbSizeX, int aabbSizeY, int aabbSizeZ) {
+        this.aabbSizeX = aabbSizeX;
+        this.aabbSizeY = aabbSizeY;
+        this.aabbSizeZ = aabbSizeZ;
+        newAABBGrid();
+        collisionEnabled = true;
+        return this;
+    }
+
+    public Mesh enableCollision() {
+        return enableCollision(1, 1, 1);
+    }
+
+    public Mesh disableCollision() {
+        collisionEnabled = false;
+        return this;
+    }
+
+    public boolean isCollisionEnabled() {
+        return collisionEnabled;
+    }
+
+    public int getAABBSizeX() {
+        return this.aabbSizeX;
+    }
+
+    public int getAABBSizeY() {
+        return this.aabbSizeY;
+    }
+
+    public int getAABBSizeZ() {
+        return this.aabbSizeZ;
+    }
+
+    public ArrayList<ShaderData> getShaderData() {
+        return shaderData;
+    }
+
+    public static class ShaderData {
+        public FloatBuffer vertexBuffer;
+        public FloatBuffer normalBuffer;
+        public FloatBuffer colorBuffer;
+        public FloatBuffer texCoordsBuffer;
+        public IntBuffer indicesBuffer;
+        public Vector3f ambientColor = new Vector3f(0.2f, 0.2f, 0.2f);
+        public Vector3f diffuseColor = new Vector3f(0.5f, 0.5f, 0.5f);
+        public Vector3f specularColor = new Vector3f(1, 1, 1);
+        public float specularExponent = 200;
+        public int texture = 0;
+        public Bitmap textureBitmap;
     }
 }

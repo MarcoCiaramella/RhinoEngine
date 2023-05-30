@@ -105,23 +105,4 @@ public class Color {
         int b = (int) (blueI(colorMin)*c1 + blueI(colorMax)*c2);
         return colorInt(a,r,g,b);
     }
-
-    public static float[] gradientColoring(float[] vertices, int[] indices, Gradient[] gradients){
-        float[] colors = new float[(vertices.length/3)*4];
-        Arrays.fill(colors, 1f);
-        float zMax = Vertex.getMaxZInVertices(vertices);
-        for (int i = 0; i < indices.length; i += 3){
-            float z01 = Vertex.getMaxZInTriangle(vertices,indices[i],indices[i+1],indices[i+2]) / zMax;
-            for (Gradient gradient : gradients) {
-                if (z01 >= gradient.min && z01 <= gradient.max) {
-                    float dist = gradient.max - gradient.min;
-                    float coeff = dist > 0f ? (z01 - gradient.min) / dist : 0f;
-                    int color = mixColor(gradient.colorMin,gradient.colorMax,coeff);
-                    coloringTriangle(colors,indices[i],indices[i+1],indices[i+2],color);
-                    break;
-                }
-            }
-        }
-        return colors;
-    }
 }

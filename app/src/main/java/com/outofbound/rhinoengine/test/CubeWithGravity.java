@@ -1,5 +1,7 @@
 package com.outofbound.rhinoengine.test;
 
+import com.outofbound.rhinoenginelib.mesh.AABB;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.physics.Gravity;
 import com.outofbound.rhinoenginelib.util.color.Color;
 import com.outofbound.rhinoenginelib.util.number.Numbers;
@@ -16,6 +18,7 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
         position.z = Numbers.randomFloat(-2,2);
         scale = 0.1f;
         gravity = new Gravity(-1, position.y);
+        enableCollision();
     }
 
     @Override
@@ -30,7 +33,7 @@ public class CubeWithGravity extends com.outofbound.rhinoenginelib.mesh.primitiv
     }
 
     @Override
-    public void afterRendering(long ms) {
-        collisionDetected = isColliding(Engine.getInstance().getMesh("Plane"));
+    public void onCollision(AABB aabb) {
+        collisionDetected = true;
     }
 }
