@@ -3,6 +3,7 @@ package com.outofbound.rhinoenginelib.renderer;
 import android.opengl.GLES20;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
+import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 
 
 public class RendererOnTexture {
@@ -41,13 +42,13 @@ public class RendererOnTexture {
         createFramebuffer(frameBuffer, texture, renderBuffer, fboWidth, fboHeight);
     }
 
-    private void renderOnFBO(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms){
+    private void renderOnFBO(AbstractRenderer abstractRenderer, Camera camera, long ms){
         GLES20.glViewport(0, 0, fboWidth, fboHeight);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, frameBuffer);
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
-        abstractRenderer.doRendering(screenWidth, screenHeight, camera, ms);
+        abstractRenderer.doRendering(camera, ms);
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
-        GLES20.glViewport(0, 0, screenWidth, screenHeight);
+        GLES20.glViewport(0, 0, AbstractEngine.getInstance().getWidth(), AbstractEngine.getInstance().getHeight());
     }
 
     private void createFramebuffer(int frameBuffer, int texture, int renderBuffer, int fboWidth, int fboHeight){
@@ -67,8 +68,8 @@ public class RendererOnTexture {
         GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, 0);
     }
 
-    public int render(AbstractRenderer abstractRenderer, int screenWidth, int screenHeight, Camera camera, long ms) {
-        renderOnFBO(abstractRenderer, screenWidth, screenHeight, camera, ms);
+    public int render(AbstractRenderer abstractRenderer, Camera camera, long ms) {
+        renderOnFBO(abstractRenderer, camera, ms);
         return texture;
     }
 

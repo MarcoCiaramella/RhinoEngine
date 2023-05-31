@@ -64,13 +64,13 @@ public final class SceneRenderer extends AbstractRenderer {
     }
 
     @Override
-    public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
+    public void doRendering(Camera camera, long ms) {
         camera.loadVpMatrix();
         if (lights.getDirLight().isOn() && lights.getDirLight().isShadowEnabled()){
-            lights.getDirLight().getShadowMap().render(shadowMapRenderer, screenWidth, screenHeight, ms);
+            lights.getDirLight().getShadowMap().render(shadowMapRenderer, ms);
         }
         if (lights.getPointLight().isOn() && lights.getPointLight().isShadowEnabled()) {
-            lights.getPointLight().getShadowMap().render(shadowMapRenderer, screenWidth, screenHeight, ms);
+            lights.getPointLight().getShadowMap().render(shadowMapRenderer, ms);
         }
         if (blendingEnabled) {
             GLES20.glEnable(GLES20.GL_BLEND);

@@ -296,10 +296,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         }
 
         if (blurEnabled){
-            blurRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
+            blurRenderer.doRendering(camera, deltaMs);
         }
         else {
-            sceneRenderer.doRendering(getWidth(), getHeight(), camera, deltaMs);
+            sceneRenderer.doRendering(camera, deltaMs);
         }
 
         for (String name : sceneRenderer.getMeshes().keySet()) {

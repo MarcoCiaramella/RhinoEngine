@@ -20,7 +20,7 @@ public class ShadowMapRenderer extends AbstractRenderer {
     }
 
     @Override
-    public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
+    public void doRendering(Camera camera, long ms) {
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_FRONT);
         camera.loadVpMatrix();

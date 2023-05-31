@@ -7,7 +7,7 @@ import com.outofbound.rhinoenginelib.mesh.Mesh;
 
 public abstract class AbstractRenderer {
 
-    public abstract void doRendering(int screenWidth, int screenHeight, Camera camera, long ms);
+    public abstract void doRendering(Camera camera, long ms);
 
     protected void draw(Mesh.ShaderData shaderData){
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, shaderData.indicesBuffer.capacity(), GLES20.GL_UNSIGNED_INT, shaderData.indicesBuffer);

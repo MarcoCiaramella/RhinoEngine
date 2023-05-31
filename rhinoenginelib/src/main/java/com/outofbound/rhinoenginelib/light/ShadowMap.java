@@ -17,8 +17,8 @@ public class ShadowMap {
         rendererOnTexture = new RendererOnTexture(RendererOnTexture.RESOLUTION_1024);
     }
 
-    public void render(ShadowMapRenderer shadowMapRenderer, int screenWidth, int screenHeight, long ms){
-        texture = rendererOnTexture.render(shadowMapRenderer, screenWidth, screenHeight, camera, ms);
+    public void render(ShadowMapRenderer shadowMapRenderer, long ms){
+        texture = rendererOnTexture.render(shadowMapRenderer, camera, ms);
     }
 
     public int getTexture(){

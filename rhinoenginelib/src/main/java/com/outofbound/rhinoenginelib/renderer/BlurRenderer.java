@@ -49,10 +49,10 @@ public class BlurRenderer extends AbstractRenderer {
     }
 
     @Override
-    public void doRendering(int screenWidth, int screenHeight, Camera camera, long ms) {
+    public void doRendering(Camera camera, long ms) {
         blurShader.setVertices(verticesBuffer);
         blurShader.setTextureCoords(textureCoordsBuffer);
-        blurShader.setSceneTexture(rendererOnTexture.render(abstractRenderer, screenWidth, screenHeight, camera, ms));
+        blurShader.setSceneTexture(rendererOnTexture.render(abstractRenderer, camera, ms));
         // TODO renderizzare il blur su una texture piccola per velocizzare
         blurShader.bindData();
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
