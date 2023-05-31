@@ -3,7 +3,7 @@
 precision mediump float;
 
 varying vec2 vTexCoords;
-uniform sampler2D uSceneTextureId;
+uniform sampler2D uTextureId;
 // radius [0.0,1.0]
 uniform float uRadius;
 
@@ -34,7 +34,7 @@ vec4 calcBlur(sampler2D texture, vec2 uv) {
 }
 
 void main(){
-    vec4 scene = texture2D(uSceneTextureId, vTexCoords);
-    vec4 blur = calcBlur(uSceneTextureId, vTexCoords);
+    vec4 scene = texture2D(uTextureId, vTexCoords);
+    vec4 blur = calcBlur(uTextureId, vTexCoords);
     gl_FragColor = clamp((scene + blur) - (scene * blur), 0.0, 1.0);
 }

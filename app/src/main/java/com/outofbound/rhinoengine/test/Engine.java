@@ -8,6 +8,7 @@ import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.light.PointLight;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
+import com.outofbound.rhinoenginelib.renderer.RenderingResolution;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 
@@ -20,11 +21,11 @@ public class Engine extends AbstractEngine {
     private static final MyGesture gesture = new MyGesture();
 
     public Engine(Context context){
-        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture);
+        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture, RenderingResolution.RESOLUTION_256);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture);
+        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture, RenderingResolution.RESOLUTION_256);
     }
 
     @Override

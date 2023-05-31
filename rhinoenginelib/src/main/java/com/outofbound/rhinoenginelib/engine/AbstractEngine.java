@@ -15,6 +15,7 @@ import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.collision.Collider;
+import com.outofbound.rhinoenginelib.renderer.FrameRenderer;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
@@ -39,10 +40,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     private ScaleGestureDetector scaleDetector;
     private boolean gestureProcessed = false;
     private static AbstractEngine instance;
-    private BlurRenderer blurRenderer;
-    private boolean blurEnabled = false;
-    private SceneRenderer sceneRenderer;
     private final SyncMap<Task> taskMap = new SyncMap<>();
+    private FrameRenderer frameRenderer;
+    private int resolution;
 
 
 
@@ -51,10 +51,11 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @param context the context for this view
      * @param camera the Camera
      * @param gesture a Gesture
+     * @param resolution rendering resolution
      */
-    public AbstractEngine(Context context, Camera camera, Gesture gesture){
+    public AbstractEngine(Context context, Camera camera, Gesture gesture, int resolution){
         super(context);
-        config(camera, gesture);
+        config(camera, gesture, resolution);
     }
 
     /**
@@ -63,13 +64,14 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @param attrs the object AttributeSet
      * @param camera the Camera
      * @param gesture a Gesture
+     * @param resolution rendering resolution
      */
-    public AbstractEngine(Context context, AttributeSet attrs, Camera camera, Gesture gesture){
+    public AbstractEngine(Context context, AttributeSet attrs, Camera camera, Gesture gesture, int resolution){
         super(context,attrs);
-        config(camera, gesture);
+        config(camera, gesture, resolution);
     }
 
-    private void config(Camera camera, Gesture gesture){
+    private void config(Camera camera, Gesture gesture, int resolution){
         instance = this;
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
@@ -78,6 +80,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
         setOnTouchListener(this);
         this.camera = camera;
         this.gesture = gesture;
+        this.resolution = resolution;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
     }
 
@@ -257,13 +260,10 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      */
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         GLES20.glDepthFunc(GLES20.GL_LESS);
         GLES20.glClearDepthf(1.0f);
-
-        sceneRenderer = new SceneRenderer();
-        blurRenderer = new BlurRenderer(sceneRenderer);
+        frameRenderer = new FrameRenderer(resolution);
         init();
     }
 
@@ -295,20 +295,15 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
             deltaMs = currentMs - ms;
         }
 
-        if (blurEnabled){
-            blurRenderer.doRendering(camera, deltaMs);
-        }
-        else {
-            sceneRenderer.doRendering(camera, deltaMs);
-        }
+        frameRenderer.doRendering(camera, deltaMs);
 
-        for (String name : sceneRenderer.getMeshes().keySet()) {
+        for (String name : frameRenderer.getMeshes().keySet()) {
             Mesh mesh = getMesh(name);
             if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
                 if (mesh.updateAABB()) Collider.update(mesh);
             }
         }
-        for (String name : sceneRenderer.getMeshes().keySet()) {
+        for (String name : frameRenderer.getMeshes().keySet()) {
             Mesh mesh = getMesh(name);
             if (mesh != null && mesh.isCollisionEnabled() && mesh.hasAABB()) {
                 Collider.processCollision(mesh);
@@ -371,7 +366,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @return this AbstractEngine
      */
     public AbstractEngine enableBlur(){
-        blurEnabled = true;
+        frameRenderer.enableBlur();
         return this;
     }
 
@@ -380,7 +375,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @return this AbstractEngine
      */
     public AbstractEngine disableBlur(){
-        blurEnabled = false;
+        frameRenderer.disableBlur();
         return this;
     }
 
@@ -396,20 +391,20 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     }
 
     public void addMesh(Mesh mesh){
-        sceneRenderer.addMesh(mesh);
+        frameRenderer.addMesh(mesh);
     }
 
     public AbstractEngine removeMesh(String name){
-        sceneRenderer.removeMesh(name);
+        frameRenderer.removeMesh(name);
         return this;
     }
 
     public Mesh getMesh(String name){
-        return sceneRenderer.getMesh(name);
+        return frameRenderer.getMesh(name);
     }
 
     public Lights getLights(){
-        return sceneRenderer.getLights();
+        return frameRenderer.getLights();
     }
 
 }

@@ -4,7 +4,7 @@ import android.opengl.GLES20;
 
 import java.nio.FloatBuffer;
 
-public final class BlurShader extends Shader {
+public final class FrameShader extends Shader {
 
     private FloatBuffer vertices;
     private FloatBuffer textureCoords;
@@ -12,15 +12,13 @@ public final class BlurShader extends Shader {
     private final int aPosition;
     private final int aTexCoords;
     private final int uTextureId;
-    private final int uRadius;
 
-    public BlurShader() {
-        super("vs_blur.glsl", "fs_blur.glsl");
+    public FrameShader() {
+        super("vs_frame.glsl", "fs_frame.glsl");
         use();
         aPosition = getAttrib("aPosition");
         aTexCoords = getAttrib("aTexCoords");
         uTextureId = getUniform("uTextureId");
-        uRadius = getUniform("uRadius");
     }
 
     @Override
@@ -33,7 +31,6 @@ public final class BlurShader extends Shader {
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, texture);
         GLES20.glUniform1i(uTextureId, 0);
-        GLES20.glUniform1f(uRadius, 1.0f);
     }
 
     @Override
@@ -42,17 +39,17 @@ public final class BlurShader extends Shader {
         GLES20.glDisableVertexAttribArray(aTexCoords);
     }
 
-    public BlurShader setVertices(FloatBuffer vertices){
+    public FrameShader setVertices(FloatBuffer vertices){
         this.vertices = vertices;
         return this;
     }
 
-    public BlurShader setTextureCoords(FloatBuffer textureCoords){
+    public FrameShader setTextureCoords(FloatBuffer textureCoords){
         this.textureCoords = textureCoords;
         return this;
     }
 
-    public BlurShader setTexture(int texture){
+    public FrameShader setTexture(int texture){
         this.texture = texture;
         return this;
     }

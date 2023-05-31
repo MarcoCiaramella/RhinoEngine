@@ -45,14 +45,14 @@ public class BlurRenderer extends AbstractRenderer {
         textureCoordsBuffer.position(0);
         blurShader = new BlurShader();
         this.abstractRenderer = abstractRenderer;
-        rendererOnTexture = new RendererOnTexture(RendererOnTexture.RESOLUTION_1024);
+        rendererOnTexture = new RendererOnTexture(RenderingResolution.RESOLUTION_1024);
     }
 
     @Override
     public void doRendering(Camera camera, long ms) {
         blurShader.setVertices(verticesBuffer);
         blurShader.setTextureCoords(textureCoordsBuffer);
-        blurShader.setSceneTexture(rendererOnTexture.render(abstractRenderer, camera, ms));
+        blurShader.setTexture(rendererOnTexture.render(abstractRenderer, camera, ms));
         blurShader.bindData();
         GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, 4);
         blurShader.unbindData();
