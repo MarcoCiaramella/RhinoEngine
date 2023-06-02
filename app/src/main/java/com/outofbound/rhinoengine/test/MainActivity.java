@@ -9,14 +9,21 @@ import androidx.appcompat.widget.SwitchCompat;
 import com.outofbound.rhinoengine.R;
 import com.outofbound.rhinoenginelib.activity.RhinoEngineActivity;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
+import com.outofbound.rhinoenginelib.gesture.RotateScaleGesture;
+import com.outofbound.rhinoenginelib.mesh.Mesh;
+import com.outofbound.rhinoenginelib.renderer.RenderingResolution;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 public class MainActivity extends RhinoEngineActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        withoutLayout();
+    }
 
+    private void withLayout() {
+        setContentView(R.layout.activity_main);
         getFPS().post(new Runnable() {
             @Override
             public void run() {
@@ -54,6 +61,15 @@ public class MainActivity extends RhinoEngineActivity {
             public void run() {
                 getDebug().setText(Debug.text);
                 getDebug().postDelayed(this,100);
+            }
+        });
+    }
+
+    private void withoutLayout() {
+        setContentView(new AbstractEngine(this, new Vector3f(1, 2, 3), new RotateScaleGesture(), RenderingResolution.RESOLUTION_256) {
+            @Override
+            protected void init() {
+                addMesh(new Mesh("car", "car1.obj"));
             }
         });
     }
