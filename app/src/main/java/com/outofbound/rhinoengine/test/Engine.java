@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
+import com.outofbound.rhinoenginelib.gesture.RotateScaleGesture;
 import com.outofbound.rhinoenginelib.light.PointLight;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.renderer.RenderingResolution;
@@ -18,14 +19,13 @@ public class Engine extends AbstractEngine {
     private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
     private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
     private static final int NUM_CUBES = 10;
-    private static final MyGesture gesture = new MyGesture();
 
     public Engine(Context context){
-        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture, RenderingResolution.RESOLUTION_256);
+        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), new RotateScaleGesture(), RenderingResolution.RESOLUTION_256);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), gesture, RenderingResolution.RESOLUTION_256);
+        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), new RotateScaleGesture(), RenderingResolution.RESOLUTION_256);
     }
 
     @Override
