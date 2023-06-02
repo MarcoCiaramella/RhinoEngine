@@ -16,16 +16,14 @@ import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 public class Engine extends AbstractEngine {
 
     private static final Vector3f CAMERA_EYE = new Vector3f(3,2,3);
-    private static final Vector3f CAMERA_CENTER = new Vector3f(0,0,0);
-    private static final Vector3f CAMERA_UP = new Vector3f(0,1,0);
     private static final int NUM_CUBES = 10;
 
     public Engine(Context context){
-        super(context, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), new RotateScaleGesture(), RenderingResolution.RESOLUTION_256);
+        super(context, CAMERA_EYE, new RotateScaleGesture(), RenderingResolution.RESOLUTION_256);
     }
 
     public Engine(Context context, AttributeSet attrs){
-        super(context, attrs, new CameraPerspective(CAMERA_EYE, CAMERA_CENTER, CAMERA_UP, 1, 1000), new RotateScaleGesture(), RenderingResolution.RESOLUTION_256);
+        super(context, attrs, CAMERA_EYE, new RotateScaleGesture(), RenderingResolution.RESOLUTION_256);
     }
 
     @Override

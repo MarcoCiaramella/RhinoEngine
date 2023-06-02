@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 import com.outofbound.rhinoenginelib.camera.Camera;
+import com.outofbound.rhinoenginelib.camera.CameraPerspective;
 import com.outofbound.rhinoenginelib.gesture.Gesture;
 import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
@@ -21,6 +22,7 @@ import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
 import com.outofbound.rhinoenginelib.util.map.SyncMap;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.util.Calendar;
 
@@ -50,36 +52,36 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     /**
      * The engine constructor.
      * @param context the context for this view
-     * @param camera the Camera
+     * @param cameraPosition camera position looking to the scene
      * @param gesture a Gesture
      * @param resolution rendering resolution from {@link RenderingResolution}
      */
-    public AbstractEngine(Context context, Camera camera, Gesture gesture, RenderingResolution resolution){
+    public AbstractEngine(Context context, Vector3f cameraPosition, Gesture gesture, RenderingResolution resolution){
         super(context);
-        config(camera, gesture, resolution);
+        config(cameraPosition, gesture, resolution);
     }
 
     /**
      * The engine constructor.
      * @param context the context for this view
      * @param attrs the object AttributeSet
-     * @param camera the Camera
+     * @param cameraPosition camera position looking to the scene
      * @param gesture a Gesture
      * @param resolution rendering resolution from {@link RenderingResolution}
      */
-    public AbstractEngine(Context context, AttributeSet attrs, Camera camera, Gesture gesture, RenderingResolution resolution){
+    public AbstractEngine(Context context, AttributeSet attrs, Vector3f cameraPosition, Gesture gesture, RenderingResolution resolution){
         super(context,attrs);
-        config(camera, gesture, resolution);
+        config(cameraPosition, gesture, resolution);
     }
 
-    private void config(Camera camera, Gesture gesture, RenderingResolution resolution){
+    private void config(Vector3f cameraPosition, Gesture gesture, RenderingResolution resolution){
         instance = this;
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
         setOnTouchListener(this);
-        this.camera = camera;
+        this.camera = new CameraPerspective(cameraPosition, new Vector3f(0,0,0), new Vector3f(0,1,0), 1, 1000);
         this.gesture = gesture;
         this.resolution = resolution;
         this.scaleDetector = new ScaleGestureDetector(getContext(), this);
