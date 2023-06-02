@@ -13,15 +13,19 @@ public class RendererOnTexture {
     private int frameBuffer;
     private int texture;
 
-    private static final int[] resolutions = {256,512,1024,2048,4096};
 
 
-    public RendererOnTexture(int resolution){
-        if (resolution < 0 || resolution > 4){
-            throw new IllegalArgumentException("resolution must be RenderingResolution.RESOLUTION_x");
+    public RendererOnTexture(RenderingResolution resolution){
+        int res = 0;
+        switch (resolution) {
+            case RESOLUTION_256: res = 256; break;
+            case RESOLUTION_512: res = 512; break;
+            case RESOLUTION_1024: res = 1024; break;
+            case RESOLUTION_2048: res = 2048; break;
+            case RESOLUTION_4096: res = 4096; break;
         }
-        this.fboWidth = resolutions[resolution];
-        this.fboHeight = resolutions[resolution];
+        this.fboWidth = res;
+        this.fboHeight = res;
         setup();
     }
 

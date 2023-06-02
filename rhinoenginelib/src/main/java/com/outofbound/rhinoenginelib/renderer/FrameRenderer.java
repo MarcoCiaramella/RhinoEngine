@@ -38,7 +38,7 @@ public class FrameRenderer extends AbstractRenderer {
     private final SceneRenderer sceneRenderer;
 
 
-    public FrameRenderer(int resolution) {
+    public FrameRenderer(RenderingResolution resolution) {
         ByteBuffer bb_vertex = ByteBuffer.allocateDirect(vertices.length * 4);
         bb_vertex.order(ByteOrder.nativeOrder());
         verticesBuffer = bb_vertex.asFloatBuffer();

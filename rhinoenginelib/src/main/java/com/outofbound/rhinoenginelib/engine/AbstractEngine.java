@@ -16,6 +16,7 @@ import com.outofbound.rhinoenginelib.light.Lights;
 import com.outofbound.rhinoenginelib.mesh.Mesh;
 import com.outofbound.rhinoenginelib.collision.Collider;
 import com.outofbound.rhinoenginelib.renderer.FrameRenderer;
+import com.outofbound.rhinoenginelib.renderer.RenderingResolution;
 import com.outofbound.rhinoenginelib.renderer.SceneRenderer;
 import com.outofbound.rhinoenginelib.renderer.BlurRenderer;
 import com.outofbound.rhinoenginelib.task.Task;
@@ -42,7 +43,7 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
     private static AbstractEngine instance;
     private final SyncMap<Task> taskMap = new SyncMap<>();
     private FrameRenderer frameRenderer;
-    private int resolution;
+    private RenderingResolution resolution;
 
 
 
@@ -51,9 +52,9 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @param context the context for this view
      * @param camera the Camera
      * @param gesture a Gesture
-     * @param resolution rendering resolution
+     * @param resolution rendering resolution from {@link RenderingResolution}
      */
-    public AbstractEngine(Context context, Camera camera, Gesture gesture, int resolution){
+    public AbstractEngine(Context context, Camera camera, Gesture gesture, RenderingResolution resolution){
         super(context);
         config(camera, gesture, resolution);
     }
@@ -64,14 +65,14 @@ public abstract class AbstractEngine extends GLSurfaceView implements GLSurfaceV
      * @param attrs the object AttributeSet
      * @param camera the Camera
      * @param gesture a Gesture
-     * @param resolution rendering resolution
+     * @param resolution rendering resolution from {@link RenderingResolution}
      */
-    public AbstractEngine(Context context, AttributeSet attrs, Camera camera, Gesture gesture, int resolution){
+    public AbstractEngine(Context context, AttributeSet attrs, Camera camera, Gesture gesture, RenderingResolution resolution){
         super(context,attrs);
         config(camera, gesture, resolution);
     }
 
-    private void config(Camera camera, Gesture gesture, int resolution){
+    private void config(Camera camera, Gesture gesture, RenderingResolution resolution){
         instance = this;
         setSystemUiVisibility(SYSTEM_UI_FLAG_IMMERSIVE | SYSTEM_UI_FLAG_FULLSCREEN);
         setEGLContextClientVersion(2);
