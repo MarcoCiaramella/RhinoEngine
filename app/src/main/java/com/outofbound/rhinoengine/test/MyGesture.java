@@ -15,7 +15,7 @@ class MyGesture implements Gesture {
 
     @Override
     public void onMove(float x, float y, float velX, float velY) {
-        if (Math.abs(velX) > Math.abs(velY)) {
+        if (Math.abs(velX) >= Math.abs(velY)) {
             Engine.getInstance().getCamera().getEye().rotate(-velX * 10, 0, 1, 0);
         }
         else if (Math.abs(velY) > Math.abs(velX)) {
@@ -25,6 +25,6 @@ class MyGesture implements Gesture {
 
     @Override
     public void onScale(float scaleFactor) {
-
+        Engine.getInstance().getCamera().getEye().multS(scaleFactor);
     }
 }
