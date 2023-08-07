@@ -3,6 +3,8 @@ package com.outofbound.rhinoenginelib.mesh;
 import com.lib.joctree.math.Matrix4;
 import com.lib.joctree.math.Vector3;
 import com.lib.joctree.math.collision.BoundingBox;
+import com.outofbound.rhinoenginelib.util.triangle.Triangle;
+import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
@@ -13,10 +15,24 @@ public class AABB {
     private final BoundingBox boundingBox;
     private final Matrix4 m4 = new Matrix4();
     private final Mesh parent;
+    private final ArrayList<Triangle> triangles = new ArrayList<>();
 
     private AABB(Mesh parent, float minX, float maxX, float minY, float maxY, float minZ, float maxZ) {
         boundingBox = new BoundingBox(new Vector3(minX, minY, minZ), new Vector3(maxX, maxY, maxZ));
         this.parent = parent;
+        loadTriangles();
+    }
+
+    private void loadTriangles() {
+        for (Triangle triangle : parent.getTriangles()) {
+            if (boundingBox.contains(cast(triangle.v1)) || boundingBox.contains(cast(triangle.v2)) || boundingBox.contains(cast(triangle.v3)) ) {
+                triangles.add(triangle);
+            }
+        }
+    }
+
+    private Vector3 cast(Vector3f v) {
+        return new Vector3(v.x, v.y, v.z);
     }
 
     public Mesh getParent() {

@@ -316,6 +316,10 @@ public class Mesh {
         }
     }
 
+    public ArrayList<Triangle> getTriangles() {
+        return triangles;
+    }
+
     public static class ShaderData {
         public FloatBuffer vertexBuffer;
         public FloatBuffer normalBuffer;
