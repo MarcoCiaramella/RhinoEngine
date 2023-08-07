@@ -1,9 +1,6 @@
 package com.outofbound.rhinoenginelib.util.color;
 
 import com.outofbound.rhinoenginelib.util.number.Numbers;
-import com.outofbound.rhinoenginelib.util.vertex.Vertex;
-
-import java.util.Arrays;
 
 public class Color {
 

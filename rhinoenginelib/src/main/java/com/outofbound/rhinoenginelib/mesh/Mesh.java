@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.outofbound.rhinoenginelib.engine.AbstractEngine;
 import com.outofbound.rhinoenginelib.util.bitmap.BitmapUtil;
+import com.outofbound.rhinoenginelib.util.triangle.Triangle;
 import com.outofbound.rhinoenginelib.util.vector.Vector3f;
 
 import java.io.IOException;
@@ -43,6 +44,7 @@ public class Mesh {
     private int aabbSizeX, aabbSizeY, aabbSizeZ;
     private boolean updateAABBRequired = true;
     private final ArrayList<ShaderData> shaderData = new ArrayList<>();
+    private final ArrayList<Triangle> triangles = new ArrayList<>();
 
 
     public Mesh(@NonNull String name, @NonNull float[] vertices, @NonNull float[] normals, int[] indices, float[] colors){
@@ -52,12 +54,15 @@ public class Mesh {
         loadNormals(shaderData.get(0), normals);
         loadColors(shaderData.get(0), colors);
         loadIndices(shaderData.get(0), indices);
-
+        loadTriangles(shaderData.get(0).vertexBuffer, shaderData.get(0).normalBuffer, shaderData.get(0).indicesBuffer);
     }
 
     public Mesh(@NonNull String name, @NonNull String asset){
         this.name = name;
         loadAsset(asset);
+        for (ShaderData sd : shaderData) {
+            loadTriangles(sd.vertexBuffer, sd.normalBuffer, sd.indicesBuffer);
+        }
     }
 
     private void loadAsset(String fileName){
@@ -290,6 +295,25 @@ public class Mesh {
 
     public ArrayList<ShaderData> getShaderData() {
         return shaderData;
+    }
+
+    private void loadTriangles(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, IntBuffer indicesBuffer) {
+        for (int i = 0; i < indicesBuffer.capacity(); i += 3) {
+            int x1 = indicesBuffer.get(i) * 3;
+            int x2 = indicesBuffer.get(i+1) * 3;
+            int x3 = indicesBuffer.get(i+2) * 3;
+            int y1 = x1+1;
+            int y2 = x2+1;
+            int y3 = x3+1;
+            int z1 = y1+1;
+            int z2 = y2+1;
+            int z3 = y3+1;
+            triangles.add(new Triangle(
+                    new Vector3f(vertexBuffer.get(x1), vertexBuffer.get(y1), vertexBuffer.get(z1)),
+                    new Vector3f(vertexBuffer.get(x2), vertexBuffer.get(y2), vertexBuffer.get(z2)),
+                    new Vector3f(vertexBuffer.get(x3), vertexBuffer.get(y3), vertexBuffer.get(z3)),
+                    new Vector3f(normalBuffer.get(x1), normalBuffer.get(y1), normalBuffer.get(z1))));
+        }
     }
 
     public static class ShaderData {
